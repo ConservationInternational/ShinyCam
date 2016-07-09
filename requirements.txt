@@ -1,0 +1,7 @@
+toolz
+pandas
+numpy
+matplotlib
+ipython
+jupyter
+seaborn
