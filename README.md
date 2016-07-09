@@ -12,24 +12,23 @@ We have developed standard wildlife monitoring protocols and flexible data manag
 
 # Code
 ## Directory Structure
-I propose the following structure for our repo:
+Here is the structure for our repo:
 ```.
 ├── team_ci
-│   ├── data
-│     ├── code
-|         └── code for processing data
-│     ├── processed
-│     └── original
-│   ├── ShinyApps
-│     ├── ExampleShinyApp
-│       ├── data - symlink /path/to/data
-│       ├── server.R
-│       └── ui.R
-│     ├── app2
-│       ├── data - symlink /path/to/data
-│       ├── server.R
-│       └── ui.R
-│   └── Any other code
+|   ├── data
+|   | ├── code
+|   | |   └── code for processing data
+|   | ├── processed
+|   | └── original
+|   ├── ShinyApps
+|   | ├── ExampleShinyApp
+|   |   ├── data - symlink /path/to/data
+|   |   ├── server.R
+|   |   └── ui.R
+|   ├── rscripts
+|   ├── pyscripts
+|   └── notebooks
+└──
 ```
 
 
