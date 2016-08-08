@@ -12,7 +12,8 @@ We have developed standard wildlife monitoring protocols and flexible data manag
 
 # Code
 ## Directory Structure
-Here is the structure for our repo:
+Here is the structure for our repo. Note that the `data` folder will not exist on Github - please match this directory structure on your machine:
+
 ```.
 ├── team_ci
 |   ├── data
@@ -22,7 +23,7 @@ Here is the structure for our repo:
 |   | └── original
 |   ├── ShinyApps
 |   | ├── ExampleShinyApp
-|   |   ├── data - symlink /path/to/data
+|   |   ├── data - either the folder containing data, or symlink /path/to/data
 |   |   ├── server.R
 |   |   └── ui.R
 |   ├── rscripts
@@ -35,15 +36,18 @@ Here is the structure for our repo:
 ### ExampleShinyApp
 This is a small example app/intro to Shiny in R, using our data. Given a user-selected camera serial number, we show a bar chart of the animals that this camera has seen. Note that this is not one of the items as requested by CI; rather, it serves as an intro to our data and to Shiny.
 
-To use this app, please populate the /data folder as it is in Google drive and create symlinks as in the above structure. Directions to run the app can be found [here](http://shiny.rstudio.com/articles/running.html). Please freel free to contact [Erin](mailto:erin.g.craig@gmail.com) with questions.
+To use this app, please populate the /data folder as it is in Google drive and make your local directory match the structure above. Directions to run the app can be found [here](http://shiny.rstudio.com/articles/running.html). 
 
 Python Setup (OS X and Linux ONLY)
 -----
 - First make sure you have ```python, pip``` and ```virtualenv``` installed
-- ```git clone git@github.com:DataKind-SF/team_ci.git```
+- ```git clone git@github.com:DataKind-SF/datadive_201608_ci.git```
+- Populate your data folder as in [Google drive]().
 - ```make python```
 - To start jupyter notebook run ```make notebook```
 
 R Setup
 -----
-- TODO
+- Make sure you have ```R``` installed.  
+- Clone this repo: ```git clone git@github.com:DataKind-SF/datadive_201608_ci.git```
+- Populate the data folder as in [Google drive]().
