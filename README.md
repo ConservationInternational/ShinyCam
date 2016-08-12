@@ -42,7 +42,7 @@ Python Setup (OS X and Linux ONLY)
 -----
 - First make sure you have ```python, pip``` and ```virtualenv``` installed
 - ```git clone git@github.com:DataKind-SF/datadive_201608_ci.git```
-- Populate your data folder as in [Google drive]().
+- Populate your data folder as in [Google drive](https://drive.google.com/folderview?id=0BzoemeOsgjRIb2R1ZWo5YjBCRHc&usp=sharing).
 - ```make python```
 - To start jupyter notebook run ```make notebook```
 
@@ -50,4 +50,4 @@ R Setup
 -----
 - Make sure you have ```R``` installed.  
 - Clone this repo: ```git clone git@github.com:DataKind-SF/datadive_201608_ci.git```
-- Populate the data folder as in [Google drive]().
+- Populate the data folder as in [Google drive](https://drive.google.com/folderview?id=0BzoemeOsgjRIb2R1ZWo5YjBCRHc&usp=sharing).
