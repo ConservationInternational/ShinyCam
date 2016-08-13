@@ -36,12 +36,17 @@ shinyUI(navbarPage("Superzip", id="nav",
 
         h2("ZIP explorer"),
 
+        ## NOTE (Michael): The dataFiles are created in the global.R
+        selectInput("dataFiles", "Data Source", choices = dataFiles),
         selectInput("color", "Color", vars),
         selectInput("size", "Size", vars, selected = "adultpop"),
         conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
           # Only prompt for threshold when coloring or sizing by superzip
           numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
           ),
+
+        ## NOTE (Michael): The sampling frequency should be set after the data
+        ##                 source has been decided.
         selectInput(inputId = "samplingFrequency",
                     label = "Sampling Frequency",
                     choices = samplingFrequency),
