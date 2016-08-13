@@ -21,3 +21,9 @@ cleantable <- allzips %>%
     Lat = latitude,
     Long = longitude
   )
+
+
+fileExtension = "csv"
+dataFiles <-
+    dir(path = "data/", pattern = paste0("*.", "csv")) %>%
+    gsub(pattern = paste0(".", fileExtension), replacement = "", x = .)
