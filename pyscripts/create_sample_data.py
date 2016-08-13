@@ -39,16 +39,17 @@ writer.writerow(header)
 # loop over variables
 for site, locs in subprojects:
     for deploy_id, lat, lon in locs:
-        for sampling_type, n_sampling_periods in samplings:
-            for i_sampling_period in range(n_sampling_periods):
-                for genus, species, low_rate, high_rate in species_sets:
-                    # set up row
-                    row = [
-                        data_source, site,
-                        deploy_id, lat, lon,
-                        sampling_type, i_sampling_period+1,
-                        genus, species, random.randint(low_rate, high_rate),
-                    ]
+        for year in years:
+            for sampling_type, n_sampling_periods in samplings:
+                for i_sampling_period in range(n_sampling_periods):
+                    for genus, species, low_rate, high_rate in species_sets:
+                        # set up row
+                        row = [
+                            data_source, site,
+                            deploy_id, lat, lon,
+                            sampling_type, i_sampling_period+1, year,
+                            genus, species, random.randint(low_rate, high_rate),
+                        ]
 
-                    # print row
-                    writer.writerow(row)
+                        # print row
+                        writer.writerow(row)
