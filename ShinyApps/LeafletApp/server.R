@@ -12,6 +12,8 @@ zipdata <- allzips[sample.int(nrow(allzips), 10000),]
 # will be drawn last and thus be easier to see
 zipdata <- zipdata[order(zipdata$centile),]
 
+sampledata <- read.csv('data/TEAM_data.csv')
+
 shinyServer(function(input, output, session) {
 
   ## Interactive Map ###########################################
@@ -131,33 +133,6 @@ shinyServer(function(input, output, session) {
 
 
   ## Data Explorer ###########################################
-
-  observe({
-    cities <- if (is.null(input$states)) character(0) else {
-      filter(cleantable, State %in% input$states) %>%
-        `$`('City') %>%
-        unique() %>%
-        sort()
-    }
-    stillSelected <- isolate(input$cities[input$cities %in% cities])
-    updateSelectInput(session, "cities", choices = cities,
-      selected = stillSelected)
-  })
-
-  observe({
-    zipcodes <- if (is.null(input$states)) character(0) else {
-      cleantable %>%
-        filter(State %in% input$states,
-          is.null(input$cities) | City %in% input$cities) %>%
-        `$`('Zipcode') %>%
-        unique() %>%
-        sort()
-    }
-    stillSelected <- isolate(input$zipcodes[input$zipcodes %in% zipcodes])
-    updateSelectInput(session, "zipcodes", choices = zipcodes,
-      selected = stillSelected)
-  })
-
   observe({
     if (is.null(input$goto))
       return()
@@ -173,16 +148,35 @@ shinyServer(function(input, output, session) {
     })
   })
 
-  output$ziptable <- DT::renderDataTable({
-    df <- cleantable %>%
-      filter(
-        Score >= input$minScore,
-        Score <= input$maxScore,
-        is.null(input$states) | State %in% input$states,
-        is.null(input$cities) | City %in% input$cities,
-        is.null(input$zipcodes) | Zipcode %in% input$zipcodes
-      ) %>%
-      mutate(Action = paste('<a class="go-map" href="" data-lat="', Lat, '" data-long="', Long, '" data-zip="', Zipcode, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
+  
+  # transform on sampling type
+  keepCols <- c(
+    'Project.ID', 'Deployment.Location.ID',
+    'Latitude.Resolution', 'Longitude.Resolution',
+    'Sampling.Type', 'Sampling.Period', 'Year',
+    'Genus', 'Species', 'Rate.Of.Detection'
+  )
+  
+  # TODO use filtered data
+  subsettedData <- sampledata[keepCols]
+  colnames(subsettedData) <- c(
+    'Project', 'Deployment Location ID',
+    'Latitude', 'Longitude',
+    'Sampling Type', 'Sampling Period', 'Year',
+    'Genus', 'Species', 'Rate Of Detection'
+  )
+
+  # TODO change file name based on filters
+  output$downloadData <- downloadHandler(
+    filename = function() { paste('data', '.csv', sep='') },
+    content = function(file) {
+      write.csv(subsettedData, file)
+    }
+  )
+  
+  output$table <- DT::renderDataTable({
+    df <- subsettedData %>%
+      mutate(Action = paste('<a class="go-map" href="" data-lat="', Latitude, '" data-long="', Longitude, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
     action <- DT::dataTableAjax(session, df)
 
     DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
