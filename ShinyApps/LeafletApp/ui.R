@@ -10,6 +10,11 @@ vars <- c(
   "Population" = "adultpop"
 )
 
+samplingFrequency <- c(
+    "Annual" = "annual",
+    "Seasonal" = "season",
+    "Monthly" = "monthly"
+    )
 
 shinyUI(navbarPage("Superzip", id="nav",
 
@@ -36,8 +41,12 @@ shinyUI(navbarPage("Superzip", id="nav",
         conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
           # Only prompt for threshold when coloring or sizing by superzip
           numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-        ),
-
+          ),
+        selectInput(inputId = "samplingFrequency",
+                    label = "Sampling Frequency",
+                    choices = samplingFrequency),
+        checkboxInput(inputId = "show_human",
+                      label = "Show Human Activities?"),
         plotOutput("histCentile", height = 200),
         plotOutput("scatterCollegeIncome", height = 250)
       ),
