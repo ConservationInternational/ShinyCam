@@ -61,7 +61,7 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         uiOutput("red.control"),
         uiOutput("species.list"),
         uiOutput("frequency.control"),
-        uiOutput("time.control")
+        uiOutput("time.control"),
         #uiOutput("time.selection")#,
         # selectInput("color", "Color", vars),
         # selectInput("size", "Size", vars, selected = "adultpop"),
@@ -75,7 +75,14 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         # checkboxInput(inputId = "show_human",
         #               label = "Show Human Activities?"),
         # plotOutput("histCentile", height = 200),
-        # plotOutput("scatterCollegeIncome", height = 250)
+                                        # plotOutput("scatterCollegeIncome", height = 250)
+        plotOutput("histCentile", height = 200),
+        plotOutput("scatterCollegeIncome", height = 250),
+        plotOutput("camera_ts_benchmark", height = 200),
+        plotOutput("camera_ts_benchmark_facet", height = 200),
+        plotOutput("total_ts", height = 200),
+        plotOutput("top_five_plot", height = 200),
+        plotOutput("health_ts", height = 200)
       ),
 
       tags$div(id="cite",
@@ -109,13 +116,5 @@ shinyUI(navbarPage("Rates of detection", id="nav",
     DT::dataTableOutput("table")
   ),
 
-conditionalPanel("false", icon("crosshair")),
-  plotOutput("histCentile", height = 200),
-  plotOutput("scatterCollegeIncome", height = 250),
-  plotOutput("camera_ts_benchmark", height = 200),
-  plotOutput("camera_ts_benchmark_facet", height = 200),
-  plotOutput("total_ts", height = 200),
-  plotOutput("top_five_plot", height = 200),
-  plotOutput("health_ts", height = 200)
-
+  conditionalPanel("false", icon("crosshair"))
 ))
