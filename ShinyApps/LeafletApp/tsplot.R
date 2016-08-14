@@ -2,25 +2,34 @@ library(dplyr)
 library(ggplot2)
 library(reshape2)
 
-createTimeStamp = function(Year, samplingPeriod){
-    timeString = paste(Year, samplingPeriod, "01", sep = "-")
+## createTimeStamp = function(Year, samplingPeriod){
+##     timeString = paste(Year, samplingPeriod, "01", sep = "-")
+##     as.Date(timeString, "%Y-%m-%d")
+## }
+
+
+createTimeStamp = function(samplingPeriod){
+    timeString = paste(samplingPeriod, "01", sep = "-")
     as.Date(timeString, "%Y-%m-%d")
 }
 
-cameraID = "123ABC"
+
+cameraID = "CT-VB-1-1"
 groupingID = "Species"
-samplingFrequency = "monthly"
+samplingFrequency = "Annual"
 
 
 selectedData =
-    read.csv("data/TEAM_data.csv", stringsAsFactors = FALSE)
+    read.csv("data/rate_of_detection.csv", stringsAsFactors = FALSE)
+    ## read.csv("data/TEAM_data.csv", stringsAsFactors = FALSE)
 
 ## Create time stamp
 timeStampData =
     selectedData %>%
     subset(Sampling.Type == samplingFrequency) %>%
-    mutate(., timeStamp = createTimeStamp(Year = Year,
-                                          samplingPeriod = Sampling.Period))
+    ## mutate(., timeStamp = createTimeStamp(Year = Year,
+    ##                                       samplingPeriod = Sampling.Period))
+    mutate(., timeStamp = createTimeStamp(samplingPeriod = Sampling.Period))
 
 cameraData =
     timeStampData %>%

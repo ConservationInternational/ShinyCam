@@ -27,38 +27,6 @@ shinyServer(function(input, output, session) {
 
   ## Interactive Map ###########################################
 
-    ## Create time series plot
-    source("tsplot.R")
-    output$ts_plot <- renderPlot({
-        ## print(plotts(full_data = plotting_subset(),
-        ##              camera_data = camera_subset(),
-        ##              time = "timeStamp",
-        ##              group = "Genus",
-        ##              rate = "Rate.Of.Detection"))
-        print(plotts(full_data = timeStampData,
-                     camera_data = cameraData,
-                     group = "Genus", # The columname of the group
-                     time = "timeStamp", # The column name of the time stamp
-                     rate = "Rate.Of.Detection"))
-    })
-
-
-    output$agg_ts_plot <- renderPlot({
-        ## print(plotts(full_data = plotting_subset(),
-        ##              camera_data = camera_subset(),
-        ##              time = "timeStamp",
-        ##              group = "Genus",
-        ##              rate = "Rate.Of.Detection"))
-        print(plotAggTs(full_data = timeStampData,
-                        time = "timeStamp", # The column name of the time stamp
-                        rate = "Rate.Of.Detection"))
-    })
-
-    output$decompose_ts_plot <- renderPlot({
-        print(plotDecomposeTs(full_data = timeStampData, time = "timeStamp",
-                              rate = "Rate.Of.Detection"))
-    })
-
 
   # Get unique pairs of lat long values for plotting cam locations
   locs <- select(lat_long_data, Latitude, Longitude)
@@ -361,5 +329,37 @@ shinyServer(function(input, output, session) {
   camera_dataset <- reactive ({
     subset(site_selection(), )
   })
+
+    ## Create time series plot
+    source("tsplot.R")
+    output$ts_plot <- renderPlot({
+        ##     print(plotts(full_data = plotting_dataset(),
+        ##                  camera_data = camera_dataset(),
+        ##                  time = "timeStamp",
+        ##                  group = "Genus",
+        ##                  rate = "Rate.Of.Detection"))
+        print(plotts(full_data = timeStampData,
+                     camera_data = cameraData,
+                     group = "Genus", # The columname of the group
+                     time = "timeStamp", # The column name of the time stamp
+                     rate = "Rate.Of.Detection"))
+    })
+
+
+    output$agg_ts_plot <- renderPlot({
+        ## print(plotts(full_data = plotting_subset(),
+        ##              camera_data = camera_subset(),
+        ##              time = "timeStamp",
+        ##              group = "Genus",
+        ##              rate = "Rate.Of.Detection"))
+        print(plotAggTs(full_data = timeStampData,
+                        time = "timeStamp", # The column name of the time stamp
+                        rate = "Rate.Of.Detection"))
+    })
+
+    output$decompose_ts_plot <- renderPlot({
+        print(plotDecomposeTs(full_data = timeStampData, time = "timeStamp",
+                              rate = "Rate.Of.Detection"))
+    })
 
 })
