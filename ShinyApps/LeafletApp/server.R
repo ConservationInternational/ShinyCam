@@ -50,8 +50,7 @@ shinyServer(function(input, output, session) {
   # Select Region
   output$site_checkbox <- renderUI({
     labels <- as.character(unique(dataset_input()$Project.ID))
-    selectInput("site_selection", "Select Sites/Subregions", choices = labels, selected = labels,
-                multiple=TRUE)
+    selectInput("site_selection", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
   })
   
   # Select site
@@ -149,12 +148,15 @@ shinyServer(function(input, output, session) {
     }
     
     #dat <- get_KDE_polygons(site_selection())
-    tmap <- leaflet(cam_lat_longs) %>% 
+    
+    tmap <- leaflet(unique(select(site_selection(), Latitude, Longitude))) %>% 
       addTiles(
         urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
-      ) %>% 
-      addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL)# %>% 
-      #addPolygons(data=dat$poly, color = brewer.pal(dat$nlev, "Greens")[dat$levs], stroke=FALSE)
+      ) 
+    if (nrow(site_selection())>0) {
+      tmap <- tmap %>% 
+        addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL)
+            }
     if (!is.null(idw.raster)) { 
       tmap %>%
         addRasterImage(idw.raster, opacity=0.5, colors="Reds")
@@ -193,7 +195,7 @@ shinyServer(function(input, output, session) {
   # Generate controls
 
   # Update species selection based on RED and guild
-  # TODO: (Someday) Fix this aweful logic, which works, not that that's saying much
+  # TODO: (Someday) Fix this awful logic, which works, not that that's saying much
   observe({
      #Modify selection based on nulls
     if (is.null(input$red) & is.null(input$guild)) {
@@ -235,7 +237,11 @@ shinyServer(function(input, output, session) {
   # Subset dataframe for plotting (no time subset)
   # Subset by project, site, frequency, and selected species
   plotting_dataset <- reactive({
-    subset(site_selection(), Sampling.Type==input$select_time & paste(Genus, Species)==input$species)
+    if (!is.null(input$species)) {
+      subset(site_selection(), (Sampling.Type==input$select_time) & (paste(Genus, Species) %in% input$species))
+    } else {
+      data.frame()
+    }
   })
   
   # Subset dataframe for mapping (time subset)
@@ -244,7 +250,8 @@ shinyServer(function(input, output, session) {
     if (!is.null(input$species)) {
       subset(plotting_dataset(), timestamp==input$time_slider)
     } else {
-      subset(plotting_dataset(), rep(FALSE, times=nrow(plotting_dataset())))
+      #subset(plotting_dataset(), rep(FALSE, times=nrow(plotting_dataset())))
+      data.frame()
     }
   })
   
