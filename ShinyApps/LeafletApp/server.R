@@ -4,6 +4,7 @@ library(RColorBrewer)
 library(scales)
 library(lattice)
 library(dplyr)
+source("scripts/kernel_density_estimate.R")
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 set.seed(100)
@@ -12,30 +13,40 @@ zipdata <- allzips[sample.int(nrow(allzips), 10000),]
 # will be drawn last and thus be easier to see
 zipdata <- zipdata[order(zipdata$centile),]
 
+#TEAM_data <- read.csv("data/TEAM_data.csv")
+#TEAM_data$Longitude.Resolution <- TEAM_data$Longitude.Resolution + sample(-3:3)
+#TEAM_data$Latitude.Resolution <- TEAM_data$Latitude.Resolution + sample(-3:3)
+
+#Global
+GRADIENT_SCALE <- 2
+dat <- read.csv("data/rate_of_detection.csv")
+
 # Read species information 
 species.table <- read.csv("./data/taxonomy_scientific_name_20160813.csv")
 red.list.table <- read.csv("./data/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))
+
 
 shinyServer(function(input, output, session) {
 
   ## Interactive Map ###########################################
 
   # Create the map
+  locs <- select(dat, Latitude, Longitude)
+  cam_lat_longs <- unique(locs)
+  
   output$map <- renderLeaflet({
-    leaflet() %>%
-      #addTiles(
-      #  urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      #  attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
-      #) %>%
-      addTiles(
-          #urlTemplate = "http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-          urlTemplate = "http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-         
-          attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
-      ) %>%
-      setView(lng = -93.85, lat = 37.45, zoom = 4) 
+  leaflet(cam_lat_longs) %>% 
+    addTiles(
+      urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}",
+      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+    ) %>% 
+    addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1) %>% 
+    addPolygons(data=dat_pgons$poly, color = brewer.pal(dat_pgons$nlev, "Greens")[dat_pgons$levs], stroke=FALSE)
+  
   })
+  
+
 
   # A reactive expression that returns the set of zips that are
   # in bounds right now
@@ -75,41 +86,37 @@ shinyServer(function(input, output, session) {
 
     print(xyplot(income ~ college, data = zipsInBounds(), xlim = range(allzips$college), ylim = range(allzips$income)))
   })
-  
-  observe({
-    print(str(input))
-  })
 
   # This observer is responsible for maintaining the circles and legend,
   # according to the variables the user has chosen to map to color and size.
-  observe({
-    colorBy <- input$color
-    sizeBy <- input$size
-
-    if (colorBy == "superzip") {
-      # Color and palette are treated specially in the "superzip" case, because
-      # the values are categorical instead of continuous.
-      colorData <- ifelse(zipdata$centile >= (100 - input$threshold), "yes", "no")
-      pal <- colorFactor("Spectral", colorData)
-    } else {
-      colorData <- zipdata[[colorBy]]
-      pal <- colorBin("Spectral", colorData, 7, pretty = FALSE)
-    }
-
-    if (sizeBy == "superzip") {
-      # Radius is treated specially in the "superzip" case.
-      radius <- ifelse(zipdata$centile >= (100 - input$threshold), 30000, 3000)
-    } else {
-      radius <- zipdata[[sizeBy]] / max(zipdata[[sizeBy]]) * 30000
-    }
-
-    leafletProxy("map", data = zipdata) %>%
-      clearShapes() %>%
-      addCircles(~longitude, ~latitude, radius=radius, layerId=~zipcode,
-        stroke=FALSE, fillOpacity=0.4, fillColor=pal(colorData)) %>%
-      addLegend("bottomleft", pal=pal, values=colorData, title=colorBy,
-        layerId="colorLegend")
-  })
+#   observe({
+#     colorBy <- input$color
+#     sizeBy <- input$size
+# 
+#     if (colorBy == "superzip") {
+#       # Color and palette are treated specially in the "superzip" case, because
+#       # the values are categorical instead of continuous.
+#       colorData <- ifelse(zipdata$centile >= (100 - input$threshold), "yes", "no")
+#       pal <- colorFactor("Spectral", colorData)
+#     } else {
+#       colorData <- zipdata[[colorBy]]
+#       pal <- colorBin("Spectral", colorData, 7, pretty = FALSE)
+#     }
+# 
+#     if (sizeBy == "superzip") {
+#       # Radius is treated specially in the "superzip" case.
+#       radius <- ifelse(zipdata$centile >= (100 - input$threshold), 30000, 3000)
+#     } else {
+#       radius <- zipdata[[sizeBy]] / max(zipdata[[sizeBy]]) * 30000
+#     }
+# 
+#     leafletProxy("map", data = zipdata) %>%
+#       clearShapes() %>%
+#       addCircles(~longitude, ~latitude, radius=radius, layerId=~zipcode,
+#         stroke=FALSE, fillOpacity=0.4, fillColor=pal(colorData)) %>%
+#       addLegend("bottomleft", pal=pal, values=colorData, title=colorBy,
+#         layerId="colorLegend")
+#   })
 
   # Show a popup at the given location
   showZipcodePopup <- function(zipcode, lat, lng) {
@@ -136,7 +143,6 @@ shinyServer(function(input, output, session) {
     isolate({
       showZipcodePopup(event$id, event$lat, event$lng)
     })
-    print(event)
   })
 
 
@@ -182,17 +188,26 @@ shinyServer(function(input, output, session) {
       map %>% fitBounds(lng - dist, lat - dist, lng + dist, lat + dist)
     })
   })
+  
+  # TODO use filtered data as input
+  subsettedData <- select(TEAM_data,
+    'Project'=Project.ID, 'Deployment Location ID'=Deployment.Location.ID,
+    'Latitude'=Latitude.Resolution, 'Longitude'=Longitude.Resolution,
+    'Sampling Type'=Sampling.Type, 'Sampling Period'=Sampling.Period, 'Year'=Year,
+    'Genus'=Genus, 'Species'=Species, 'Rate Of Detection'=Rate.Of.Detection
+  )
 
-  output$ziptable <- DT::renderDataTable({
-    df <- cleantable %>%
-      filter(
-        Score >= input$minScore,
-        Score <= input$maxScore,
-        is.null(input$states) | State %in% input$states,
-        is.null(input$cities) | City %in% input$cities,
-        is.null(input$zipcodes) | Zipcode %in% input$zipcodes
-      ) %>%
-      mutate(Action = paste('<a class="go-map" href="" data-lat="', Lat, '" data-long="', Long, '" data-zip="', Zipcode, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
+  # TODO change file name based on filters
+  output$downloadData <- downloadHandler(
+    filename = function() { paste('data', '.csv', sep='') },
+    content = function(file) {
+      write.csv(subsettedData, file)
+    }
+  )
+  
+  output$table <- DT::renderDataTable({
+    df <- subsettedData %>%
+      mutate(Go = paste('<a class="go-map" href="" data-lat="', Latitude, '" data-long="', Longitude, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
     action <- DT::dataTableAjax(session, df)
 
     DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
