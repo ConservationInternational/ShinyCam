@@ -41,8 +41,21 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         h2("Rates of detection"),
 	selectInput("dataset", "Camera Trap Project", c("TEST!")),
         uiOutput("site_checkbox"),
-        #radioButtons("humans", "Show Humans?", c("Humans", "No Humans"), 
-        #            selected="No Humans"),
+	
+	
+	#####     SLIDER 
+	selectInput("select_time", label = "Sampling Frequency", 
+	            choices = list("Annual" = 'annual', "Seasonal" = 'seasonal', "Monthly" = 'monthly'), 
+	            selected = 1),
+	
+	sliderInput("time_slider", label = "Select Time", min = 0, 
+	            max = 100, value = 50, timeFormat = "%Y-%m-%d"),
+	
+	#####
+	
+	
+        radioButtons("humans", "Show Humans?", c("Humans", "No Humans"), 
+                    selected="No Humans"),
         uiOutput("guild.control"),
         uiOutput("red.control"),
         uiOutput("species.list"),

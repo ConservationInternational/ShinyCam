@@ -87,13 +87,6 @@ shinyServer(function(input, output, session) {
     selectInput("species", "Select Species (Multiple Possible)", 
                 choices=sort(present.species.names()), selected=NULL, multiple=TRUE)
   })
-
-  # Render time slider
-  output$time.selection <- renderUI({
-    tmin <- min(site_selection()$)
-    tmax <- max()
-    sliderInput()
-  })
   
 
   ## Interactive Map ###########################################
