@@ -31,17 +31,18 @@ shinyServer(function(input, output, session) {
 
   ## Interactive Map ###########################################
 
-  # Create the map
+  # Get unique pairs of lat long values for plotting cam locations
   locs <- select(dat, Latitude, Longitude)
   cam_lat_longs <- unique(locs)
   
+  # Create the map
   output$map <- renderLeaflet({
   leaflet(cam_lat_longs) %>% 
     addTiles(
       urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}",
       attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     ) %>% 
-    addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1) %>% 
+    addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL) %>% 
     addPolygons(data=dat_pgons$poly, color = brewer.pal(dat_pgons$nlev, "Greens")[dat_pgons$levs], stroke=FALSE)
   
   })

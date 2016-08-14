@@ -1,7 +1,17 @@
+library("sp")
+library("rgdal")
+library("KernSmooth")
+
+# Tool to get a kernel density estimate for a given set of data
+# Input:
+#   dat - Data frame with latitude, longitude
+#   bandwidth - Tunable parameter for size of kernel
+#   gridsize - Tunable parameter for size of normalization grid
+
 get_KDE_polygons <- function(dat, bandwidth=0.25, gridsize=51){
   kde <- bkde2D(dat[ , c("Longitude", "Latitude")],
-                bandwidth=c(bandwidth, bandwidth),
-                gridsize=c(gridsize, gridsize))
+                bandwidth=rep(bandwidth, 2),
+                gridsize=rep(gridsize, 2))
   CL <- contourLines(kde$x1 , kde$x2 , kde$fhat)
   
   ## EXTRACT CONTOUR LINE LEVELS
