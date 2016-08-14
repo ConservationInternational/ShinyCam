@@ -121,7 +121,7 @@ shinyServer(function(input, output, session) {
   # Render species selection
   output$species.list <- renderUI({
     selectInput("species", "Select Species (Multiple Possible)",
-                choices=sort(present.species.names()), selected=NULL, multiple=TRUE)
+                choices=sort(as.character(present.species.names())), selected=NULL, multiple=TRUE)
   })
 
 
