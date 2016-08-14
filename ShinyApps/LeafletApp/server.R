@@ -18,37 +18,65 @@ GRADIENT_SCALE <- 2
 lat_long_data <- read.csv("data/rate_of_detection.csv")
 #mapping_dataset()
 
-# Read species information 
+# Read species information
 species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
 red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))
 
 shinyServer(function(input, output, session) {
-  
+
   # Read in input data based on project
   dataset_input <- reactive({
     if (input$dataset=="TEST!") {
       read.csv("./data/rate_of_detection.csv")
-    } 
+    }
   })
-  
+
   # Select Region
   output$site_checkbox <- renderUI({
     labels <- as.character(unique(dataset_input()$Project.ID))
     selectInput("site_selection", "Select Sites/Subregions", choices = labels, selected = labels,
                 multiple=TRUE)
   })
-  
+
   # Select site
   site_selection <- reactive({
     subset(dataset_input(), as.character(Project.ID) %in% input$site_selection)
   })
-  
-  # Create reactive data.frame containing only species present in selected sites  
+
+
+  ######  ADD SLIDER
+
+  filterDataset <- reactive ({
+       data_by_time <- filter(dataset_input, Sampling.Type == input$select_time)
+
+       #### TEMP
+
+       data_by_time <- mutate(data_by_time, timestamp = NA)
+
+       data_by_time$timestamp <- createTimeStamp(data_by_time$Year, data_by_time$Sampling.Period)
+
+       return(data_by_time$timestamp)
+  })
+
+
+
+  observe({
+
+       updateSliderInput(session, inputId="time_slider", step = NULL)
+
+
+  })
+
+
+
+  ######
+
+  # Create reactive data.frame containing only species present in selected sites
   # in selected project area
   present.species <- reactive({
     species <- unique(site_selection()[c("Genus", "Species")])
-    present.species <- species.table[species.table$genus %in% species$Genus & 
+    present.species <- species.table[species.table$genus %in% species$Genus &
                                        species.table$species %in% species$Species,]
     present.species
   })
@@ -58,46 +86,46 @@ shinyServer(function(input, output, session) {
     species <- unique(site_selection()[c("Genus", "Species")])
     paste(species$Genus, species$Species)
   })
-  
+
   # Render guild selector
   output$guild.control <- renderUI({
     guild.list <- sort(unique(as.character(present.species()$guild)))
     checkboxGroupInput("guild", "Select Guilds", choices=guild.list,
                        selected=NULL)
   })
-  
+
   # Render RED selector
   output$red.control <- renderUI({
     red.list <- sort(unique(as.character(red.list.table$description[red.list.table$id %in% present.species()$red_list_status_id])))
     checkboxGroupInput("red", "Select Red List Categories", choices=red.list,
                        selected=NULL)
   })
-  
+
   # Render species selection
   output$species.list <- renderUI({
-    selectInput("species", "Select Species (Multiple Possible)", 
+    selectInput("species", "Select Species (Multiple Possible)",
                 choices=sort(present.species.names()), selected=NULL, multiple=TRUE)
   })
-  
+
 
   ## Interactive Map ###########################################
 
   # Get unique pairs of lat long values for plotting cam locations
   locs <- select(lat_long_data, Latitude, Longitude)
   cam_lat_longs <- unique(locs)
-  
+
   # Create the map
   output$map <- renderLeaflet({
     dat <- get_KDE_polygons(site_selection())
-    leaflet(cam_lat_longs) %>% 
+    leaflet(cam_lat_longs) %>%
       addTiles(
         urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
-      ) %>% 
-      addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL) %>% 
+      ) %>%
+      addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL) %>%
       addPolygons(data=dat$poly, color = brewer.pal(dat$nlev, "Greens")[dat$levs], stroke=FALSE)
-  
+
   })
-  
+
   # TODO use filtered data as input
   #subsettedData <- select(TEAM_data,
   #  'Project'=Project.ID, 'Deployment Location ID'=Deployment.Location.ID,
@@ -113,7 +141,7 @@ shinyServer(function(input, output, session) {
       write.csv(subsettedData, file)
     }
   )
-  
+
   output$table <- DT::renderDataTable({
     df <- subsettedData %>%
       mutate(Go = paste('<a class="go-map" href="" data-lat="', Latitude, '" data-long="', Longitude, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
@@ -121,22 +149,22 @@ shinyServer(function(input, output, session) {
 
     DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
   })
-  
+
   # Generate controls
-  
+
   # Read in input data based on project
   #dataset_input <- reactive({
   #  if (input$dataset=="TEST!") {
   #    read.csv("./data/rate_of_detection.csv")
-  #  } 
+  #  }
   #})
-  
-  # Add 
-  
- 
-  
+
+  # Add
+
+
+
   #
-  
+
   # Update species selection based on RED and guild
   observe({
      #Modify selection based on nulls
@@ -147,14 +175,14 @@ shinyServer(function(input, output, session) {
       selected.species <- present.species()[trows,]
       selected.names <- paste(selected.species$genus, selected.species$species)
     } else if (is.null(input$guild)) {
-      trows <- as.character(present.species()$red_list_status_id %in% 
+      trows <- as.character(present.species()$red_list_status_id %in%
                               red.list.table$id[red.list.table$description %in% input$red])
       selected.species <- present.species()[trows,]
       selected.names <- paste(selected.species$genus, selected.species$species)
     } else {
-      guilds <- (as.character(present.species()$guild) %in% input$guild) 
-                
-      reds <- as.character(present.species()$red_list_status_id) %in% 
+      guilds <- (as.character(present.species()$guild) %in% input$guild)
+
+      reds <- as.character(present.species()$red_list_status_id) %in%
                         red.list.table$id[red.list.table$description %in% input$red]
       if (is.null(guilds) & is.null(reds)) {
         selected.names <- NULL
@@ -170,32 +198,32 @@ shinyServer(function(input, output, session) {
       }
 
     }
-    
-    updateSelectInput(session, "species", "Select Species (Multiple Possible)", 
+
+    updateSelectInput(session, "species", "Select Species (Multiple Possible)",
                       choices=present.species.names(), selected=selected.names)
-    
+
   })
-  
+
   ### 2 reactive dataframes:
   ### Both have a group column (as factor)
   # 1 - time subset
   # 2 - full data
-  
+
   # Subset dataframe for plotting (no time subset)
   # Subset by project, site, frequency, and selected species
   plotting_dataset <- reactive({
     subset(site_selection(), )
   })
-  
+
   # Subset dataframe for mapping (time subset)
   # Subset by project, site, frequency, selected species, current time
   mapping_dataset <- reactive ({
     subset(plotting_dataset(), )
   })
-  
+
   # Subset dataframe for plotting based on map click
   camera_dataset <- reactive ({
     subset(site_selection(), )
   })
-  
+
 })
