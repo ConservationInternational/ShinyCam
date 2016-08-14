@@ -10,6 +10,8 @@ library(dplyr)
 library(gstat)
 library(sp)
 library(data.table)
+library(KernSmooth)
+library(viridis)
 source("scripts/kernel_density_estimate.R")
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
@@ -82,14 +84,9 @@ shinyServer(function(input, output, session) {
   
   # Render time selector
   output$time.control <- renderUI({
-    #print(head(dataset_input()$timestamp))
     tmin <- min(dataset_input()$timestamp, na.rm=TRUE)
     tmax <- max(dataset_input()$timestamp, na.rm=TRUE)
-    #print(tmin)
-    #print(tmax)
-    #sliderInput("time_slider", label = "Select Time", min = tmin, 
-    #            max = tmax, value = tmin, timeFormat = "%Y-%m")
-    selectInput("time_slider", label = "Select Time", choices = as.character(unique(plotting_dataset()$timestamp)))
+    selectInput("time_slider", label = "Select Time", choices = as.character(unique(site_selection()$timestamp)))
   })
   
   # Render guild selector
@@ -126,25 +123,27 @@ shinyServer(function(input, output, session) {
       in.dat.raw <- mapping_dataset()
       in.dat <- aggregate(in.dat.raw, by=list(in.dat.raw$Deployment.Location.ID), FUN=mean)
       coordinates(in.dat) <- ~ Longitude + Latitude
-      x.range <- c(floor(min(in.dat$Longitude)), ceiling(max(in.dat$Longitude)))
+      x.range <- c(min(in.dat$Longitude), max(in.dat$Longitude))
       y.range <- c(min(in.dat$Latitude), max(in.dat$Latitude))
       x.diff <- x.range[2]-x.range[1]
       y.diff <- y.range[2]-y.range[1]
-      ncells <- 20 # Set the number of cells in x and y direction
+      ncells <- 50 # Set the number of cells in x and y direction
       pad.pct <- 0.1 # Set the xy padding around input points as percentage of range
       grd <- expand.grid(x = seq(from = x.range[1]-pad.pct*x.diff, to = x.range[2]+pad.pct*x.diff, by = (x.diff)/ncells),
                          y = seq(from = y.range[1]-pad.pct*y.diff, to = y.range[2]+pad.pct*y.diff, by = (y.diff)/ncells))
       coordinates(grd) <- ~x + y
       gridded(grd) <- TRUE
-      tidw <- idw(Rate.Of.Detection ~ 1, locations=in.dat, newdata=grd, nmax=10)
+      tidw <- idw(Rate.Of.Detection ~ 1, locations=in.dat, newdata=grd, nmax=10, idp=4)
       dw.output = as.data.frame(tidw)
       names(dw.output)[1:3] <- c("long", "lat", "var1.pred")
+      dw.output[which(dw.output$var1.pred == min(dw.output$var1.pred)), "var1.pred"] <- 0
       coordinates(dw.output) <- ~long+lat
       proj4string(dw.output) <- CRS("+init=epsg:4326")
       gridded(dw.output) <- TRUE
       idw.raster <- raster(dw.output, layer=1, values=TRUE)
     } else {
       idw.raster <- NULL
+      in.dat     <- NULL
     }
     
     #dat <- get_KDE_polygons(site_selection())
@@ -156,10 +155,11 @@ shinyServer(function(input, output, session) {
     if (nrow(site_selection())>0) {
       tmap <- tmap %>% 
         addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL)
-            }
+      }
     if (!is.null(idw.raster)) { 
       tmap %>%
-        addRasterImage(idw.raster, opacity=0.5, colors="Reds")
+        addCircleMarkers(~Longitude, ~Latitude, weight=1, data= mapping_dataset(), radius=~sqrt(Rate.Of.Detection), color="red", fillOpacity=1, layerId=NULL) %>%
+        addRasterImage(idw.raster, opacity=0.4, colors = "Reds") 
     } else {
       tmap
     }
@@ -247,7 +247,7 @@ shinyServer(function(input, output, session) {
   # Subset dataframe for mapping (time subset)
   # Subset by project, site, frequency, selected species, current time
   mapping_dataset <- reactive ({
-    if (!is.null(input$species)) {
+    if (!is.null(input$species) & (!is.null(input$time_slider))) {
       subset(plotting_dataset(), timestamp==input$time_slider)
     } else {
       #subset(plotting_dataset(), rep(FALSE, times=nrow(plotting_dataset())))
