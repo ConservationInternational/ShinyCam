@@ -1,13 +1,21 @@
-# SuperZIP demo
+# Rates of Detection app
 
-See a version of it live at http://shiny.rstudio.com/gallery/superzip-example.html
+## Goal
+Show "rates of detection" for camera traps on a map, showing additional graphs and data where appropriate. Give user control over:
+- Data source
+- Species (and Guild/Conservation Status)
+- Time 
 
-You can run this demo with:
-```
-if (!require(devtools))
-  install.packages("devtools")
-devtools::install_github("rstudio/leaflet")
-shiny::runGitHub("rstudio/shiny-examples", subdir="063-superzip-example")
-```
+## Needs
+In order to run, this app needs the following in the `data` directory:
+- a csv called `rate_of_detection` with the following column names:
 
-Data compiled for _Coming Apart: The State of White America, 1960–2010_ by Charles Murray (Crown Forum, 2012). This app was inspired by the Washington Post's interactive feature _[Washington: A world apart](http://www.washingtonpost.com/sf/local/2013/11/09/washington-a-world-apart/)_.
+```"Sampling.Period", "Site.Name", "Sampling.Unit.Name", "Species", "Number.of.Animals", "Year", "Project.ID"             "Deployment.Location.ID", "Latitude", "Longitude", "Genus", "Sampling.Type", "Data.Source", "Rate.Of.Detection"```
+
+- a csv called `taxonomy_scientific_name_20160813.csv` mapping species to guild, and
+- a csv called `taxonomy_red_list_status_20160813.csv` mapping species to their conservation status.
+
+## To run
+To run this app from RStudio, open server.R or ui.R and click 'Run App'. 
+
+To run from the command line, do ```R -e "shiny::runApp('~/path/to/this/directory')"```
