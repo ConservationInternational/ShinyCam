@@ -40,27 +40,30 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         width = 330, height = "auto", style = "overflow-y:scroll",
 
         h2("Rates of detection"),
+
       	selectInput("dataset", "Camera Trap Project", c("TEAM")),
+
+      	selectInput("dataset", "Camera Trap Project", c("TEST!")),
               uiOutput("site_checkbox"),
-      	
-      	
-      	#####     SLIDER 
+
+
+      	#####     SLIDER
 
       #   # TODO: Make this reactive based on frequencies present in input data
-      # 	selectInput("select_time", label = "Sampling Frequency", 
-      # 	            choices = list("Annual" = 'annual', "Seasonal" = 'seasonal', "Monthly" = 'monthly'), 
+      # 	selectInput("select_time", label = "Sampling Frequency",
+      # 	            choices = list("Annual" = 'annual', "Seasonal" = 'seasonal', "Monthly" = 'monthly'),
       # 	            selected = 1),
-      # 	
+      #
       #   # TODO: Make this into a reactive UI based on min() and max() of actual data for sites.
-      # 	sliderInput("time_slider", label = "Select Time", min = 0, 
+      # 	sliderInput("time_slider", label = "Select Time", min = 0,
       # 	            max = 100, value = 50, timeFormat = "%Y-%m-%d"),
-        #radioButtons("humans", "Show Humans?", c("Humans", "No Humans"), 
+        #radioButtons("humans", "Show Humans?", c("Humans", "No Humans"),
         #            selected="No Humans"),
         uiOutput("guild.control"),
         uiOutput("red.control"),
         uiOutput("species.list"),
         uiOutput("frequency.control"),
-        uiOutput("time.control")
+        uiOutput("time.control"),
         #uiOutput("time.selection")#,
         # selectInput("color", "Color", vars),
         # selectInput("size", "Size", vars, selected = "adultpop"),
@@ -74,7 +77,14 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         # checkboxInput(inputId = "show_human",
         #               label = "Show Human Activities?"),
         # plotOutput("histCentile", height = 200),
-        # plotOutput("scatterCollegeIncome", height = 250)
+                                        # plotOutput("scatterCollegeIncome", height = 250)
+        plotOutput("histCentile", height = 200),
+        plotOutput("scatterCollegeIncome", height = 250),
+        plotOutput("camera_ts_benchmark", height = 200),
+        plotOutput("camera_ts_benchmark_facet", height = 200),
+        plotOutput("total_ts", height = 200),
+        plotOutput("top_five_plot", height = 200),
+        plotOutput("health_ts", height = 200)
       ),
 
       tags$div(id="cite",
