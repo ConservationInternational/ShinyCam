@@ -41,6 +41,8 @@ shinyUI(navbarPage("Rates of detection", id="nav",
 
         h2("Rates of detection"),
 
+      	selectInput("dataset", "Camera Trap Project", c("TEAM")),
+
       	selectInput("dataset", "Camera Trap Project", c("TEST!")),
               uiOutput("site_checkbox"),
 
@@ -76,13 +78,16 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         #               label = "Show Human Activities?"),
         # plotOutput("histCentile", height = 200),
                                         # plotOutput("scatterCollegeIncome", height = 250)
-        plotOutput("histCentile", height = 200),
-        plotOutput("scatterCollegeIncome", height = 250),
-        plotOutput("camera_ts_benchmark", height = 200),
-        plotOutput("camera_ts_benchmark_facet", height = 200),
-        plotOutput("total_ts", height = 200),
-        plotOutput("top_five_plot", height = 200),
-        plotOutput("health_ts", height = 200)
+        conditionalPanel(
+            condition = 'input["species.length"] > 0',
+            plotOutput("histCentile", height = 200),
+            plotOutput("scatterCollegeIncome", height = 250),
+            plotOutput("camera_ts_benchmark", height = 200),
+            plotOutput("camera_ts_benchmark_facet", height = 200),
+            plotOutput("total_ts", height = 200),
+            plotOutput("top_five_plot", height = 200),
+            plotOutput("health_ts", height = 200)
+        )
       ),
 
       tags$div(id="cite",
@@ -92,21 +97,6 @@ shinyUI(navbarPage("Rates of detection", id="nav",
   ),
 
   tabPanel("Data explorer",
-    fluidRow(
-      column(3,
-        selectInput("states", "States", c("All states"="", structure(state.abb, names=state.name), "Washington, DC"="DC"), multiple=TRUE)
-      ),
-      column(3,
-        conditionalPanel("input.states",
-          selectInput("cities", "Cities", c("All cities"=""), multiple=TRUE)
-        )
-      ),
-      column(3,
-        conditionalPanel("input.states",
-          selectInput("zipcodes", "Zipcodes", c("All zipcodes"=""), multiple=TRUE)
-        )
-      )
-    ),
     fluidRow(
       column(1,
         downloadButton('downloadData', 'Download')
