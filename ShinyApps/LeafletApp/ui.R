@@ -39,9 +39,22 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         width = 330, height = "auto",
 
         h2("Rates of detection"),
-        selectInput("dataset", "Camera Trap Project", c("TEST!")),
+	selectInput("dataset", "Camera Trap Project", c("TEST!")),
         uiOutput("site_checkbox"),
-        radioButtons("humans", "Show Humans?", c("Humans", "No Humans"),
+	
+	
+	#####     SLIDER 
+	selectInput("select_time", label = "Sampling Frequency", 
+	            choices = list("Annual" = 'annual', "Seasonal" = 'seasonal', "Monthly" = 'monthly'), 
+	            selected = 1),
+	
+	sliderInput("time_slider", label = "Select Time", min = 0, 
+	            max = 100, value = 50, timeFormat = "%Y-%m-%d"),
+	
+	#####
+	
+	
+        radioButtons("humans", "Show Humans?", c("Humans", "No Humans"), 
                     selected="No Humans"),
         uiOutput("guild.control"),
         uiOutput("red.control"),
@@ -57,9 +70,8 @@ shinyUI(navbarPage("Rates of detection", id="nav",
                     choices = samplingFrequency),
         checkboxInput(inputId = "show_human",
                       label = "Show Human Activities?"),
-        plotOutput("ts_plot", height = 200),
-        plotOutput("agg_ts_plot", height = 200),
-        plotOutput("decompose_ts_plot", height = 200)
+        plotOutput("histCentile", height = 200),
+        plotOutput("scatterCollegeIncome", height = 250)
       ),
 
       tags$div(id="cite",
