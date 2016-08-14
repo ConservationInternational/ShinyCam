@@ -13,7 +13,7 @@ library(data.table)
 library(KernSmooth)
 library(viridis)
 source("scripts/kernel_density_estimate.R")
-source("scripts/extra_plot.R")
+#source("scripts/extra_plot.R")
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 #set.seed(100)
@@ -22,14 +22,8 @@ source("scripts/extra_plot.R")
 # will be drawn last and thus be easier to see
 #zipdata <- zipdata[order(zipdata$centile),]
 
-
-## HACK (Michael): Temporary placement of the function.
-createTimeStamp = function(samplingPeriod){
-    timeString = paste(samplingPeriod, "01", sep = "-")
-    as.Date(timeString, "%Y-%m-%d")
-}
-
 # Read species information
+OVERLAY_OPACITY <- 0.5
 species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
 
 red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
@@ -58,7 +52,7 @@ shinyServer(function(input, output, session) {
       as.Date(timeString, "%Y-%m-%d")
     }
 
-    indat$timestamp <- createTimeStamp(indat$Sampling.Period)
+    indat$timestamp <- createTimeStamp(indat$Sampling.Period, indat$Year)
 
     indat
   })
@@ -130,10 +124,6 @@ shinyServer(function(input, output, session) {
 
 
   ## Interactive Map ###########################################
-
-  # Get unique pairs of lat long values for plotting cam locations
-  locs <- select(lat_long_data, Latitude, Longitude)
-  cam_lat_longs <- unique(locs)
 
   # Create the map
   output$map <- renderLeaflet({
@@ -304,44 +294,44 @@ selected.names <- sort(as.character(selected.names))
         ## NOTE (Michael): This plot is only meaningful when the number of
         ##                 groupings are small.
 
-        output$camera_ts_benchmark = renderPlot({
-            plotCameraBenchmark(full_data = plotting_dataset(),
-                                camera_data = camera_dataset(),
-                                time = "timestamp",
-                                group = "Genus",
-                                rate = "Rate.Of.Detection",
-                                facet = FALSE)
-        })
-
-        output$camera_ts_benchmark_facet = renderPlot({
-            plotCameraBenchmark(full_data = plotting_dataset(),
-                                camera_data = camera_dataset(),
-                                time = "timestamp",
-                                group = "Genus",
-                                rate = "Rate.Of.Detection",
-                                facet = TRUE)
-        })
-
-        output$total_ts = renderPlot({
-            plotTotalTs(full_data = plotting_dataset(),
-                        time = "timestamp",
-                        rate = "Rate.Of.Detection",
-                        aggFUN = mean)
-        })
-
-        ## NOTE (Michael): This plot is not displayed correctly due to the Inf
-        ##                 values in the data.
-        output$top_five_plot = renderPlot({
-            groupTopFive(plotting_dataset(),
-                         group = "Genus",
-                         rate = "Rate.Of.Detection")
-        })
-
-        output$health_ts = renderPlot({
-            health_timeseries(data = plotting_dataset(),
-                              group = "Genus",
-                              rate = "Rate.Of.Detection",
-                              year = "Year")
-        })
+        # output$camera_ts_benchmark = renderPlot({
+        #     plotCameraBenchmark(full_data = plotting_dataset(),
+        #                         camera_data = camera_dataset(),
+        #                         time = "timestamp",
+        #                         group = "Genus",
+        #                         rate = "Rate.Of.Detection",
+        #                         facet = FALSE)
+        # })
+        # 
+        # output$camera_ts_benchmark_facet = renderPlot({
+        #     plotCameraBenchmark(full_data = plotting_dataset(),
+        #                         camera_data = camera_dataset(),
+        #                         time = "timestamp",
+        #                         group = "Genus",
+        #                         rate = "Rate.Of.Detection",
+        #                         facet = TRUE)
+        # })
+        # 
+        # output$total_ts = renderPlot({
+        #     plotTotalTs(full_data = plotting_dataset(),
+        #                 time = "timestamp",
+        #                 rate = "Rate.Of.Detection",
+        #                 aggFUN = mean)
+        # })
+        # 
+        # ## NOTE (Michael): This plot is not displayed correctly due to the Inf
+        # ##                 values in the data.
+        # output$top_five_plot = renderPlot({
+        #     groupTopFive(plotting_dataset(),
+        #                  group = "Genus",
+        #                  rate = "Rate.Of.Detection")
+        # })
+        # 
+        # output$health_ts = renderPlot({
+        #     health_timeseries(data = plotting_dataset(),
+        #                       group = "Genus",
+        #                       rate = "Rate.Of.Detection",
+        #                       year = "Year")
+        # })
 
 })
