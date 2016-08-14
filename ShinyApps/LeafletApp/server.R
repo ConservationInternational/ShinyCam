@@ -35,7 +35,7 @@ shinyServer(function(input, output, session) {
   output$map <- renderLeaflet({
     dat <- get_KDE_polygons(site_selection()) #read.csv("data/rate_of_detection.csv")
     #filt <- as.character(dat$Project.ID) %in% input$site_selection
-    write.csv(site_selection(), "~/Documents/Joel/github/site_sel.csv", row.names=FALSE)
+    #write.csv(site_selection(), "~/Documents/Joel/github/site_sel.csv", row.names=FALSE)
     print(colnames(site_selection()))
     #print(str(dat))
     #dat <- get_KDE_polygons(filter(dat, Data.Source == "TEAM"))
@@ -238,6 +238,34 @@ shinyServer(function(input, output, session) {
   site_selection <- reactive({
     subset(dataset_input(), as.character(Project.ID) %in% input$site_selection)
   })
+  
+  
+  ######  ADD SLIDER
+  
+  filterDataset <- reactive ({
+       data_by_time <- filter(dataset_input, Sampling.Type == input$select_time)
+       
+       #### TEMP
+       
+       data_by_time <- mutate(data_by_time, timestamp = NA)
+       
+       data_by_time$timestamp <- createTimeStamp(data_by_time$Year, data_by_time$Sampling.Period)
+       
+       return(data_by_time$timestamp)
+  })
+  
+  
+  
+  observe({
+       
+       updateSliderInput(session, inputId="time_slider", step = NULL)
+       
+       
+  })
+  
+  
+  
+  ######
   
   # Create reactive data.frame containing only species present in selected sites  
   # in selected project area
