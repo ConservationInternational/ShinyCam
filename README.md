@@ -46,6 +46,7 @@ Python Setup (OS X and Linux ONLY)
 - Populate your data folder as in [Google drive](https://drive.google.com/folderview?id=0BzoemeOsgjRIb2R1ZWo5YjBCRHc&usp=sharing).
 - ```make python```
 - To start jupyter notebook run ```make notebook```
+- Python scripts are documented in `pyscripts/README.md`
 
 R Setup
 -----
