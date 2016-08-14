@@ -13,6 +13,13 @@ zipdata <- allzips[sample.int(nrow(allzips), 10000),]
 # will be drawn last and thus be easier to see
 zipdata <- zipdata[order(zipdata$centile),]
 
+
+## HACK (Michael): Temporary placement of the function.
+createTimeStamp = function(samplingPeriod){
+    timeString = paste(samplingPeriod, "01", sep = "-")
+    as.Date(timeString, "%Y-%m-%d")
+}
+
 #Global
 GRADIENT_SCALE <- 2
 lat_long_data <- read.csv("data/rate_of_detection.csv")
@@ -28,7 +35,10 @@ shinyServer(function(input, output, session) {
   # Read in input data based on project
   dataset_input <- reactive({
     if (input$dataset=="TEST!") {
-      read.csv("./data/rate_of_detection.csv")
+      read.csv("./data/rate_of_detection.csv") %>%
+          ## HACK (Michael): To temporary clean the data
+          subset(., Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf) %>%
+          mutate(., timeStamp = createTimeStamp(samplingPeriod = Sampling.Period))
     }
   })
 
@@ -228,20 +238,18 @@ shinyServer(function(input, output, session) {
 
 
     ## Additional plots
-    source("tsplot.R")
-
-    ## NOTE (Michael): This plot is not showing because time stamp has not been
-    ##                 created.
+    source("extra_plot.R")
+    ## NOTE (Michael): This plot is only meaningful when the number of groupings
+    ##                 .are small
     output$camera_ts_benchmark = renderPlot({
         plotCameraBenchmark(full_data = plotting_dataset(),
                             camera_data = camera_dataset(),
                             time = "timeStamp",
                             group = "Genus",
                             rate = "Rate.Of.Detection",
-                            facet = TRUE)
+                            facet = FALSE)
         })
-    ## NOTE (Michael): This plot is not showing because time stamp has not been
-    ##                 created.
+
     output$total_ts = renderPlot({
         plotTotalTs(full_data = plotting_dataset(),
                     time = "timeStamp",
