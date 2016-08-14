@@ -23,6 +23,7 @@ source("scripts/kernel_density_estimate.R")
 
 #Global
 GRADIENT_SCALE <- 2
+OVERLAY_OPACITY <- 0.4
 lat_long_data <- as.data.frame(fread("data/rate_of_detection.csv"))
 #mapping_dataset()
 
@@ -64,8 +65,11 @@ shinyServer(function(input, output, session) {
   # in selected project area
   present.species <- reactive({
     species <- unique(site_selection()[c("Genus", "Species")])
-    present.species <- species.table[species.table$genus %in% species$Genus & 
+    present.species <- species.table[species.table$genus %in% species$Genus &
                                        species.table$species %in% species$Species,]
+    # Switch out "" with "Unknown"
+    present.species$guild <- as.factor(ifelse(as.character(present.species$guild) == "", "Unknown", as.character(present.species$guild)))
+    
     present.species
   })
   # Create reactive vector containing the genus and species (concatenated) that
@@ -136,7 +140,7 @@ shinyServer(function(input, output, session) {
       tidw <- idw(Rate.Of.Detection ~ 1, locations=in.dat, newdata=grd, nmax=10, idp=4)
       dw.output = as.data.frame(tidw)
       names(dw.output)[1:3] <- c("long", "lat", "var1.pred")
-      dw.output[which(dw.output$var1.pred == min(dw.output$var1.pred)), "var1.pred"] <- 0
+      dw.output[which(dw.output$var1.pred <= unname(quantile(dw.output$var1.pred, OVERLAY_OPACITY))), "var1.pred"] <- NA
       coordinates(dw.output) <- ~long+lat
       proj4string(dw.output) <- CRS("+init=epsg:4326")
       gridded(dw.output) <- TRUE
@@ -158,8 +162,8 @@ shinyServer(function(input, output, session) {
       }
     if (!is.null(idw.raster)) { 
       tmap %>%
-        addCircleMarkers(~Longitude, ~Latitude, weight=1, data= mapping_dataset(), radius=~sqrt(Rate.Of.Detection), color="red", fillOpacity=1, layerId=NULL) %>%
-        addRasterImage(idw.raster, opacity=0.4, colors = "Reds") 
+        addCircleMarkers(~Longitude, ~Latitude, weight=1, data = mapping_dataset(), radius=~sqrt(Rate.Of.Detection), color="red", fillOpacity=1, layerId=NULL) %>%
+        addRasterImage(idw.raster, opacity=0.3, colors = "Reds") 
     } else {
       tmap
     }
@@ -228,7 +232,7 @@ shinyServer(function(input, output, session) {
       }
 
     }
-    
+    selected.names <- sort(as.character(selected.names))
     updateSelectInput(session, "species", "Select Species (Multiple Possible)", 
                       choices=present.species.names(), selected=selected.names)
     
