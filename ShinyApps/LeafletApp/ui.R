@@ -109,7 +109,7 @@ shinyUI(navbarPage("Rates of detection", id="nav",
     DT::dataTableOutput("table")
   ),
 
-conditionalPanel("false", icon("crosshair"))
+conditionalPanel("false", icon("crosshair")),
   plotOutput("histCentile", height = 200),
   plotOutput("scatterCollegeIncome", height = 250),
   plotOutput("camera_ts_benchmark", height = 200),
