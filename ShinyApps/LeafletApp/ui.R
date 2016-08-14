@@ -40,8 +40,9 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         width = 330, height = "auto", style = "overflow-y:scroll",
 
         h2("Rates of detection"),
+
       	selectInput("dataset", "Camera Trap Project", c("TEAM")),
-              uiOutput("site_checkbox"),
+        uiOutput("site_checkbox"),
       	#####     SLIDER
 
       #   # TODO: Make this reactive based on frequencies present in input data
@@ -58,7 +59,7 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         uiOutput("red.control"),
         uiOutput("species.list"),
         uiOutput("frequency.control"),
-        uiOutput("time.control")#,
+        uiOutput("time.control"),
         #uiOutput("time.selection")#,
         # selectInput("color", "Color", vars),
         # selectInput("size", "Size", vars, selected = "adultpop"),
@@ -73,16 +74,16 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         #               label = "Show Human Activities?"),
         # plotOutput("histCentile", height = 200),
                                         # plotOutput("scatterCollegeIncome", height = 250)
-        # conditionalPanel(
-        #     condition = 'input["species.length"] > 0',
-        #     plotOutput("histCentile", height = 200),
-        #     plotOutput("scatterCollegeIncome", height = 250),
-        #     plotOutput("camera_ts_benchmark", height = 200),
-        #     plotOutput("camera_ts_benchmark_facet", height = 200),
-        #     plotOutput("total_ts", height = 200),
-        #     plotOutput("top_five_plot", height = 200),
-        #     plotOutput("health_ts", height = 200)
-        # )
+        ## conditionalPanel(
+        ##     condition = 'input["species.length"] > 0',
+        ##     plotOutput("histCentile", height = 200),
+        ## plotOutput("scatterCollegeIncome", height = 250),
+        plotOutput("total_ts", height = 200),
+        plotOutput("top_five_plot", height = 200),
+        plotOutput("camera_ts_benchmark", height = 200),
+        plotOutput("camera_ts_benchmark_facet", height = 200),
+        plotOutput("health_ts", height = 200)
+        ## )
       ),
 
       tags$div(id="cite",

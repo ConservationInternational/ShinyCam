@@ -58,8 +58,7 @@ shinyServer(function(input, output, session) {
       as.Date(timeString, "%Y-%m-%d")
     }
 
-    indat$timestamp <- createTimeStamp(indat$Sampling.Period, indat$Year)
-    print(str(indat))
+    indat$timestamp <- createTimeStamp(indat$Sampling.Period)
 
     indat
   })
@@ -132,8 +131,11 @@ shinyServer(function(input, output, session) {
 
   ## Interactive Map ###########################################
 
+  # Get unique pairs of lat long values for plotting cam locations
+  locs <- select(lat_long_data, Latitude, Longitude)
+  cam_lat_longs <- unique(locs)
+
   # Create the map
-  
   output$map <- renderLeaflet({
     #Make idw raster
     if (!values$starting) {
@@ -165,7 +167,7 @@ shinyServer(function(input, output, session) {
       tidw <- idw(Rate.Of.Detection ~ 1, locations=in.dat, newdata=grd, nmax=10, idp=4)
       dw.output = as.data.frame(tidw)
       names(dw.output)[1:3] <- c("long", "lat", "var1.pred")
-      dw.output[which(dw.output$var1.pred == min(dw.output$var1.pred)), "var1.pred"] <- 0
+      dw.output[which(dw.output$var1.pred <= unname(quantile(dw.output$var1.pred, OVERLAY_OPACITY))), "var1.pred"] <- NA
       coordinates(dw.output) <- ~long+lat
       proj4string(dw.output) <- CRS("+init=epsg:4326")
       gridded(dw.output) <- TRUE
@@ -199,7 +201,6 @@ shinyServer(function(input, output, session) {
       NULL
     }
   })
-
 
   # TODO use filtered data as input
   #subsettedData <- select(TEAM_data,
