@@ -82,7 +82,7 @@ shinyServer(function(input, output, session) {
   # are present in the selected sites in the project area
   present.species.names <- reactive({
     species <- unique(site_selection()[c("Genus", "Species")])
-    paste(species$Genus, species$Species)
+    as.character(paste(species$Genus, species$Species))
   })
 
   # Render frequency selector
@@ -120,6 +120,7 @@ shinyServer(function(input, output, session) {
 
   # Render species selection
   output$species.list <- renderUI({
+       
     selectInput("species", "Select Species (Multiple Possible)",
                 choices=sort(as.character(present.species.names())), selected=NULL, multiple=TRUE)
   })
@@ -238,8 +239,10 @@ shinyServer(function(input, output, session) {
 
     }
 
+selected.names <- sort(as.character(selected.names))
+       
     updateSelectInput(session, "species", "Select Species (Multiple Possible)",
-                      choices=present.species.names(), selected=selected.names)
+                      choices=sort(as.character(present.species.names())), selected=selected.names)
 
   })
 
