@@ -226,4 +226,36 @@ shinyServer(function(input, output, session) {
     subset(site_selection(), )
   })
 
+
+    ## Additional plots
+    source("tsplot.R")
+
+    ## NOTE (Michael): This plot is not showing because time stamp has not been
+    ##                 created.
+    output$camera_ts_benchmark = renderPlot({
+        plotCameraBenchmark(full_data = plotting_dataset(),
+                            camera_data = camera_dataset(),
+                            time = "timeStamp",
+                            group = "Genus",
+                            rate = "Rate.Of.Detection",
+                            facet = TRUE)
+        })
+    ## NOTE (Michael): This plot is not showing because time stamp has not been
+    ##                 created.
+    output$total_ts = renderPlot({
+        plotTotalTs(full_data = plotting_dataset(),
+                    time = "timeStamp",
+                    rate = "Rate.Of.Detection",
+                    aggFUN = mean)
+    })
+
+    ## NOTE (Michael): This plot is not displayed correctly due to the Inf
+    ##                 values in the data.
+    output$top_five_plot = renderPlot({
+        groupTopFive(plotting_dataset(),
+                     group = "Genus",
+                     rate = "Rate.Of.Detection")
+    })
+
+
 })

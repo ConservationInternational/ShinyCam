@@ -39,39 +39,43 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         width = 330, height = "auto",
 
         h2("Rates of detection"),
-	selectInput("dataset", "Camera Trap Project", c("TEST!")),
+        selectInput("dataset", "Camera Trap Project", c("TEST!")),
         uiOutput("site_checkbox"),
-	
-	
-	#####     SLIDER 
-	selectInput("select_time", label = "Sampling Frequency", 
-	            choices = list("Annual" = 'annual', "Seasonal" = 'seasonal', "Monthly" = 'monthly'), 
+
+
+	#####     SLIDER
+	selectInput("select_time", label = "Sampling Frequency",
+	            choices = list("Annual" = 'annual', "Seasonal" = 'seasonal', "Monthly" = 'monthly'),
 	            selected = 1),
-	
-	sliderInput("time_slider", label = "Select Time", min = 0, 
+
+	sliderInput("time_slider", label = "Select Time", min = 0,
 	            max = 100, value = 50, timeFormat = "%Y-%m-%d"),
-	
+
 	#####
-	
-	
-        radioButtons("humans", "Show Humans?", c("Humans", "No Humans"), 
-                    selected="No Humans"),
-        uiOutput("guild.control"),
-        uiOutput("red.control"),
-        uiOutput("species.list"),
-        selectInput("color", "Color", vars),
-        selectInput("size", "Size", vars, selected = "adultpop"),
-        conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
-                         # Only prompt for threshold when coloring or sizing by superzip
-                         numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-        ),
-        selectInput(inputId = "samplingFrequency",
-                    label = "Sampling Frequency",
-                    choices = samplingFrequency),
-        checkboxInput(inputId = "show_human",
-                      label = "Show Human Activities?"),
-        plotOutput("histCentile", height = 200),
-        plotOutput("scatterCollegeIncome", height = 250)
+
+
+  radioButtons("humans", "Show Humans?", c("Humans", "No Humans"),
+               selected="No Humans"),
+  uiOutput("guild.control"),
+  uiOutput("red.control"),
+  uiOutput("species.list"),
+  selectInput("color", "Color", vars),
+  selectInput("size", "Size", vars, selected = "adultpop"),
+  conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
+                                        # Only prompt for threshold when coloring or sizing by superzip
+                   numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
+                   ),
+  selectInput(inputId = "samplingFrequency",
+              label = "Sampling Frequency",
+              choices = samplingFrequency),
+  checkboxInput(inputId = "show_human",
+                label = "Show Human Activities?"),
+  plotOutput("histCentile", height = 200),
+  plotOutput("scatterCollegeIncome", height = 250),
+  plotOutput("camera_ts_benchmark", height = 200),
+  plotOutput("total_ts", height = 200),
+  plotOutput("top_five_plot", height = 200)
+
       ),
 
       tags$div(id="cite",
