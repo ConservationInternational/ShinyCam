@@ -16,7 +16,7 @@ if __name__ == '__main__':
     team['Sampling Type'] = 'Annual'
     team['Data Source'] = 'TEAM'
 
-    rate = pd.read_csv('../data/team_trap_days.csv')
+    rate = pd.read_csv('../data/intermediate/team_trap_days.csv')
     rate['Sampling.Period'] = rate['Sampling.Period'].apply(lambda x: str(x).replace('.', '-'))
 
     team = pd.merge(team, rate, left_on= ['Sampling Unit Name', 'Sampling Period'], how = 'inner',
@@ -26,4 +26,4 @@ if __name__ == '__main__':
     del team['trap_days_per_100']
     del team['trap_days']
 
-    team.to_csv('../data/preprocessed/rate_of_detection.csv', index=False)
+    team.to_csv('../data/processed/rate_of_detection.csv', index=False)
