@@ -24,6 +24,20 @@ writes files:
 * data/intermediate/Max_Animals_MARIN_data.csv
 * data/intermediate/Max_Animals_TEAM_data.csv
 
+### 3 Calculate trapnights
+
+Given the various deployment location camera's uptime, it calculates the trapnights aggregated for different periods
+
+*MarinTrapNightsAggregationAtMonthLevel.py*
+read file:
+write file:
+    data/intermediate/marin_trap_days.csv
+
+*TeamTrapNightsAggregationAtSamplingPeriod.py*
+read file:
+write file:
+    data/intermediate/team_trap_days.csv
+
 ### 3_DataPreparation.py
 Calculate rate of detection and join with metadata.
 
