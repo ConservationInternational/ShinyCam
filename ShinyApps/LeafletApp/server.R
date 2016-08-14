@@ -76,6 +76,9 @@ shinyServer(function(input, output, session) {
     species <- unique(site_selection()[c("Genus", "Species")])
     present.species <- species.table[species.table$genus %in% species$Genus &
                                        species.table$species %in% species$Species,]
+    # Switch out "" with "Unknown"
+    present.species$guild <- as.factor(ifelse(as.character(present.species$guild) == "", "Unknown", as.character(present.species$guild)))
+
     present.species
   })
   # Create reactive vector containing the genus and species (concatenated) that
@@ -109,6 +112,7 @@ shinyServer(function(input, output, session) {
     guild.list <- sort(unique(as.character(present.species()$guild)))
     checkboxGroupInput("guild", "Select Guilds", choices=guild.list,
                        selected=NULL)
+    
   })
 
   # Render RED selector
