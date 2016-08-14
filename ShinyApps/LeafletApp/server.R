@@ -4,6 +4,7 @@ library(RColorBrewer)
 library(scales)
 library(lattice)
 library(dplyr)
+library(rCharts)
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 set.seed(100)
@@ -12,26 +13,45 @@ zipdata <- allzips[sample.int(nrow(allzips), 10000),]
 # will be drawn last and thus be easier to see
 zipdata <- zipdata[order(zipdata$centile),]
 
-sampledata <- read.csv('data/TEAM_data.csv')
+TEAM_data <- read.csv("data/TEAM_data.csv")
 
 shinyServer(function(input, output, session) {
 
   ## Interactive Map ###########################################
 
   # Create the map
-  output$map <- renderLeaflet({
-    leaflet() %>%
+  output$baseMap <- renderMap({
+    baseMap <- Leaflet$new() 
+    baseMap$setView(c(0.6,-76) ,4) 
+    baseMap$tileLayer(provider="Esri.WorldImagery")
+    baseMap
+  })
+  
+  #output$map <- renderLeaflet({
+  #  leaflet() %>%
       #addTiles(
       #  urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
       #  attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
       #) %>%
-      addTiles(
-          #urlTemplate = "http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-          urlTemplate = "http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-         
-          attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
-      ) %>%
-      setView(lng = -93.85, lat = 37.45, zoom = 4) 
+  #    addTiles(
+  #        urlTemplate = "http://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+  #        attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+  #    ) %>%
+   #   setView(lng = -93.85, lat = 37.45, zoom = 4) 
+  #})
+  
+  # Create heatmap overlay
+  output$heatMap <- renderUI({
+    #Create JSON like data from the lat long and intensity data
+    
+    j <- paste0("[",TEAM_data[,"Latitude.Resolution"], ",", TEAM_data[,"Longitude.Resolution"], ",", TEAM_data[,"Rate.Of.Detection"]/2, "]", collapse=",")
+    j <- paste0("[",j,"]")
+    j
+    tags$body(tags$script(HTML(sprintf("
+                                       var addressPoints = %s
+                                       var heat = L.heatLayer(addressPoints).addTo(map)"
+                                       , j
+    ))))
   })
 
   # A reactive expression that returns the set of zips that are
@@ -158,7 +178,7 @@ shinyServer(function(input, output, session) {
   )
   
   # TODO use filtered data
-  subsettedData <- sampledata[keepCols]
+  subsettedData <- TEAM_data[keepCols]
   colnames(subsettedData) <- c(
     'Project', 'Deployment Location ID',
     'Latitude', 'Longitude',
@@ -176,7 +196,7 @@ shinyServer(function(input, output, session) {
   
   output$table <- DT::renderDataTable({
     df <- subsettedData %>%
-      mutate(Action = paste('<a class="go-map" href="" data-lat="', Latitude, '" data-long="', Longitude, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
+      mutate(Go = paste('<a class="go-map" href="" data-lat="', Latitude, '" data-long="', Longitude, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
     action <- DT::dataTableAjax(session, df)
 
     DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)

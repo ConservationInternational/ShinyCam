@@ -1,4 +1,5 @@
 library(shiny)
+library(rCharts)
 library(leaflet)
 
 # Choices for drop-downs
@@ -27,8 +28,11 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         includeCSS("styles.css"),
         includeScript("gomap.js")
       ),
-
-      leafletOutput("map", width="100%", height="100%"),
+      chartOutput("baseMap", "leaflet"),
+      #leafletOutput("map", width="100%", height="100%"),
+      tags$style('.leaflet {height: 100%; width: 100%;}'),
+      tags$head(tags$script(src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js")),
+      uiOutput('heatMap'),
 
       # Shiny versions prior to 0.11 should use class="modal" instead.
       absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
