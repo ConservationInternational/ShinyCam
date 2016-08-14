@@ -110,7 +110,7 @@ shinyServer(function(input, output, session) {
     guild.list <- sort(unique(as.character(present.species()$guild)))
     checkboxGroupInput("guild", "Select Guilds", choices=guild.list,
                        selected=NULL)
-    
+
   })
 
   # Render RED selector
@@ -122,7 +122,7 @@ shinyServer(function(input, output, session) {
 
   # Render species selection
   output$species.list <- renderUI({
-       
+
     selectInput("species", "Select Species (Multiple Possible)",
                 choices=sort(as.character(present.species.names())), selected=NULL, multiple=TRUE)
   })
@@ -248,7 +248,7 @@ shinyServer(function(input, output, session) {
     }
 
 selected.names <- sort(as.character(selected.names))
-       
+
     updateSelectInput(session, "species", "Select Species (Multiple Possible)",
                       choices=sort(as.character(present.species.names())), selected=selected.names)
 
@@ -282,47 +282,48 @@ selected.names <- sort(as.character(selected.names))
 
 
     ## Additional plots
-    ## NOTE (Michael): This plot is only meaningful when the number of groupings
-    ##                 .are small
-    output$camera_ts_benchmark = renderPlot({
-        plotCameraBenchmark(full_data = plotting_dataset(),
-                            camera_data = camera_dataset(),
-                            time = "timeStamp",
-                            group = "Genus",
-                            rate = "Rate.Of.Detection",
-                            facet = FALSE)
+
+        ## NOTE (Michael): This plot is only meaningful when the number of
+        ##                 groupings are small.
+
+        output$camera_ts_benchmark = renderPlot({
+            plotCameraBenchmark(full_data = plotting_dataset(),
+                                camera_data = camera_dataset(),
+                                time = "timestamp",
+                                group = "Genus",
+                                rate = "Rate.Of.Detection",
+                                facet = FALSE)
         })
 
-    output$camera_ts_benchmark_facet = renderPlot({
-        plotCameraBenchmark(full_data = plotting_dataset(),
-                            camera_data = camera_dataset(),
-                            time = "timeStamp",
-                            group = "Genus",
-                            rate = "Rate.Of.Detection",
-                            facet = TRUE)
-    })
+        output$camera_ts_benchmark_facet = renderPlot({
+            plotCameraBenchmark(full_data = plotting_dataset(),
+                                camera_data = camera_dataset(),
+                                time = "timestamp",
+                                group = "Genus",
+                                rate = "Rate.Of.Detection",
+                                facet = TRUE)
+        })
 
-    output$total_ts = renderPlot({
-        plotTotalTs(full_data = plotting_dataset(),
-                    time = "timeStamp",
-                    rate = "Rate.Of.Detection",
-                    aggFUN = mean)
-    })
+        output$total_ts = renderPlot({
+            plotTotalTs(full_data = plotting_dataset(),
+                        time = "timestamp",
+                        rate = "Rate.Of.Detection",
+                        aggFUN = mean)
+        })
 
-    ## NOTE (Michael): This plot is not displayed correctly due to the Inf
-    ##                 values in the data.
-    output$top_five_plot = renderPlot({
-        groupTopFive(plotting_dataset(),
-                     group = "Genus",
-                     rate = "Rate.Of.Detection")
-    })
+        ## NOTE (Michael): This plot is not displayed correctly due to the Inf
+        ##                 values in the data.
+        output$top_five_plot = renderPlot({
+            groupTopFive(plotting_dataset(),
+                         group = "Genus",
+                         rate = "Rate.Of.Detection")
+        })
 
-    output$health_ts = renderPlot({
-        health_timeseries(data = plotting_dataset(),
-                          group = "Genus",
-                          rate = "Rate.Of.Detection",
-                          year = "Year")
-    })
-
+        output$health_ts = renderPlot({
+            health_timeseries(data = plotting_dataset(),
+                              group = "Genus",
+                              rate = "Rate.Of.Detection",
+                              year = "Year")
+        })
 
 })
