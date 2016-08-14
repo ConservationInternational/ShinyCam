@@ -121,7 +121,7 @@ plotTotalTs = function(full_data, time, rate, addSmoother = FALSE, aggFUN = sum)
         summarise(., agg_rate = aggFUN(Rate.Of.Detection))
 
     tsplot =
-        ggplot(data = sumData, aes(x = timeStamp, y = agg_rate)) +
+        ggplot(data = sumData, aes(x = timestamp, y = agg_rate)) +
         geom_line() +
         theme(legend.position="top") +
         xlab("") +
@@ -243,6 +243,6 @@ health_timeseries = function(data, group, rate, year){
     health_ts
 }
 
-health_timeseries(timeStampData, "Species", "Rate.Of.Detection", "Year")
-health_timeseries(timeStampData, "Genus", "Rate.Of.Detection", "Year")
+## health_timeseries(timeStampData, "Species", "Rate.Of.Detection", "Year")
+## health_timeseries(timeStampData, "Genus", "Rate.Of.Detection", "Year")
 

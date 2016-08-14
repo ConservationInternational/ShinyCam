@@ -246,7 +246,9 @@ shinyServer(function(input, output, session) {
   # Subset dataframe for plotting (no time subset)
   # Subset by project, site, frequency, and selected species
   plotting_dataset <- reactive({
-    subset(site_selection(), Sampling.Type==input$select_time & paste(Genus, Species)==input$species)
+      tmp = subset(site_selection(), Sampling.Type==input$select_time & paste(Genus, Species)==input$species)
+      print(tmp)
+      tmp
   })
 
   # Subset dataframe for mapping (time subset)
@@ -266,47 +268,48 @@ shinyServer(function(input, output, session) {
 
 
     ## Additional plots
-    ## NOTE (Michael): This plot is only meaningful when the number of groupings
-    ##                 .are small
-    output$camera_ts_benchmark = renderPlot({
-        plotCameraBenchmark(full_data = plotting_dataset(),
-                            camera_data = camera_dataset(),
-                            time = "timeStamp",
-                            group = "Genus",
-                            rate = "Rate.Of.Detection",
-                            facet = FALSE)
+
+        ## NOTE (Michael): This plot is only meaningful when the number of
+        ##                 groupings are small.
+
+        output$camera_ts_benchmark = renderPlot({
+            plotCameraBenchmark(full_data = plotting_dataset(),
+                                camera_data = camera_dataset(),
+                                time = "timestamp",
+                                group = "Genus",
+                                rate = "Rate.Of.Detection",
+                                facet = FALSE)
         })
 
-    output$camera_ts_benchmark_facet = renderPlot({
-        plotCameraBenchmark(full_data = plotting_dataset(),
-                            camera_data = camera_dataset(),
-                            time = "timeStamp",
-                            group = "Genus",
-                            rate = "Rate.Of.Detection",
-                            facet = TRUE)
-    })
+        output$camera_ts_benchmark_facet = renderPlot({
+            plotCameraBenchmark(full_data = plotting_dataset(),
+                                camera_data = camera_dataset(),
+                                time = "timestamp",
+                                group = "Genus",
+                                rate = "Rate.Of.Detection",
+                                facet = TRUE)
+        })
 
-    output$total_ts = renderPlot({
-        plotTotalTs(full_data = plotting_dataset(),
-                    time = "timeStamp",
-                    rate = "Rate.Of.Detection",
-                    aggFUN = mean)
-    })
+        output$total_ts = renderPlot({
+            plotTotalTs(full_data = plotting_dataset(),
+                        time = "timestamp",
+                        rate = "Rate.Of.Detection",
+                        aggFUN = mean)
+        })
 
-    ## NOTE (Michael): This plot is not displayed correctly due to the Inf
-    ##                 values in the data.
-    output$top_five_plot = renderPlot({
-        groupTopFive(plotting_dataset(),
-                     group = "Genus",
-                     rate = "Rate.Of.Detection")
-    })
+        ## NOTE (Michael): This plot is not displayed correctly due to the Inf
+        ##                 values in the data.
+        output$top_five_plot = renderPlot({
+            groupTopFive(plotting_dataset(),
+                         group = "Genus",
+                         rate = "Rate.Of.Detection")
+        })
 
-    output$health_ts = renderPlot({
-        health_timeseries(data = plotting_dataset(),
-                          group = "Genus",
-                          rate = "Rate.Of.Detection",
-                          year = "Year")
-    })
-
+        output$health_ts = renderPlot({
+            health_timeseries(data = plotting_dataset(),
+                              group = "Genus",
+                              rate = "Rate.Of.Detection",
+                              year = "Year")
+        })
 
 })
