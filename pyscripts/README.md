@@ -1,4 +1,5 @@
 ## Python scripts
+------
 
 ### 1_DataMergeScript.py
 Standardizes data format between Marin and TEAM data.
@@ -29,16 +30,22 @@ writes files:
 Given the various deployment location camera's uptime, it calculates the trapnights aggregated for different periods
 
 *MarinTrapNightsAggregationAtMonthLevel.py*
+
 read file:
+*data/intermediate/Marin_Merged.csv
+
 write file:
-    data/intermediate/marin_trap_days.csv
+*data/intermediate/marin_trap_days.csv
 
 *TeamTrapNightsAggregationAtSamplingPeriod.py*
-read file:
-write file:
-    data/intermediate/team_trap_days.csv
 
-### 3_DataPreparation.py
+read file:
+*data/intermediate/Terrestrial_Vertebrate_Cols_Edited.csv
+
+write file:
+*data/intermediate/team_trap_days.csv
+
+### 4_DataPreparation.py
 Calculate rate of detection and join with metadata.
 
 reads files:
