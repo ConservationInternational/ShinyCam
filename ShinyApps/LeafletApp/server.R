@@ -167,23 +167,13 @@ shinyServer(function(input, output, session) {
       map %>% fitBounds(lng - dist, lat - dist, lng + dist, lat + dist)
     })
   })
-
   
-  # transform on sampling type
-  keepCols <- c(
-    'Project.ID', 'Deployment.Location.ID',
-    'Latitude.Resolution', 'Longitude.Resolution',
-    'Sampling.Type', 'Sampling.Period', 'Year',
-    'Genus', 'Species', 'Rate.Of.Detection'
-  )
-  
-  # TODO use filtered data
-  subsettedData <- TEAM_data[keepCols]
-  colnames(subsettedData) <- c(
-    'Project', 'Deployment Location ID',
-    'Latitude', 'Longitude',
-    'Sampling Type', 'Sampling Period', 'Year',
-    'Genus', 'Species', 'Rate Of Detection'
+  # TODO use filtered data as input
+  subsettedData <- select(TEAM_data,
+    'Project'=Project.ID, 'Deployment Location ID'=Deployment.Location.ID,
+    'Latitude'=Latitude.Resolution, 'Longitude'=Longitude.Resolution,
+    'Sampling Type'=Sampling.Type, 'Sampling Period'=Sampling.Period, 'Year'=Year,
+    'Genus'=Genus, 'Species'=Species, 'Rate Of Detection'=Rate.Of.Detection
   )
 
   # TODO change file name based on filters
