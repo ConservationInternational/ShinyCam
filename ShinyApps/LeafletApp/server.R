@@ -5,6 +5,7 @@ library(scales)
 library(lattice)
 library(dplyr)
 source("scripts/kernel_density_estimate.R")
+source("scripts/extra_plot.R")
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 set.seed(100)
@@ -238,7 +239,6 @@ shinyServer(function(input, output, session) {
 
 
     ## Additional plots
-    source("extra_plot.R")
     ## NOTE (Michael): This plot is only meaningful when the number of groupings
     ##                 .are small
     output$camera_ts_benchmark = renderPlot({
