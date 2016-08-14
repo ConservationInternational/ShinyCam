@@ -316,4 +316,9 @@ shinyServer(function(input, output, session) {
     subset(plotting_dataset(), )
   })
   
+  # Subset dataframe for plotting based on map click
+  camera_dataset <- reactive ({
+    subset(site_selection(), )
+  })
+  
 })
