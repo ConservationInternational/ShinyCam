@@ -51,3 +51,13 @@ R Setup
 - Make sure you have ```R``` installed.  
 - Clone this repo: ```git clone git@github.com:DataKind-SF/datadive_201608_ci.git```
 - Populate the data folder as in [Google drive](https://drive.google.com/folderview?id=0BzoemeOsgjRIb2R1ZWo5YjBCRHc&usp=sharing).
+- Need to add a list of packages to install (this needs to be updated at the final version):
+install.packages("shiny")
+install.packages("leaflet")
+install.packages("RColorBrewer")
+install.packages("scales")
+install.packages("lattice")
+install.packages("dplyr")
+install.packages("gstat")
+install.packages("sp")
+install.packages("intervals")
