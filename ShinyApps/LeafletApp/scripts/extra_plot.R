@@ -208,3 +208,41 @@ groupTopFive = function(data, group, rate){
 ## groupTopFive(selectedData, "Genus", "Rate.Of.Detection")
 
 
+
+
+health_timeseries = function(data, group, rate, year){
+
+    splittedData = split(data, data[[group]])
+
+
+    appendCoef = function(formula, data){
+        coefs = coef(lm(formula, data))
+        data$intercept = coefs[1]
+        data$trend = coefs[2]
+        data$col = with(data, ifelse(trend >= 0, "green", "red"))
+        data
+    }
+    form = as.formula(paste0(rate, " ~ ", year))
+
+    estimatedData = lapply(splittedData, FUN = appendCoef, formula = form)
+    print(str(estimatedData))
+    combinedData = unsplit(estimatedData, data[[group]])
+
+    health_ts =
+        ggplot(data = combinedData,
+               aes_string(x = year, y = rate, group = group)) +
+        geom_line(stat = "smooth", method = "lm",
+                  aes(color = col), alpha = 0.2, lwd = 2,
+                  se = FALSE) +
+        scale_colour_manual("Group Trend",
+                            values = c("red" = "red", "green" = "green"),
+                            labels = c("Decreasing","Increasing")) +
+        scale_y_log10() +
+        xlab("") +
+        ylab("")
+    health_ts
+}
+
+health_timeseries(timeStampData, "Species", "Rate.Of.Detection", "Year")
+health_timeseries(timeStampData, "Genus", "Rate.Of.Detection", "Year")
+

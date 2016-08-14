@@ -274,5 +274,12 @@ shinyServer(function(input, output, session) {
                      rate = "Rate.Of.Detection")
     })
 
+    output$health_ts = renderPlot({
+        health_timeseries(data = plotting_dataset(),
+                          group = "Genus",
+                          rate = "Rate.Of.Detection",
+                          year = "Year")
+    })
+
 
 })
