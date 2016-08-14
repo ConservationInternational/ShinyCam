@@ -122,8 +122,9 @@ shinyServer(function(input, output, session) {
   # Create the map
   output$map <- renderLeaflet({
     #Make idw raster
-    if (nrow(mapping_dataset()>0)) {
-      in.dat <- mapping_dataset()
+    if (nrow(mapping_dataset())>0) {
+      in.dat.raw <- mapping_dataset()
+      in.dat <- aggregate(in.dat.raw, by=list(in.dat.raw$Deployment.Location.ID), FUN=mean)
       coordinates(in.dat) <- ~ Longitude + Latitude
       x.range <- c(floor(min(in.dat$Longitude)), ceiling(max(in.dat$Longitude)))
       y.range <- c(min(in.dat$Latitude), max(in.dat$Latitude))
@@ -153,7 +154,7 @@ shinyServer(function(input, output, session) {
       ) %>% 
       addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL)# %>% 
       #addPolygons(data=dat$poly, color = brewer.pal(dat$nlev, "Greens")[dat$levs], stroke=FALSE)
-    if (!is.null(idw.raster)) {  
+    if (!is.null(idw.raster)) { 
       tmap %>%
         addRasterImage(idw.raster, opacity=0.5, colors="Reds")
     } else {
@@ -179,7 +180,9 @@ shinyServer(function(input, output, session) {
   )
   
   output$table <- DT::renderDataTable({
-    df <- subsettedData %>%
+    #df <- subsettedData %>%
+    # TODO: Confirm that mapping_dataset is the correct df to display
+    df <- mapping_dataset() %>%
       mutate(Go = paste('<a class="go-map" href="" data-lat="', Latitude, '" data-long="', Longitude, '"><i class="fa fa-crosshairs"></i></a>', sep=""))
     action <- DT::dataTableAjax(session, df)
 
@@ -228,7 +231,6 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # TODO: Confirm that these  work as expected
   # Subset dataframe for plotting (no time subset)
   # Subset by project, site, frequency, and selected species
   plotting_dataset <- reactive({
@@ -238,9 +240,11 @@ shinyServer(function(input, output, session) {
   # Subset dataframe for mapping (time subset)
   # Subset by project, site, frequency, selected species, current time
   mapping_dataset <- reactive ({
-    print(input$time_slider)
-    print(unique(plotting_dataset()$timestamp))
-    subset(plotting_dataset(), timestamp==input$time_slider)
+    if (!is.null(input$species)) {
+      subset(plotting_dataset(), timestamp==input$time_slider)
+    } else {
+      subset(plotting_dataset(), rep(FALSE, times=nrow(plotting_dataset())))
+    }
   })
   
   # Subset dataframe for plotting based on map click
