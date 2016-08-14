@@ -32,18 +32,18 @@ Given the various deployment location camera's uptime, it calculates the trapnig
 *MarinTrapNightsAggregationAtMonthLevel.py*
 
 read file:
-*data/intermediate/Marin_Merged.csv
+* data/intermediate/Marin_Merged.csv
 
 write file:
-*data/intermediate/marin_trap_days.csv
+* data/intermediate/marin_trap_days.csv
 
 *TeamTrapNightsAggregationAtSamplingPeriod.py*
 
 read file:
-*data/intermediate/Terrestrial_Vertebrate_Cols_Edited.csv
+* data/intermediate/Terrestrial_Vertebrate_Cols_Edited.csv
 
 write file:
-*data/intermediate/team_trap_days.csv
+* data/intermediate/team_trap_days.csv
 
 ### 4_DataPreparation.py
 Calculate rate of detection and join with metadata.
