@@ -9,6 +9,7 @@ library(lattice)
 library(dplyr)
 library(gstat)
 library(sp)
+library(data.table)
 source("scripts/kernel_density_estimate.R")
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
@@ -20,11 +21,11 @@ source("scripts/kernel_density_estimate.R")
 
 #Global
 GRADIENT_SCALE <- 2
-lat_long_data <- read.csv("data/rate_of_detection.csv")
+lat_long_data <- as.data.frame(fread("data/rate_of_detection.csv"))
 #mapping_dataset()
 
 # Read species information 
-species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
+species.table  <- read.csv("data/taxonomy_scientific_name_20160813.csv")
 red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))
 
@@ -33,7 +34,7 @@ shinyServer(function(input, output, session) {
   # Read in input data based on project
   dataset_input <- reactive({
     if (input$dataset=="TEAM") {
-      indat <- read.csv("./data/rate_of_detection.csv")
+      indat <- as.data.frame(fread("./data/rate_of_detection.csv"))
     }
     
     createTimeStamp <- function(samplingPeriod) {
