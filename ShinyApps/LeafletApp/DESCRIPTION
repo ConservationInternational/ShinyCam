@@ -1,7 +1,6 @@
-Title: SuperZip example
-License: MIT
+Title: RatesOfDetection 
+License: 
 DisplayMode: Normal
-Author: Joe Cheng <joe@rstudio.com>
-AuthorUrl: http://www.rstudio.com/
+Author: Conservation International and DataKind
+AuthorUrl: conservation.org, datakind.org
 Type: Shiny
-Tags: leaflet selectize datatables absolutepanel
