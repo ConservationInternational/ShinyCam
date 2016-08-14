@@ -37,7 +37,7 @@ shinyUI(navbarPage("Superzip", id="nav",
         h2("ZIP explorer"),
 
         ## NOTE (Michael): The dataFiles are created in the global.R
-        selectInput("dataFiles", "Data Source", choices = dataFiles),
+        selectInput("dataSource", "Data Source", choices = dataFiles),
         selectInput("color", "Color", vars),
         selectInput("size", "Size", vars, selected = "adultpop"),
         conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
@@ -52,8 +52,8 @@ shinyUI(navbarPage("Superzip", id="nav",
                     choices = samplingFrequency),
         checkboxInput(inputId = "show_human",
                       label = "Show Human Activities?"),
-        plotOutput("histCentile", height = 200),
-        plotOutput("scatterCollegeIncome", height = 250)
+        plotOutput("ts_plot", height = 200),
+        plotOutput("agg_ts_plot", height = 200)
       ),
 
       tags$div(id="cite",
