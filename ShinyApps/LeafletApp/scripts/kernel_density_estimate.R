@@ -8,10 +8,10 @@ library("KernSmooth")
 #   bandwidth - Tunable parameter for size of kernel
 #   gridsize - Tunable parameter for size of normalization grid
 
-get_KDE_polygons <- function(dat, bandwidth=0.25, gridsize=51){
+get_KDE_polygons <- function(dat, bandwidth=0.25, gridsize=200){
   kde <- bkde2D(dat[ , c("Longitude", "Latitude")],
                 bandwidth=rep(bandwidth, 2),
-                gridsize=rep(gridsize, 2))
+                gridsize=c(gridsize*2, gridsize))
   CL <- contourLines(kde$x1 , kde$x2 , kde$fhat)
   
   ## EXTRACT CONTOUR LINE LEVELS

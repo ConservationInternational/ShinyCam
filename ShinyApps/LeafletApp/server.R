@@ -33,16 +33,10 @@ shinyServer(function(input, output, session) {
   
   # Create the map
   output$map <- renderLeaflet({
-    dat <- get_KDE_polygons(site_selection()) #read.csv("data/rate_of_detection.csv")
-    #filt <- as.character(dat$Project.ID) %in% input$site_selection
-    write.csv(site_selection(), "~/Documents/Joel/github/site_sel.csv", row.names=FALSE)
-    print(colnames(site_selection()))
-    #print(str(dat))
-    #dat <- get_KDE_polygons(filter(dat, Data.Source == "TEAM"))
+    dat <- get_KDE_polygons(site_selection())
     leaflet(cam_lat_longs) %>% 
       addTiles(
-        urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}",
-        attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+        urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
       ) %>% 
       addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL) %>% 
       addPolygons(data=dat$poly, color = brewer.pal(dat$nlev, "Greens")[dat$levs], stroke=FALSE)
@@ -222,7 +216,7 @@ shinyServer(function(input, output, session) {
   dataset_input <- reactive({
     if (input$dataset=="TEST!") {
       read.csv("./data/rate_of_detection.csv")
-    }
+    } 
   })
   
   # Add 
