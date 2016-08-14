@@ -35,3 +35,5 @@ reads files:
 writes files:
 * data/processed/rate_of_detection.csv
 
+### create_sample_data.py
+Outputs fake data in the format needed for input into the front-end.
