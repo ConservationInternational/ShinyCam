@@ -217,13 +217,18 @@ shinyServer(function(input, output, session) {
   
   # Read in input data based on project
   dataset_input <- reactive({
-    if (input$dataset=="TEAM") {
-      read.csv("./data/TEAM_data.csv")
-    } else if (input$dataset=="MWPIP") {
-      read.csv("./data/TEAM_data.csv")
-    } else if (input$dataset=="TEST!") {
-      read.csv("./data/rate_of_detection.csv")
+    if (input$dataset=="TEST!") {
+      indat <- read.csv("./data/rate_of_detection.csv")
     }
+    
+    createTimeStamp <- function(Year, samplingPeriod) {
+      timeString = paste(Year, samplingPeriod, "01", sep = "-")
+      as.Date(timeString, "%Y-%m-%d")
+    }
+    
+    indat$timestamp <- createTimeStamp(data_by_time$Year, data_by_time$Sampling.Period)
+
+    indat
   })
   
   # Add 
@@ -273,6 +278,13 @@ shinyServer(function(input, output, session) {
   output$species.list <- renderUI({
     selectInput("species", "Select Species (Multiple Possible)", 
                 choices=sort(present.species.names()), selected=NULL, multiple=TRUE)
+  })
+  
+  # Render time slider
+  output$time.selection <- renderUI({
+    tmin <- min(site_selection()$)
+    tmax <- max()
+    sliderInput()
   })
   
   # Update species selection based on RED and guild
