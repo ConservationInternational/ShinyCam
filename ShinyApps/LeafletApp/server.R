@@ -9,6 +9,9 @@ library(lattice)
 library(dplyr)
 library(gstat)
 library(sp)
+library(data.table)
+library(KernSmooth)
+library(viridis)
 source("scripts/kernel_density_estimate.R")
 source("scripts/extra_plot.R")
 
@@ -28,11 +31,13 @@ createTimeStamp = function(samplingPeriod){
 
 #Global
 GRADIENT_SCALE <- 2
-lat_long_data <- read.csv("data/rate_of_detection.csv")
+lat_long_data <- as.data.frame(fread("data/rate_of_detection.csv"))
 #mapping_dataset()
+
 
 # Read species information
 species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
+
 red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))
 
@@ -40,9 +45,8 @@ shinyServer(function(input, output, session) {
 
   # Read in input data based on project
   dataset_input <- reactive({
-    if (input$dataset=="TEST!") {
-
-        indat <- read.csv("./data/rate_of_detection.csv") %>%
+    if (input$dataset=="TEAM") {
+      indat <- as.data.frame(fread("./data/rate_of_detection.csv")) %>%
             ## HACK (Michael): To clean the data
             subset(., Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
 
@@ -61,8 +65,7 @@ shinyServer(function(input, output, session) {
   # Select Region
   output$site_checkbox <- renderUI({
     labels <- as.character(unique(dataset_input()$Project.ID))
-    selectInput("site_selection", "Select Sites/Subregions", choices = labels, selected = labels,
-                multiple=TRUE)
+    selectInput("site_selection", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
   })
 
   # Select site
@@ -94,14 +97,9 @@ shinyServer(function(input, output, session) {
 
   # Render time selector
   output$time.control <- renderUI({
-    print(head(dataset_input()$timestamp))
     tmin <- min(dataset_input()$timestamp, na.rm=TRUE)
     tmax <- max(dataset_input()$timestamp, na.rm=TRUE)
-    print(tmin)
-    print(tmax)
-    #sliderInput("time_slider", label = "Select Time", min = tmin,
-    #            max = tmax, value = tmin, timeFormat = "%Y-%m")
-    selectInput("time_slider", label = "Select Time", choices = as.character(unique(plotting_dataset()$timestamp)))
+    selectInput("time_slider", label = "Select Time", choices = as.character(unique(site_selection()$timestamp)))
   })
 
   # Render guild selector
@@ -138,37 +136,43 @@ shinyServer(function(input, output, session) {
       in.dat.raw <- mapping_dataset()
       in.dat <- aggregate(in.dat.raw, by=list(in.dat.raw$Deployment.Location.ID), FUN=mean)
       coordinates(in.dat) <- ~ Longitude + Latitude
-      x.range <- c(floor(min(in.dat$Longitude)), ceiling(max(in.dat$Longitude)))
+      x.range <- c(min(in.dat$Longitude), max(in.dat$Longitude))
       y.range <- c(min(in.dat$Latitude), max(in.dat$Latitude))
       x.diff <- x.range[2]-x.range[1]
       y.diff <- y.range[2]-y.range[1]
-      ncells <- 20 # Set the number of cells in x and y direction
+      ncells <- 50 # Set the number of cells in x and y direction
       pad.pct <- 0.1 # Set the xy padding around input points as percentage of range
       grd <- expand.grid(x = seq(from = x.range[1]-pad.pct*x.diff, to = x.range[2]+pad.pct*x.diff, by = (x.diff)/ncells),
                          y = seq(from = y.range[1]-pad.pct*y.diff, to = y.range[2]+pad.pct*y.diff, by = (y.diff)/ncells))
       coordinates(grd) <- ~x + y
       gridded(grd) <- TRUE
-      tidw <- idw(Rate.Of.Detection ~ 1, locations=in.dat, newdata=grd, nmax=10)
+      tidw <- idw(Rate.Of.Detection ~ 1, locations=in.dat, newdata=grd, nmax=10, idp=4)
       dw.output = as.data.frame(tidw)
       names(dw.output)[1:3] <- c("long", "lat", "var1.pred")
+      dw.output[which(dw.output$var1.pred == min(dw.output$var1.pred)), "var1.pred"] <- 0
       coordinates(dw.output) <- ~long+lat
       proj4string(dw.output) <- CRS("+init=epsg:4326")
       gridded(dw.output) <- TRUE
       idw.raster <- raster(dw.output, layer=1, values=TRUE)
     } else {
       idw.raster <- NULL
+      in.dat     <- NULL
     }
 
     #dat <- get_KDE_polygons(site_selection())
-    tmap <- leaflet(cam_lat_longs) %>%
+    tmap <- leaflet(unique(select(site_selection(), Latitude, Longitude))) %>%
       addTiles(
         urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
-      ) %>%
-      addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL)# %>%
-      #addPolygons(data=dat$poly, color = brewer.pal(dat$nlev, "Greens")[dat$levs], stroke=FALSE)
+      )
+    if (nrow(site_selection())>0) {
+      tmap <- tmap %>%
+        addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL)
+      }
     if (!is.null(idw.raster)) {
+
       tmap %>%
-        addRasterImage(idw.raster, opacity=0.5, colors="Reds")
+        addCircleMarkers(~Longitude, ~Latitude, weight=1, data= mapping_dataset(), radius=~sqrt(Rate.Of.Detection), color="red", fillOpacity=1, layerId=NULL) %>%
+        addRasterImage(idw.raster, opacity=0.4, colors = "Reds")
     } else {
       tmap
     }
@@ -204,7 +208,7 @@ shinyServer(function(input, output, session) {
   # Generate controls
 
   # Update species selection based on RED and guild
-  # TODO: (Someday) Fix this aweful logic, which works, not that that's saying much
+  # TODO: (Someday) Fix this awful logic, which works, not that that's saying much
   observe({
      #Modify selection based on nulls
     if (is.null(input$red) & is.null(input$guild)) {
@@ -246,16 +250,21 @@ shinyServer(function(input, output, session) {
   # Subset dataframe for plotting (no time subset)
   # Subset by project, site, frequency, and selected species
   plotting_dataset <- reactive({
-    subset(site_selection(), Sampling.Type==input$select_time & paste(Genus, Species)==input$species)
+    if (!is.null(input$species)) {
+      subset(site_selection(), (Sampling.Type==input$select_time) & (paste(Genus, Species) %in% input$species))
+    } else {
+      data.frame()
+    }
   })
 
   # Subset dataframe for mapping (time subset)
   # Subset by project, site, frequency, selected species, current time
   mapping_dataset <- reactive ({
-    if (!is.null(input$species)) {
+    if (!is.null(input$species) & (!is.null(input$time_slider))) {
       subset(plotting_dataset(), timestamp==input$time_slider)
     } else {
-      subset(plotting_dataset(), rep(FALSE, times=nrow(plotting_dataset())))
+      #subset(plotting_dataset(), rep(FALSE, times=nrow(plotting_dataset())))
+      data.frame()
     }
   })
 
