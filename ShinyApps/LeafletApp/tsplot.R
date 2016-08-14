@@ -21,14 +21,17 @@ samplingFrequency = "Annual"
 
 selectedData =
     read.csv("data/rate_of_detection.csv", stringsAsFactors = FALSE)
-    ## read.csv("data/TEAM_data.csv", stringsAsFactors = FALSE)
+
+## HACK (Michael): Cleaning the data
+selectedData =
+    selectedData %>%
+    subset(., Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf) %>%
+    subset(., Genus %in% head(unique(.$Genus)))
 
 ## Create time stamp
 timeStampData =
     selectedData %>%
     subset(Sampling.Type == samplingFrequency) %>%
-    ## mutate(., timeStamp = createTimeStamp(Year = Year,
-    ##                                       samplingPeriod = Sampling.Period))
     mutate(., timeStamp = createTimeStamp(samplingPeriod = Sampling.Period))
 
 cameraData =
@@ -36,35 +39,58 @@ cameraData =
     subset(., Deployment.Location.ID == cameraID)
 
 
-plotts = function(full_data, camera_data, time, group, rate, addSmoother = FALSE,
-                  facet = FALSE){
+plotCameraBenchmark = function(full_data,
+                               camera_data,
+                               time,
+                               group,
+                               rate,
+                               addSmoother = FALSE,
+                               facet = FALSE){
+
     ## This function plots the camera specific rate of detection
     grouping_formula =
         sapply(c(time, group), . %>% {as.formula(paste0('~', .))})
 
     averageData =
         full_data %>%
+        subset(., .[[group]] %in% unique(camera_data[[group]])) %>%
         group_by_(.dots = grouping_formula) %>%
         summarise(., mean_rate = mean(Rate.Of.Detection))
+
+    dotdash = "dotdash"
+    solid = "solid"
 
     if(!facet){
         tsplot = ggplot() +
             geom_line(data = camera_data,
-                      aes_string(x = time, y = rate, col = group), lwd = 2) +
+                      aes_string(x = time, y = rate, col = group,
+                                 linetype = dotdash)) +
             geom_line(data = averageData,
-                      aes_string(x = time, y = "mean_rate", col = group)) +
+                      aes_string(x = time, y = "mean_rate", col = group,
+                                 linetype = solid)) +
             theme(legend.position="top") +
+            scale_linetype_manual(name = "Line type",
+                                  values = c("dotdash" = "dotdash",
+                                             "solid" = "solid"),
+                                  labels = c("Camera", "Overall")) +
             xlab("") +
             ylab("")
     }else {
         ## This enables facet
-        tsplot = ggplot() +
+        tsplot =
+            ggplot() +
             geom_line(data = camera_data,
-                      aes_string(x = time, y = rate), lwd = 2) +
+                      aes_string(x = time, y = rate,
+                                 linetype = dotdash)) +
             geom_line(data = averageData,
-                      aes_string(x = time, y = "mean_rate")) +
-            facet_grid(as.formula(paste0("~", group))) +
+                      aes_string(x = time, y = "mean_rate",
+                                 linetype = solid)) +
+            facet_grid(as.formula(paste0(group, "~ .")), scales = "free") +
             theme(legend.position="top") +
+            scale_linetype_manual(name = "Line type",
+                                  values = c("dotdash" = "dotdash",
+                                             "solid" = "solid"),
+                                  labels = c("camera","average")) +
             xlab("") +
             ylab("")
     }
@@ -77,13 +103,14 @@ plotts = function(full_data, camera_data, time, group, rate, addSmoother = FALSE
     tsplot
 }
 
+## ## This plot should be plotted only if the number of class is less than 5.
+## plotCameraBenchmark(full_data = timeStampData, camera_data = cameraData,
+##                     group = groupingID, time = "timeStamp",
+##                     rate = "Rate.Of.Detection", addSmoother = FALSE,
+##                     facet = TRUE)
 
-## plotts(full_data = timeStampData, camera_data = cameraData,
-##        group = groupingID, time = "timeStamp", rate = "Rate.Of.Detection",
-##        addSmoother = FALSE)
 
-
-plotAggTs = function(full_data, time, rate, addSmoother = FALSE){
+plotTotalTs = function(full_data, time, rate, addSmoother = FALSE, aggFUN = sum){
     ## This function plots the total sum of detection rate
     grouping_formula =
         sapply(c(time), . %>% {as.formula(paste0('~', .))})
@@ -91,10 +118,10 @@ plotAggTs = function(full_data, time, rate, addSmoother = FALSE){
     sumData <<-
         full_data %>%
         group_by_(.dots = grouping_formula) %>%
-        summarise(., sum_rate = sum(Rate.Of.Detection))
+        summarise(., agg_rate = aggFUN(Rate.Of.Detection))
 
     tsplot =
-        ggplot(data = sumData, aes(x = timeStamp, y = sum_rate)) +
+        ggplot(data = sumData, aes(x = timeStamp, y = agg_rate)) +
         geom_line() +
         theme(legend.position="top") +
         xlab("") +
@@ -109,11 +136,15 @@ plotAggTs = function(full_data, time, rate, addSmoother = FALSE){
     tsplot
 }
 
+## ## Seems to make no sense of plotting the aggregated count, as it increases with
+## ## the number of project.
+## plotTotalTs(full_data = timeStampData, time = "timeStamp",
+##             rate = "Rate.Of.Detection", addSmoother = FALSE,
+##             aggFUN = mean)
 
-## plotAggTs(full_data = timeStampData, time = "timeStamp",
-##           rate = "Rate.Of.Detection", addSmoother = FALSE)
 
-
+## Need to account for data which only has annual data, this should depends on
+## the sampling frequency filter.
 plotDecomposeTs = function(full_data, time, rate){
     grouping_formula =
         sapply(c(time), . %>% {as.formula(paste0('~', .))})
@@ -141,5 +172,40 @@ plotDecomposeTs = function(full_data, time, rate){
 }
 
 
-## plotDecomposeTs(full_data = timeStampData, time = "timeStamp",
+## plotDecomposeTs(full_data = timeStampData,
+##                 time = "timeStamp",
 ##                 rate = "Rate.Of.Detection")
+
+
+## Top species at camera and top species overall.
+
+groupTopFive = function(data, group, rate){
+    grouping_formula = as.formula(paste0("~", group))
+
+    ## Select the top 5 by detection rate
+    topFiveData =
+        data %>%
+        group_by_(.dots = grouping_formula) %>%
+        summarise(avg = mean(Rate.Of.Detection)) %>%
+        arrange(., desc(avg)) %>%
+        head(., 5)
+    print(topFiveData)
+
+    ## This is to sort the graph in order
+    topFiveData[[group]] =
+        factor(topFiveData[[group]], levels = rev(topFiveData[[group]]))
+
+    ## Plot the data
+    top5Plot =
+        ggplot(data = topFiveData,
+               aes_string(x = group, y = "avg")) +
+        geom_bar(stat = "identity") +
+        coord_flip()
+
+    top5Plot
+}
+
+## This plot can be performed on full data, or camera data
+## groupTopFive(selectedData, "Genus", "Rate.Of.Detection")
+
+
