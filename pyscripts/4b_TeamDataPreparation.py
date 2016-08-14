@@ -21,9 +21,14 @@ if __name__ == '__main__':
 
     team = pd.merge(team, rate, left_on= ['Sampling Unit Name', 'Sampling Period'], how = 'inner',
              right_on = ['Deployment.Location.ID', 'Sampling.Period'])
-    team['trap_days_per_100'] = team['trap_days']/100.
-    team['Rate Of Detection'] = team['Number of Animals']/team['trap_days_per_100']
-    del team['trap_days_per_100']
-    del team['trap_days']
+    team['trap_nights_per_100'] = team['trapnights']/100.
+    team['Rate Of Detection'] = team['Number of Animals']/team['trap_nights_per_100']
+    team['Sampling Period'] = 1
+    
+    team.rename(columns = {'Site Name': 'Project ID', 'Latitude' : 'Latitude Resolution',
+                        'Longitude' :'Longitude Resolution', 'Deployment.Location.ID' :'Deployment Location ID'}, inplace = True)
 
-    team.to_csv('../data/processed/rate_of_detection.csv', index=False)
+    team = team[['Data Source', 'Project ID', 'Deployment Location ID', 'Latitude Resolution', 'Longitude Resolution', 
+    'Sampling Type', 'Sampling Period', 'Year', 'Genus', 'Species', 'Rate Of Detection']]
+
+    team.to_csv('../data/processed/team_rate_of_detection.csv', index=False)
