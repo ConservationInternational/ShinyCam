@@ -24,9 +24,9 @@ if __name__ == '__main__':
     team['Time Between Photos'] = team['Time Between Photos'].apply(lambda x: 0 if x > 100 else x)
 
     team_new = fn(team, 3)
-    team_new.to_csv('Max_Animals_TEAM_data.csv')
+    team_new.to_csv('../data/intermediate/Max_Animals_TEAM_data.csv')
 
-    marin = pd.read_csv('../data/Marin_Merged.csv', index_col=0)
+    marin = pd.read_csv('../data/intermediate/Marin_Merged.csv', index_col=0)
 
     marin['NEW_PHOTO_TIME'] = pd.to_datetime(marin['Date_Time Captured'])
     marin['Time Between Photos'] = marin['NEW_PHOTO_TIME'] - marin['NEW_PHOTO_TIME'].shift()
