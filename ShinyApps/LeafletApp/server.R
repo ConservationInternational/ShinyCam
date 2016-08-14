@@ -13,37 +13,39 @@ zipdata <- allzips[sample.int(nrow(allzips), 10000),]
 # will be drawn last and thus be easier to see
 zipdata <- zipdata[order(zipdata$centile),]
 
-#TEAM_data <- read.csv("data/TEAM_data.csv")
-#TEAM_data$Longitude.Resolution <- TEAM_data$Longitude.Resolution + sample(-3:3)
-#TEAM_data$Latitude.Resolution <- TEAM_data$Latitude.Resolution + sample(-3:3)
-
 #Global
 GRADIENT_SCALE <- 2
-dat <- read.csv("data/rate_of_detection.csv")
+lat_long_data <- read.csv("data/rate_of_detection.csv")
+#mapping_dataset()
 
 # Read species information 
-species.table <- read.csv("./data/taxonomy_scientific_name_20160813.csv")
-red.list.table <- read.csv("./data/taxonomy_red_list_status_20160813.csv")
+species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
+red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))
-
 
 shinyServer(function(input, output, session) {
 
   ## Interactive Map ###########################################
 
   # Get unique pairs of lat long values for plotting cam locations
-  locs <- select(dat, Latitude, Longitude)
+  locs <- select(lat_long_data, Latitude, Longitude)
   cam_lat_longs <- unique(locs)
   
   # Create the map
   output$map <- renderLeaflet({
-  leaflet(cam_lat_longs) %>% 
-    addTiles(
-      urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
-    ) %>% 
-    addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL) %>% 
-    addPolygons(data=dat_pgons$poly, color = brewer.pal(dat_pgons$nlev, "Greens")[dat_pgons$levs], stroke=FALSE)
+    dat <- get_KDE_polygons(site_selection()) #read.csv("data/rate_of_detection.csv")
+    #filt <- as.character(dat$Project.ID) %in% input$site_selection
+    write.csv(site_selection(), "~/Documents/Joel/github/site_sel.csv", row.names=FALSE)
+    print(colnames(site_selection()))
+    #print(str(dat))
+    #dat <- get_KDE_polygons(filter(dat, Data.Source == "TEAM"))
+    leaflet(cam_lat_longs) %>% 
+      addTiles(
+        urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}",
+        attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      ) %>% 
+      addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=2, color="black", fillOpacity=1, layerId=NULL) %>% 
+      addPolygons(data=dat$poly, color = brewer.pal(dat$nlev, "Greens")[dat$levs], stroke=FALSE)
   
   })
   
@@ -191,12 +193,12 @@ shinyServer(function(input, output, session) {
   })
   
   # TODO use filtered data as input
-  subsettedData <- select(TEAM_data,
-    'Project'=Project.ID, 'Deployment Location ID'=Deployment.Location.ID,
-    'Latitude'=Latitude.Resolution, 'Longitude'=Longitude.Resolution,
-    'Sampling Type'=Sampling.Type, 'Sampling Period'=Sampling.Period, 'Year'=Year,
-    'Genus'=Genus, 'Species'=Species, 'Rate Of Detection'=Rate.Of.Detection
-  )
+  #subsettedData <- select(TEAM_data,
+  #  'Project'=Project.ID, 'Deployment Location ID'=Deployment.Location.ID,
+  #  'Latitude'=Latitude.Resolution, 'Longitude'=Longitude.Resolution,
+  #  'Sampling Type'=Sampling.Type, 'Sampling Period'=Sampling.Period, 'Year'=Year,
+  #  'Genus'=Genus, 'Species'=Species, 'Rate Of Detection'=Rate.Of.Detection
+  #)
 
   # TODO change file name based on filters
   output$downloadData <- downloadHandler(
@@ -218,11 +220,7 @@ shinyServer(function(input, output, session) {
   
   # Read in input data based on project
   dataset_input <- reactive({
-    if (input$dataset=="TEAM") {
-      read.csv("./data/TEAM_data.csv")
-    } else if (input$dataset=="MWPIP") {
-      read.csv("./data/TEAM_data.csv")
-    } else if (input$dataset=="TEST!") {
+    if (input$dataset=="TEST!") {
       read.csv("./data/rate_of_detection.csv")
     }
   })

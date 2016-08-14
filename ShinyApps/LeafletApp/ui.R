@@ -39,7 +39,7 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         width = 330, height = "auto",
 
         h2("Rates of detection"),
-	selectInput("dataset", "Camera Trap Project", c("TEAM", "MWPIP", "TEST!")),
+	selectInput("dataset", "Camera Trap Project", c("TEST!")),
         uiOutput("site_checkbox"),
         radioButtons("humans", "Show Humans?", c("Humans", "No Humans"), 
                     selected="No Humans"),
