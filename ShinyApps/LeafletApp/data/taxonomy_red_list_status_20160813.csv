@@ -1,0 +1,16 @@
+id,code,description
+1,EX,Extinct
+2,EW,Extinct In The Wild
+3,CR,Critically Endangered
+4,EN,Endangered
+5,VU,Vulnerable
+6,LR/cd,Lower Risk:Conservation Dependent
+7,DD,Data Deficient
+8,LC,Least Concern
+9,NT,Near Threatened
+10,NR,Not Recognized Birdlife Category
+11,UR,Under Review Birdlife Category
+-1,XXNA,Not Available
+12,CR (PE),Critically Endangered (Possibly Extinct)
+13,CR (PEW),Critically Endangered (Possibly Extinct in the Wild)
+14,DOM,Domesticated

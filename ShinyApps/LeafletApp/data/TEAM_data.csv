@@ -1,0 +1,409 @@
+Data Source,Project ID,Deployment Location ID,Latitude Resolution,Longitude Resolution,Sampling Type,Sampling Period,Year,Genus,Species,Rate Of Detection
+TEAM,Yasuni,123ABC,-0.6,-76.4,annual,1,2013,Macaca,nemestrina,58
+TEAM,Yasuni,123ABC,-0.6,-76.4,annual,1,2013,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,1,2013,Macaca,nemestrina,64
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,1,2013,Cuniculus,paca,4
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,2,2013,Macaca,nemestrina,52
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,2,2013,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,3,2013,Macaca,nemestrina,89
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,3,2013,Cuniculus,paca,4
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,4,2013,Macaca,nemestrina,77
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,4,2013,Cuniculus,paca,0
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,1,2013,Macaca,nemestrina,83
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,1,2013,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,2,2013,Macaca,nemestrina,70
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,2,2013,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,3,2013,Macaca,nemestrina,66
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,3,2013,Cuniculus,paca,1
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,4,2013,Macaca,nemestrina,79
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,4,2013,Cuniculus,paca,1
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,5,2013,Macaca,nemestrina,66
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,5,2013,Cuniculus,paca,3
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,6,2013,Macaca,nemestrina,98
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,6,2013,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,7,2013,Macaca,nemestrina,81
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,7,2013,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,8,2013,Macaca,nemestrina,63
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,8,2013,Cuniculus,paca,1
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,9,2013,Macaca,nemestrina,84
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,9,2013,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,10,2013,Macaca,nemestrina,99
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,10,2013,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,11,2013,Macaca,nemestrina,65
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,11,2013,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,12,2013,Macaca,nemestrina,71
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,12,2013,Cuniculus,paca,4
+TEAM,Yasuni,123ABC,-0.6,-76.4,annual,1,2014,Macaca,nemestrina,79
+TEAM,Yasuni,123ABC,-0.6,-76.4,annual,1,2014,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,1,2014,Macaca,nemestrina,66
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,1,2014,Cuniculus,paca,1
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,2,2014,Macaca,nemestrina,65
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,2,2014,Cuniculus,paca,3
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,3,2014,Macaca,nemestrina,69
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,3,2014,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,4,2014,Macaca,nemestrina,82
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,4,2014,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,1,2014,Macaca,nemestrina,62
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,1,2014,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,2,2014,Macaca,nemestrina,91
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,2,2014,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,3,2014,Macaca,nemestrina,62
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,3,2014,Cuniculus,paca,4
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,4,2014,Macaca,nemestrina,62
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,4,2014,Cuniculus,paca,4
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,5,2014,Macaca,nemestrina,62
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,5,2014,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,6,2014,Macaca,nemestrina,70
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,6,2014,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,7,2014,Macaca,nemestrina,55
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,7,2014,Cuniculus,paca,3
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,8,2014,Macaca,nemestrina,76
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,8,2014,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,9,2014,Macaca,nemestrina,80
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,9,2014,Cuniculus,paca,2
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,10,2014,Macaca,nemestrina,81
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,10,2014,Cuniculus,paca,3
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,11,2014,Macaca,nemestrina,72
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,11,2014,Cuniculus,paca,3
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,12,2014,Macaca,nemestrina,93
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,12,2014,Cuniculus,paca,4
+TEAM,Yasuni,123ABC,-0.6,-76.4,annual,1,2015,Macaca,nemestrina,59
+TEAM,Yasuni,123ABC,-0.6,-76.4,annual,1,2015,Cuniculus,paca,0
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,1,2015,Macaca,nemestrina,64
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,1,2015,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,2,2015,Macaca,nemestrina,89
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,2,2015,Cuniculus,paca,3
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,3,2015,Macaca,nemestrina,76
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,3,2015,Cuniculus,paca,1
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,4,2015,Macaca,nemestrina,58
+TEAM,Yasuni,123ABC,-0.6,-76.4,seasonal,4,2015,Cuniculus,paca,3
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,1,2015,Macaca,nemestrina,94
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,1,2015,Cuniculus,paca,1
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,2,2015,Macaca,nemestrina,94
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,2,2015,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,3,2015,Macaca,nemestrina,56
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,3,2015,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,4,2015,Macaca,nemestrina,96
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,4,2015,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,5,2015,Macaca,nemestrina,77
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,5,2015,Cuniculus,paca,5
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,6,2015,Macaca,nemestrina,53
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,6,2015,Cuniculus,paca,1
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,7,2015,Macaca,nemestrina,78
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,7,2015,Cuniculus,paca,3
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,8,2015,Macaca,nemestrina,94
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,8,2015,Cuniculus,paca,4
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,9,2015,Macaca,nemestrina,50
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,9,2015,Cuniculus,paca,4
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,10,2015,Macaca,nemestrina,63
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,10,2015,Cuniculus,paca,4
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,11,2015,Macaca,nemestrina,93
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,11,2015,Cuniculus,paca,4
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,12,2015,Macaca,nemestrina,80
+TEAM,Yasuni,123ABC,-0.6,-76.4,monthly,12,2015,Cuniculus,paca,1
+TEAM,Yasuni,456DEF,-4.2,-81.5,annual,1,2013,Macaca,nemestrina,88
+TEAM,Yasuni,456DEF,-4.2,-81.5,annual,1,2013,Cuniculus,paca,2
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,1,2013,Macaca,nemestrina,91
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,1,2013,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,2,2013,Macaca,nemestrina,91
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,2,2013,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,3,2013,Macaca,nemestrina,78
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,3,2013,Cuniculus,paca,0
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,4,2013,Macaca,nemestrina,98
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,4,2013,Cuniculus,paca,4
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,1,2013,Macaca,nemestrina,59
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,1,2013,Cuniculus,paca,4
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,2,2013,Macaca,nemestrina,65
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,2,2013,Cuniculus,paca,1
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,3,2013,Macaca,nemestrina,67
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,3,2013,Cuniculus,paca,4
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,4,2013,Macaca,nemestrina,86
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,4,2013,Cuniculus,paca,4
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,5,2013,Macaca,nemestrina,70
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,5,2013,Cuniculus,paca,1
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,6,2013,Macaca,nemestrina,85
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,6,2013,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,7,2013,Macaca,nemestrina,59
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,7,2013,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,8,2013,Macaca,nemestrina,99
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,8,2013,Cuniculus,paca,2
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,9,2013,Macaca,nemestrina,84
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,9,2013,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,10,2013,Macaca,nemestrina,69
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,10,2013,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,11,2013,Macaca,nemestrina,76
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,11,2013,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,12,2013,Macaca,nemestrina,96
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,12,2013,Cuniculus,paca,1
+TEAM,Yasuni,456DEF,-4.2,-81.5,annual,1,2014,Macaca,nemestrina,78
+TEAM,Yasuni,456DEF,-4.2,-81.5,annual,1,2014,Cuniculus,paca,1
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,1,2014,Macaca,nemestrina,88
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,1,2014,Cuniculus,paca,4
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,2,2014,Macaca,nemestrina,90
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,2,2014,Cuniculus,paca,1
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,3,2014,Macaca,nemestrina,82
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,3,2014,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,4,2014,Macaca,nemestrina,59
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,4,2014,Cuniculus,paca,1
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,1,2014,Macaca,nemestrina,82
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,1,2014,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,2,2014,Macaca,nemestrina,93
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,2,2014,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,3,2014,Macaca,nemestrina,76
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,3,2014,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,4,2014,Macaca,nemestrina,57
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,4,2014,Cuniculus,paca,4
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,5,2014,Macaca,nemestrina,56
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,5,2014,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,6,2014,Macaca,nemestrina,89
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,6,2014,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,7,2014,Macaca,nemestrina,71
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,7,2014,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,8,2014,Macaca,nemestrina,74
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,8,2014,Cuniculus,paca,4
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,9,2014,Macaca,nemestrina,93
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,9,2014,Cuniculus,paca,2
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,10,2014,Macaca,nemestrina,92
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,10,2014,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,11,2014,Macaca,nemestrina,55
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,11,2014,Cuniculus,paca,4
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,12,2014,Macaca,nemestrina,62
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,12,2014,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,annual,1,2015,Macaca,nemestrina,56
+TEAM,Yasuni,456DEF,-4.2,-81.5,annual,1,2015,Cuniculus,paca,2
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,1,2015,Macaca,nemestrina,93
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,1,2015,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,2,2015,Macaca,nemestrina,98
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,2,2015,Cuniculus,paca,1
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,3,2015,Macaca,nemestrina,78
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,3,2015,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,4,2015,Macaca,nemestrina,95
+TEAM,Yasuni,456DEF,-4.2,-81.5,seasonal,4,2015,Cuniculus,paca,4
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,1,2015,Macaca,nemestrina,87
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,1,2015,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,2,2015,Macaca,nemestrina,72
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,2,2015,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,3,2015,Macaca,nemestrina,86
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,3,2015,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,4,2015,Macaca,nemestrina,81
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,4,2015,Cuniculus,paca,2
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,5,2015,Macaca,nemestrina,86
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,5,2015,Cuniculus,paca,1
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,6,2015,Macaca,nemestrina,93
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,6,2015,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,7,2015,Macaca,nemestrina,57
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,7,2015,Cuniculus,paca,0
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,8,2015,Macaca,nemestrina,62
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,8,2015,Cuniculus,paca,3
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,9,2015,Macaca,nemestrina,54
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,9,2015,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,10,2015,Macaca,nemestrina,85
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,10,2015,Cuniculus,paca,2
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,11,2015,Macaca,nemestrina,88
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,11,2015,Cuniculus,paca,5
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,12,2015,Macaca,nemestrina,51
+TEAM,Yasuni,456DEF,-4.2,-81.5,monthly,12,2015,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,annual,1,2013,Macaca,nemestrina,54
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,annual,1,2013,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,1,2013,Macaca,nemestrina,70
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,1,2013,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,2,2013,Macaca,nemestrina,69
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,2,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,3,2013,Macaca,nemestrina,62
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,3,2013,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,4,2013,Macaca,nemestrina,83
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,4,2013,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,1,2013,Macaca,nemestrina,56
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,1,2013,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,2,2013,Macaca,nemestrina,84
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,2,2013,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,3,2013,Macaca,nemestrina,71
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,3,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,4,2013,Macaca,nemestrina,95
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,4,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,5,2013,Macaca,nemestrina,85
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,5,2013,Cuniculus,paca,3
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,6,2013,Macaca,nemestrina,71
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,6,2013,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,7,2013,Macaca,nemestrina,78
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,7,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,8,2013,Macaca,nemestrina,74
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,8,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,9,2013,Macaca,nemestrina,60
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,9,2013,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,10,2013,Macaca,nemestrina,57
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,10,2013,Cuniculus,paca,3
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,11,2013,Macaca,nemestrina,75
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,11,2013,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,12,2013,Macaca,nemestrina,53
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,12,2013,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,annual,1,2014,Macaca,nemestrina,64
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,annual,1,2014,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,1,2014,Macaca,nemestrina,56
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,1,2014,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,2,2014,Macaca,nemestrina,94
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,2,2014,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,3,2014,Macaca,nemestrina,98
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,3,2014,Cuniculus,paca,3
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,4,2014,Macaca,nemestrina,63
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,4,2014,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,1,2014,Macaca,nemestrina,96
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,1,2014,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,2,2014,Macaca,nemestrina,71
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,2,2014,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,3,2014,Macaca,nemestrina,100
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,3,2014,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,4,2014,Macaca,nemestrina,55
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,4,2014,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,5,2014,Macaca,nemestrina,66
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,5,2014,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,6,2014,Macaca,nemestrina,75
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,6,2014,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,7,2014,Macaca,nemestrina,95
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,7,2014,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,8,2014,Macaca,nemestrina,62
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,8,2014,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,9,2014,Macaca,nemestrina,77
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,9,2014,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,10,2014,Macaca,nemestrina,68
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,10,2014,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,11,2014,Macaca,nemestrina,57
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,11,2014,Cuniculus,paca,3
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,12,2014,Macaca,nemestrina,50
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,12,2014,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,annual,1,2015,Macaca,nemestrina,91
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,annual,1,2015,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,1,2015,Macaca,nemestrina,64
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,1,2015,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,2,2015,Macaca,nemestrina,81
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,2,2015,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,3,2015,Macaca,nemestrina,91
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,3,2015,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,4,2015,Macaca,nemestrina,98
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,seasonal,4,2015,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,1,2015,Macaca,nemestrina,69
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,1,2015,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,2,2015,Macaca,nemestrina,78
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,2,2015,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,3,2015,Macaca,nemestrina,73
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,3,2015,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,4,2015,Macaca,nemestrina,65
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,4,2015,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,5,2015,Macaca,nemestrina,87
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,5,2015,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,6,2015,Macaca,nemestrina,52
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,6,2015,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,7,2015,Macaca,nemestrina,98
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,7,2015,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,8,2015,Macaca,nemestrina,86
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,8,2015,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,9,2015,Macaca,nemestrina,61
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,9,2015,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,10,2015,Macaca,nemestrina,81
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,10,2015,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,11,2015,Macaca,nemestrina,82
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,11,2015,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,12,2015,Macaca,nemestrina,95
+TEAM,Pasoh Forest Reserve,789LMN,20.4,-66.6,monthly,12,2015,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,annual,1,2013,Macaca,nemestrina,78
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,annual,1,2013,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,1,2013,Macaca,nemestrina,94
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,1,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,2,2013,Macaca,nemestrina,98
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,2,2013,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,3,2013,Macaca,nemestrina,78
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,3,2013,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,4,2013,Macaca,nemestrina,85
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,4,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,1,2013,Macaca,nemestrina,74
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,1,2013,Cuniculus,paca,3
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,2,2013,Macaca,nemestrina,70
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,2,2013,Cuniculus,paca,3
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,3,2013,Macaca,nemestrina,63
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,3,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,4,2013,Macaca,nemestrina,60
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,4,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,5,2013,Macaca,nemestrina,98
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,5,2013,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,6,2013,Macaca,nemestrina,73
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,6,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,7,2013,Macaca,nemestrina,56
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,7,2013,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,8,2013,Macaca,nemestrina,65
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,8,2013,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,9,2013,Macaca,nemestrina,94
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,9,2013,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,10,2013,Macaca,nemestrina,51
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,10,2013,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,11,2013,Macaca,nemestrina,89
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,11,2013,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,12,2013,Macaca,nemestrina,63
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,12,2013,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,annual,1,2014,Macaca,nemestrina,68
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,annual,1,2014,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,1,2014,Macaca,nemestrina,54
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,1,2014,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,2,2014,Macaca,nemestrina,50
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,2,2014,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,3,2014,Macaca,nemestrina,59
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,3,2014,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,4,2014,Macaca,nemestrina,69
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,4,2014,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,1,2014,Macaca,nemestrina,81
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,1,2014,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,2,2014,Macaca,nemestrina,75
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,2,2014,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,3,2014,Macaca,nemestrina,78
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,3,2014,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,4,2014,Macaca,nemestrina,65
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,4,2014,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,5,2014,Macaca,nemestrina,69
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,5,2014,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,6,2014,Macaca,nemestrina,68
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,6,2014,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,7,2014,Macaca,nemestrina,97
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,7,2014,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,8,2014,Macaca,nemestrina,66
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,8,2014,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,9,2014,Macaca,nemestrina,66
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,9,2014,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,10,2014,Macaca,nemestrina,84
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,10,2014,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,11,2014,Macaca,nemestrina,60
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,11,2014,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,12,2014,Macaca,nemestrina,60
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,12,2014,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,annual,1,2015,Macaca,nemestrina,67
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,annual,1,2015,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,1,2015,Macaca,nemestrina,54
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,1,2015,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,2,2015,Macaca,nemestrina,72
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,2,2015,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,3,2015,Macaca,nemestrina,86
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,3,2015,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,4,2015,Macaca,nemestrina,80
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,seasonal,4,2015,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,1,2015,Macaca,nemestrina,89
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,1,2015,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,2,2015,Macaca,nemestrina,93
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,2,2015,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,3,2015,Macaca,nemestrina,70
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,3,2015,Cuniculus,paca,4
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,4,2015,Macaca,nemestrina,77
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,4,2015,Cuniculus,paca,3
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,5,2015,Macaca,nemestrina,55
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,5,2015,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,6,2015,Macaca,nemestrina,55
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,6,2015,Cuniculus,paca,0
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,7,2015,Macaca,nemestrina,77
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,7,2015,Cuniculus,paca,5
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,8,2015,Macaca,nemestrina,52
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,8,2015,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,9,2015,Macaca,nemestrina,73
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,9,2015,Cuniculus,paca,2
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,10,2015,Macaca,nemestrina,50
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,10,2015,Cuniculus,paca,3
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,11,2015,Macaca,nemestrina,55
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,11,2015,Cuniculus,paca,1
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,12,2015,Macaca,nemestrina,51
+TEAM,Pasoh Forest Reserve,000XYZ,21.6,-65.9,monthly,12,2015,Cuniculus,paca,0
