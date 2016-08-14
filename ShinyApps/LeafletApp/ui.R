@@ -1,5 +1,4 @@
 library(shiny)
-library(rCharts)
 library(leaflet)
 
 # Choices for drop-downs
@@ -40,13 +39,19 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         width = 330, height = "auto",
 
         h2("Rates of detection"),
-
+	selectInput("dataset", "Camera Trap Project", c("TEAM", "MWPIP", "TEST!")),
+        uiOutput("site_checkbox"),
+        radioButtons("humans", "Show Humans?", c("Humans", "No Humans"), 
+                    selected="No Humans"),
+        uiOutput("guild.control"),
+        uiOutput("red.control"),
+        uiOutput("species.list"),
         selectInput("color", "Color", vars),
         selectInput("size", "Size", vars, selected = "adultpop"),
         conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
-          # Only prompt for threshold when coloring or sizing by superzip
-          numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-          ),
+                         # Only prompt for threshold when coloring or sizing by superzip
+                         numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
+        ),
         selectInput(inputId = "samplingFrequency",
                     label = "Sampling Frequency",
                     choices = samplingFrequency),
@@ -63,6 +68,21 @@ shinyUI(navbarPage("Rates of detection", id="nav",
   ),
 
   tabPanel("Data explorer",
+    fluidRow(
+      column(3,
+        selectInput("states", "States", c("All states"="", structure(state.abb, names=state.name), "Washington, DC"="DC"), multiple=TRUE)
+      ),
+      column(3,
+        conditionalPanel("input.states",
+          selectInput("cities", "Cities", c("All cities"=""), multiple=TRUE)
+        )
+      ),
+      column(3,
+        conditionalPanel("input.states",
+          selectInput("zipcodes", "Zipcodes", c("All zipcodes"=""), multiple=TRUE)
+        )
+      )
+    ),
     fluidRow(
       column(1,
         downloadButton('downloadData', 'Download')
