@@ -29,12 +29,6 @@ createTimeStamp = function(samplingPeriod){
     as.Date(timeString, "%Y-%m-%d")
 }
 
-#Global
-GRADIENT_SCALE <- 2
-lat_long_data <- as.data.frame(fread("data/rate_of_detection.csv"))
-#mapping_dataset()
-
-
 # Read species information
 species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
 
@@ -42,22 +36,30 @@ red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))
 
 shinyServer(function(input, output, session) {
+  # Set up values for delayed map display
+  values <- reactiveValues(starting = TRUE)
+  session$onFlushed(function() {
+    values$starting <- FALSE
+  })
 
   # Read in input data based on project
   dataset_input <- reactive({
     if (input$dataset=="TEAM") {
-      indat <- as.data.frame(fread("./data/rate_of_detection.csv")) %>%
-            ## HACK (Michael): To clean the data
-            subset(., Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
+      indat <- as.data.frame(fread("./data/team_rate_of_detection.csv")) 
+      names(indat) <- make.names(names(indat))
+      names(indat)[names(indat) == "Longitude.Resolution"] <- "Longitude"
+      names(indat)[names(indat) == "Latitude.Resolution"] <- "Latitude"
+      indat <- subset(indat, Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
 
     }
 
-    createTimeStamp <- function(samplingPeriod) {
-      timeString = paste(samplingPeriod, "01", sep = "-")
+    createTimeStamp <- function(samplingPeriod, year) {
+      timeString = paste(year, samplingPeriod, "01", sep = "-")
       as.Date(timeString, "%Y-%m-%d")
     }
 
-    indat$timestamp <- createTimeStamp(indat$Sampling.Period)
+    indat$timestamp <- createTimeStamp(indat$Sampling.Period, indat$Year)
+    print(str(indat))
 
     indat
   })
@@ -130,19 +132,25 @@ shinyServer(function(input, output, session) {
 
   ## Interactive Map ###########################################
 
-  # Get unique pairs of lat long values for plotting cam locations
-  locs <- select(lat_long_data, Latitude, Longitude)
-  cam_lat_longs <- unique(locs)
-
   # Create the map
+  
   output$map <- renderLeaflet({
     #Make idw raster
+    if (!values$starting) {
     if (nrow(mapping_dataset())>0) {
-      loc <- select(site_selection(), Latitude, Longitude)
-      in.dat.raw <- mapping_dataset()
-      in.dat.agg <- aggregate(in.dat.raw, by=list(in.dat.raw$Deployment.Location.ID), FUN=mean)
-      in.dat <- left_join(loc, in.dat.agg, by=c("Latitude", "Longitude"))
-      in.dat[is.na(in.dat$Rate.Of.Detection),] <- 0
+      # Ideally, "zero" counts would be included in the raster interpolation. They
+      # are not currently. The broken code below should get close to implementing 
+      # this with the caveat that it assumes that valid counts were available at all
+      # sites for all times.
+      #loc <- select(subset(site_selection(), as.character(Project.ID) %in% input$site_selection), 
+      #              Latitude, Longitude)
+      #in.dat.raw <- mapping_dataset()[c("Latitude", "Longitude", "Deployment.Location.ID", "Rate.Of.Detection")]
+      #in.dat.agg <- aggregate(in.dat.raw, by=list(in.dat.raw$Deployment.Location.ID), FUN=mean)
+      #in.dat <- left_join(loc, in.dat.agg, by=c("Latitude", "Longitude"))
+      #in.dat[is.na(in.dat$Rate.Of.Detection),] <- 0
+      in.dat.raw <- mapping_dataset()[c("Latitude", "Longitude", "Deployment.Location.ID", "Rate.Of.Detection")]
+      in.dat <- aggregate(in.dat.raw, by=list(in.dat.raw$Deployment.Location.ID), FUN=mean)
+      
       coordinates(in.dat) <- ~ Longitude + Latitude
       x.range <- c(min(in.dat$Longitude), max(in.dat$Longitude))
       y.range <- c(min(in.dat$Latitude), max(in.dat$Latitude))
@@ -168,6 +176,9 @@ shinyServer(function(input, output, session) {
     }
 
     #dat <- get_KDE_polygons(site_selection())
+    # Currently, the color scale for the raster in the map is set dynamically, meaning
+    # that the rasters can't really be compared when the species selection changes.
+    # It would be good to add a legend or a fixed color scale.
     tmap <- leaflet(unique(select(site_selection(), Latitude, Longitude))) %>%
       addTiles(
         urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
@@ -184,8 +195,11 @@ shinyServer(function(input, output, session) {
     } else {
       tmap
     }
-
+    } else {
+      NULL
+    }
   })
+
 
   # TODO use filtered data as input
   #subsettedData <- select(TEAM_data,
