@@ -73,6 +73,7 @@ shinyUI(navbarPage("Rates of detection", id="nav",
   plotOutput("histCentile", height = 200),
   plotOutput("scatterCollegeIncome", height = 250),
   plotOutput("camera_ts_benchmark", height = 200),
+  plotOutput("camera_ts_benchmark_facet", height = 200),
   plotOutput("total_ts", height = 200),
   plotOutput("top_five_plot", height = 200)
 

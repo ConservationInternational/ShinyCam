@@ -250,6 +250,15 @@ shinyServer(function(input, output, session) {
                             facet = FALSE)
         })
 
+    output$camera_ts_benchmark_facet = renderPlot({
+        plotCameraBenchmark(full_data = plotting_dataset(),
+                            camera_data = camera_dataset(),
+                            time = "timeStamp",
+                            group = "Genus",
+                            rate = "Rate.Of.Detection",
+                            facet = TRUE)
+    })
+
     output$total_ts = renderPlot({
         plotTotalTs(full_data = plotting_dataset(),
                     time = "timeStamp",
