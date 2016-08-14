@@ -13,7 +13,7 @@ library(data.table)
 library(KernSmooth)
 library(viridis)
 source("scripts/kernel_density_estimate.R")
-source("scripts/extra_plot.R")
+#source("scripts/extra_plot.R")
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 #set.seed(100)
@@ -22,43 +22,37 @@ source("scripts/extra_plot.R")
 # will be drawn last and thus be easier to see
 #zipdata <- zipdata[order(zipdata$centile),]
 
-
-## HACK (Michael): Temporary placement of the function.
-createTimeStamp = function(samplingPeriod){
-    timeString = paste(samplingPeriod, "01", sep = "-")
-    as.Date(timeString, "%Y-%m-%d")
-}
-
-#Global
-GRADIENT_SCALE <- 2
-OVERLAY_OPACITY <- 0.4
-lat_long_data <- as.data.frame(fread("data/rate_of_detection.csv"))
-#mapping_dataset()
-
-
 # Read species information
+OVERLAY_OPACITY <- 0.5
 species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
 
 red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))
 
 shinyServer(function(input, output, session) {
+  # Set up values for delayed map display
+  values <- reactiveValues(starting = TRUE)
+  session$onFlushed(function() {
+    values$starting <- FALSE
+  })
 
   # Read in input data based on project
   dataset_input <- reactive({
     if (input$dataset=="TEAM") {
-      indat <- read.csv("./data/rate_of_detection.csv") %>%
-            ## HACK (Michael): To clean the data
-          subset(., Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
+      indat <- as.data.frame(fread("./data/team_rate_of_detection.csv")) 
+      names(indat) <- make.names(names(indat))
+      names(indat)[names(indat) == "Longitude.Resolution"] <- "Longitude"
+      names(indat)[names(indat) == "Latitude.Resolution"] <- "Latitude"
+      indat <- subset(indat, Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
 
     }
 
-    createTimeStamp <- function(samplingPeriod) {
-      timeString = paste(samplingPeriod, "01", sep = "-")
+    createTimeStamp <- function(samplingPeriod, year) {
+      timeString = paste(year, samplingPeriod, "01", sep = "-")
       as.Date(timeString, "%Y-%m-%d")
     }
 
-    indat$timestamp <- createTimeStamp(indat$Sampling.Period)
+    indat$timestamp <- createTimeStamp(indat$Sampling.Period, indat$Year)
 
     indat
   })
@@ -82,6 +76,8 @@ shinyServer(function(input, output, session) {
                                        species.table$species %in% species$Species,]
     # Switch out "" with "Unknown"
     present.species$guild <- as.factor(ifelse(as.character(present.species$guild) == "", "Unknown", as.character(present.species$guild)))
+
+    present.species
   })
   # Create reactive vector containing the genus and species (concatenated) that
   # are present in the selected sites in the project area
@@ -129,16 +125,24 @@ shinyServer(function(input, output, session) {
 
   ## Interactive Map ###########################################
 
-  # Get unique pairs of lat long values for plotting cam locations
-  locs <- select(lat_long_data, Latitude, Longitude)
-  cam_lat_longs <- unique(locs)
-
   # Create the map
   output$map <- renderLeaflet({
     #Make idw raster
+    if (!values$starting) {
     if (nrow(mapping_dataset())>0) {
-      in.dat.raw <- mapping_dataset()
+      # Ideally, "zero" counts would be included in the raster interpolation. They
+      # are not currently. The broken code below should get close to implementing 
+      # this with the caveat that it assumes that valid counts were available at all
+      # sites for all times.
+      #loc <- select(subset(site_selection(), as.character(Project.ID) %in% input$site_selection), 
+      #              Latitude, Longitude)
+      #in.dat.raw <- mapping_dataset()[c("Latitude", "Longitude", "Deployment.Location.ID", "Rate.Of.Detection")]
+      #in.dat.agg <- aggregate(in.dat.raw, by=list(in.dat.raw$Deployment.Location.ID), FUN=mean)
+      #in.dat <- left_join(loc, in.dat.agg, by=c("Latitude", "Longitude"))
+      #in.dat[is.na(in.dat$Rate.Of.Detection),] <- 0
+      in.dat.raw <- mapping_dataset()[c("Latitude", "Longitude", "Deployment.Location.ID", "Rate.Of.Detection")]
       in.dat <- aggregate(in.dat.raw, by=list(in.dat.raw$Deployment.Location.ID), FUN=mean)
+      
       coordinates(in.dat) <- ~ Longitude + Latitude
       x.range <- c(min(in.dat$Longitude), max(in.dat$Longitude))
       y.range <- c(min(in.dat$Latitude), max(in.dat$Latitude))
@@ -164,6 +168,9 @@ shinyServer(function(input, output, session) {
     }
 
     #dat <- get_KDE_polygons(site_selection())
+    # Currently, the color scale for the raster in the map is set dynamically, meaning
+    # that the rasters can't really be compared when the species selection changes.
+    # It would be good to add a legend or a fixed color scale.
     tmap <- leaflet(unique(select(site_selection(), Latitude, Longitude))) %>%
       addTiles(
         urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
@@ -175,12 +182,14 @@ shinyServer(function(input, output, session) {
     if (!is.null(idw.raster)) {
 
       tmap %>%
-        addCircleMarkers(~Longitude, ~Latitude, weight=1, data = mapping_dataset(), radius=~sqrt(Rate.Of.Detection), color="red", fillOpacity=1, layerId=NULL) %>%
-        addRasterImage(idw.raster, opacity=0.3, colors = "Reds") 
+        addCircleMarkers(~Longitude, ~Latitude, weight=1, data= mapping_dataset(), radius=~sqrt(Rate.Of.Detection), color="red", fillOpacity=1, layerId=NULL) %>%
+        addRasterImage(idw.raster, opacity=0.4, colors = "Reds")
     } else {
       tmap
     }
-
+    } else {
+      NULL
+    }
   })
 
   # TODO use filtered data as input
@@ -255,9 +264,9 @@ selected.names <- sort(as.character(selected.names))
 
   # Subset dataframe for plotting (no time subset)
   # Subset by project, site, frequency, and selected species
-    plotting_dataset <- reactive({
-      if (!is.null(input$species)) {
-          subset(site_selection(), (Sampling.Type==input$select_time) & (paste(Genus, Species) %in% input$species))
+  plotting_dataset <- reactive({
+    if (!is.null(input$species)) {
+      subset(site_selection(), (Sampling.Type==input$select_time) & (paste(Genus, Species) %in% input$species))
     } else {
       data.frame()
     }
@@ -282,47 +291,47 @@ selected.names <- sort(as.character(selected.names))
 
     ## Additional plots
 
-    ## NOTE (Michael): This plot is only meaningful when the number of
-    ##                 groupings are small.
+        ## NOTE (Michael): This plot is only meaningful when the number of
+        ##                 groupings are small.
 
-    output$camera_ts_benchmark = renderPlot({
-        plotCameraBenchmark(full_data = plotting_dataset(),
-                            camera_data = camera_dataset(),
-                            time = "timestamp",
-                            group = "Genus",
-                            rate = "Rate.Of.Detection",
-                            facet = FALSE)
-    })
-
-    output$camera_ts_benchmark_facet = renderPlot({
-        plotCameraBenchmark(full_data = plotting_dataset(),
-                            camera_data = camera_dataset(),
-                            time = "timestamp",
-                            group = "Genus",
-                            rate = "Rate.Of.Detection",
-                            facet = TRUE)
-    })
-
-    output$total_ts = renderPlot({
-        plotTotalTs(full_data = plotting_dataset(),
-                    time = "timestamp",
-                    rate = "Rate.Of.Detection",
-                    aggFUN = mean)
-    })
-
-    ## NOTE (Michael): This plot is not displayed correctly due to the Inf
-    ##                 values in the data.
-    output$top_five_plot = renderPlot({
-        groupTopFive(plotting_dataset(),
-                     group = "Genus",
-                     rate = "Rate.Of.Detection")
-    })
-
-    output$health_ts = renderPlot({
-        health_timeseries(data = plotting_dataset(),
-                          group = "Genus",
-                          rate = "Rate.Of.Detection",
-                          year = "Year")
-    })
+        # output$camera_ts_benchmark = renderPlot({
+        #     plotCameraBenchmark(full_data = plotting_dataset(),
+        #                         camera_data = camera_dataset(),
+        #                         time = "timestamp",
+        #                         group = "Genus",
+        #                         rate = "Rate.Of.Detection",
+        #                         facet = FALSE)
+        # })
+        # 
+        # output$camera_ts_benchmark_facet = renderPlot({
+        #     plotCameraBenchmark(full_data = plotting_dataset(),
+        #                         camera_data = camera_dataset(),
+        #                         time = "timestamp",
+        #                         group = "Genus",
+        #                         rate = "Rate.Of.Detection",
+        #                         facet = TRUE)
+        # })
+        # 
+        # output$total_ts = renderPlot({
+        #     plotTotalTs(full_data = plotting_dataset(),
+        #                 time = "timestamp",
+        #                 rate = "Rate.Of.Detection",
+        #                 aggFUN = mean)
+        # })
+        # 
+        # ## NOTE (Michael): This plot is not displayed correctly due to the Inf
+        # ##                 values in the data.
+        # output$top_five_plot = renderPlot({
+        #     groupTopFive(plotting_dataset(),
+        #                  group = "Genus",
+        #                  rate = "Rate.Of.Detection")
+        # })
+        # 
+        # output$health_ts = renderPlot({
+        #     health_timeseries(data = plotting_dataset(),
+        #                       group = "Genus",
+        #                       rate = "Rate.Of.Detection",
+        #                       year = "Year")
+        # })
 
 })
