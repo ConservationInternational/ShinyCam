@@ -2,10 +2,10 @@ import pandas as pd
 
 
 if __name__ == '__main__':
-    cameras = pd.read_csv('../data/original/ChedaJewel-Cheda-and-Jewel-GGNRA-Cameras.csv')
-    deployments = pd.read_csv('../data/original/ChedaJewel-Cheda-and-Jewel-GGNRA-Deployments.csv')
-    images = pd.read_csv('../data/original/ChedaJewel-Cheda-and-Jewel-GGNRA-Images.csv')
-    team = pd.read_csv('../data/original/Terrestrial_Vertebrate.csv')
+    cameras = pd.read_csv('../data/ChedaJewel-Cheda-and-Jewel-GGNRA-Cameras.csv')
+    deployments = pd.read_csv('../data/ChedaJewel-Cheda-and-Jewel-GGNRA-Deployments.csv')
+    images = pd.read_csv('../data/ChedaJewel-Cheda-and-Jewel-GGNRA-Images.csv')
+    team = pd.read_csv('../data/Terrestrial_Vertebrate.csv')
 
 
     merged = pd.merge(deployments, cameras, on='Camera ID', how='left')
@@ -13,6 +13,7 @@ if __name__ == '__main__':
     merged['Genus Species'].fillna('unknown unknown', inplace=True)
     merged['Genus'] = merged['Genus Species'].apply(lambda x: x.split()[0])
     merged['Species'] = merged['Genus Species'].apply(lambda x: x.split()[1])
+    
     del merged['Genus Species']
 
     merged_cols = ['Project ID_x', 'Deployment Location ID', 'Image ID', 'Location', 'Photo Type', 
@@ -43,7 +44,10 @@ if __name__ == '__main__':
            u'Individual ID', u'Count', u'Animal recognizable (Y/N)',
            u'individual Animal notes', u'Genus', u'Species']
     del merged['Project ID_y']
-    merged['Camera Deployment Begin Date'] = pd.to_datetime(merged['Camera Deployment Begin Date'])
-    merged['Camera Deployment End Date'] = pd.to_datetime(merged['Camera Deployment End Date'])
-    merged['Date_Time Captured'] = pd.to_datetime(merged['Date_Time Captured'])
-    merged.to_csv('../data/intermediate/Merged.csv', index=False)
+
+    # 5/6/15 16:16
+
+    # merged['Camera Deployment Begin Date'] = pd.to_datetime(merged['Camera Deployment Begin Date'])
+    # merged['Camera Deployment End Date'] = pd.to_datetime(merged['Camera Deployment End Date'])
+    # merged['Date_Time Captured'] = pd.to_datetime(merged['Date_Time Captured'], format = "%Y/%m/%d %H:%M")
+    merged.to_csv('../data/Merged.csv', index=False)
