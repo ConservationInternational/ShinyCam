@@ -1,5 +1,6 @@
 library(dplyr)
 library(ggplot2)
+library(reshape2)
 
 createTimeStamp = function(Year, samplingPeriod){
     timeString = paste(Year, samplingPeriod, "01", sep = "-")
@@ -47,7 +48,7 @@ plotts = function(full_data, camera_data, time, group, rate, addSmoother = FALSE
             xlab("") +
             ylab("")
     }else {
-    ## This enables facet
+        ## This enables facet
         tsplot = ggplot() +
             geom_line(data = camera_data,
                       aes_string(x = time, y = rate), lwd = 2) +
@@ -73,21 +74,19 @@ plotts = function(full_data, camera_data, time, group, rate, addSmoother = FALSE
 ##        addSmoother = FALSE)
 
 
-plotAggTs = function(full_data, time, rate,
-                     addSmoother = FALSE){
+plotAggTs = function(full_data, time, rate, addSmoother = FALSE){
     ## This function plots the total sum of detection rate
     grouping_formula =
         sapply(c(time), . %>% {as.formula(paste0('~', .))})
 
-    averageData =
+    sumData <<-
         full_data %>%
         group_by_(.dots = grouping_formula) %>%
         summarise(., sum_rate = sum(Rate.Of.Detection))
 
-
-    tsplot = ggplot() +
-        geom_line(data = averageData,
-                  aes_string(x = time, y = "sum_rate")) +
+    tsplot =
+        ggplot(data = sumData, aes(x = timeStamp, y = sum_rate)) +
+        geom_line() +
         theme(legend.position="top") +
         xlab("") +
         ylab("")
@@ -102,6 +101,36 @@ plotAggTs = function(full_data, time, rate,
 }
 
 
-## plotAggTs(full_data = timeStampData,
-##           time = "timeStamp", rate = "Rate.Of.Detection",
-##           addSmoother = FALSE)
+## plotAggTs(full_data = timeStampData, time = "timeStamp",
+##           rate = "Rate.Of.Detection", addSmoother = FALSE)
+
+
+plotDecomposeTs = function(full_data, time, rate){
+    grouping_formula =
+        sapply(c(time), . %>% {as.formula(paste0('~', .))})
+
+    sumData =
+        full_data %>%
+        group_by_(.dots = grouping_formula) %>%
+        summarise(., sum_rate = sum(Rate.Of.Detection))
+
+    sum.ts = ts(sumData$sum_rate, freq = 12)
+    sum.df = cbind(timeStamp = sumData[[time]],
+                   data.frame(stl(sum.ts, s.window = "periodic")[[1]]))
+    sum_normalised.df = melt(sum.df, id.var = time)
+
+    decompose_ts =
+        ggplot(data = sum_normalised.df,
+               aes(x = timeStamp, y = value)) +
+        facet_grid(variable ~ .) +
+        geom_line() +
+        theme(legend.position="top") +
+        xlab("") +
+        ylab("")
+
+    decompose_ts
+}
+
+
+## plotDecomposeTs(full_data = timeStampData, time = "timeStamp",
+##                 rate = "Rate.Of.Detection")

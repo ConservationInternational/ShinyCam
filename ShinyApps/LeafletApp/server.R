@@ -43,6 +43,11 @@ shinyServer(function(input, output, session) {
                         rate = "Rate.Of.Detection"))
     })
 
+    output$decompose_ts_plot <- renderPlot({
+        print(plotDecomposeTs(full_data = timeStampData, time = "timeStamp",
+                              rate = "Rate.Of.Detection"))
+    })
+
 
   # Create the map
   output$map <- renderLeaflet({

@@ -53,7 +53,8 @@ shinyUI(navbarPage("Superzip", id="nav",
         checkboxInput(inputId = "show_human",
                       label = "Show Human Activities?"),
         plotOutput("ts_plot", height = 200),
-        plotOutput("agg_ts_plot", height = 200)
+        plotOutput("agg_ts_plot", height = 200),
+        plotOutput("decompose_ts_plot", height = 200)
       ),
 
       tags$div(id="cite",
