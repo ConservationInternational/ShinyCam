@@ -32,7 +32,7 @@ shinyServer(function(input, output, session) {
   
   # Read in input data based on project
   dataset_input <- reactive({
-    if (input$dataset=="TEST!") {
+    if (input$dataset=="TEAM") {
       indat <- read.csv("./data/rate_of_detection.csv")
     }
     
@@ -82,11 +82,11 @@ shinyServer(function(input, output, session) {
   
   # Render time selector
   output$time.control <- renderUI({
-    print(head(dataset_input()$timestamp))
+    #print(head(dataset_input()$timestamp))
     tmin <- min(dataset_input()$timestamp, na.rm=TRUE)
     tmax <- max(dataset_input()$timestamp, na.rm=TRUE)
-    print(tmin)
-    print(tmax)
+    #print(tmin)
+    #print(tmax)
     #sliderInput("time_slider", label = "Select Time", min = tmin, 
     #            max = tmax, value = tmin, timeFormat = "%Y-%m")
     selectInput("time_slider", label = "Select Time", choices = as.character(unique(plotting_dataset()$timestamp)))
