@@ -7,7 +7,8 @@ vars <- c(
   "Centile score" = "centile",
   "College education" = "college",
   "Median income" = "income",
-  "Population" = "adultpop"
+  "Population" = "adultpop",
+  "Data source" = "TEAM"
 )
 
 samplingFrequency <- c(
@@ -16,9 +17,7 @@ samplingFrequency <- c(
     "Monthly" = "monthly"
     )
 
-
-
-shinyUI(navbarPage("Superzip", id="nav",
+shinyUI(navbarPage("Rates of detection", id="nav",
 
   tabPanel("Interactive map",
     div(class="outer",
@@ -28,16 +27,19 @@ shinyUI(navbarPage("Superzip", id="nav",
         includeCSS("styles.css"),
         includeScript("gomap.js")
       ),
-
+      #chartOutput("baseMap", "leaflet"),
       leafletOutput("map", width="100%", height="100%"),
+      #tags$style('.leaflet {height: 100%; width: 100%;}'),
+      #tags$head(tags$script(src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js")),
+      #uiOutput('heatMap'),
 
       # Shiny versions prior to 0.11 should use class="modal" instead.
       absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
         draggable = TRUE, top = 60, left = "auto", right = 20, bottom = 10,
         width = 330, height = "auto", style = "overflow-y:scroll",
-        
-        h2("Wildlife Gone Wild"),
-        selectInput("dataset", "Camera Trap Project", c("TEAM", "MWPIP", "TEST!")),
+
+        h2("Rates of detection"),
+	selectInput("dataset", "Camera Trap Project", c("TEST!")),
         uiOutput("site_checkbox"),
         #radioButtons("humans", "Show Humans?", c("Humans", "No Humans"), 
         #            selected="No Humans"),
@@ -61,7 +63,7 @@ shinyUI(navbarPage("Superzip", id="nav",
       ),
 
       tags$div(id="cite",
-        'Data compiled for ', tags$em('Coming Apart: The State of White America, 1960–2010'), ' by Charles Murray (Crown Forum, 2012).'
+        'Data compiled for ', vars['Data source']
       )
     )
   ),
@@ -84,14 +86,11 @@ shinyUI(navbarPage("Superzip", id="nav",
     ),
     fluidRow(
       column(1,
-        numericInput("minScore", "Min score", min=0, max=100, value=0)
-      ),
-      column(1,
-        numericInput("maxScore", "Max score", min=0, max=100, value=100)
+        downloadButton('downloadData', 'Download')
       )
     ),
     hr(),
-    DT::dataTableOutput("ziptable")
+    DT::dataTableOutput("table")
   ),
 
   conditionalPanel("false", icon("crosshair"))
