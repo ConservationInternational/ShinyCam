@@ -79,13 +79,16 @@ shinyServer(function(input, output, session) {
     species <- unique(site_selection()[c("Genus", "Species")])
     present.species <- species.table[species.table$genus %in% species$Genus &
                                        species.table$species %in% species$Species,]
+    # Switch out "" with "Unknown"
+    present.species$guild <- as.factor(ifelse(as.character(present.species$guild) == "", "Unknown", as.character(present.species$guild)))
+
     present.species
   })
   # Create reactive vector containing the genus and species (concatenated) that
   # are present in the selected sites in the project area
   present.species.names <- reactive({
     species <- unique(site_selection()[c("Genus", "Species")])
-    paste(species$Genus, species$Species)
+    as.character(paste(species$Genus, species$Species))
   })
 
   # Render frequency selector
@@ -107,6 +110,7 @@ shinyServer(function(input, output, session) {
     guild.list <- sort(unique(as.character(present.species()$guild)))
     checkboxGroupInput("guild", "Select Guilds", choices=guild.list,
                        selected=NULL)
+    
   })
 
   # Render RED selector
@@ -118,8 +122,9 @@ shinyServer(function(input, output, session) {
 
   # Render species selection
   output$species.list <- renderUI({
+       
     selectInput("species", "Select Species (Multiple Possible)",
-                choices=sort(present.species.names()), selected=NULL, multiple=TRUE)
+                choices=sort(as.character(present.species.names())), selected=NULL, multiple=TRUE)
   })
 
 
@@ -242,8 +247,10 @@ shinyServer(function(input, output, session) {
 
     }
 
+selected.names <- sort(as.character(selected.names))
+       
     updateSelectInput(session, "species", "Select Species (Multiple Possible)",
-                      choices=present.species.names(), selected=selected.names)
+                      choices=sort(as.character(present.species.names())), selected=selected.names)
 
   })
 
