@@ -138,8 +138,11 @@ shinyServer(function(input, output, session) {
   output$map <- renderLeaflet({
     #Make idw raster
     if (nrow(mapping_dataset())>0) {
+      loc <- select(site_selection(), Latitude, Longitude)
       in.dat.raw <- mapping_dataset()
-      in.dat <- aggregate(in.dat.raw, by=list(in.dat.raw$Deployment.Location.ID), FUN=mean)
+      in.dat.agg <- aggregate(in.dat.raw, by=list(in.dat.raw$Deployment.Location.ID), FUN=mean)
+      in.dat <- left_join(loc, in.dat.agg, by=c("Latitude", "Longitude"))
+      in.dat[is.na(in.dat$Rate.Of.Detection),] <- 0
       coordinates(in.dat) <- ~ Longitude + Latitude
       x.range <- c(min(in.dat$Longitude), max(in.dat$Longitude))
       y.range <- c(min(in.dat$Latitude), max(in.dat$Latitude))
