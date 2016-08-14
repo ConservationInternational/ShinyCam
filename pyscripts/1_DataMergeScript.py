@@ -1,11 +1,11 @@
 import pandas as pd
-import numpy as np
+
 
 if __name__ == '__main__':
-    cameras = pd.read_csv('../data/ChedaJewel-Cheda-and-Jewel-GGNRA-Cameras.csv')
-    deployments = pd.read_csv('../data/ChedaJewel-Cheda-and-Jewel-GGNRA-Deployments.csv')
-    images = pd.read_csv('../data/ChedaJewel-Cheda-and-Jewel-GGNRA-Images.csv')
-    team = pd.read_csv('../data/Terrestrial_Vertebrate.csv')
+    cameras = pd.read_csv('../data/original/ChedaJewel-Cheda-and-Jewel-GGNRA-Cameras.csv')
+    deployments = pd.read_csv('../data/original/ChedaJewel-Cheda-and-Jewel-GGNRA-Deployments.csv')
+    images = pd.read_csv('../data/original/ChedaJewel-Cheda-and-Jewel-GGNRA-Images.csv')
+    team = pd.read_csv('../data/original/Terrestrial_Vertebrate.csv')
 
 
     merged = pd.merge(deployments, cameras, on='Camera ID', how='left')
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     team['Camera End Date and Time'] = pd.to_datetime(team['Camera End Date and Time'])
     team[colnames_team].columns = merged_cols
 
-    team[colnames_team].to_csv('Terrestrial_Vertebrate_Cols_Edited.csv', index=False)
+    team[colnames_team].to_csv('../data/intermediate/Terrestrial_Vertebrate_Cols_Edited.csv', index=False)
 
     merged.columns = [u'Project ID', u'Deployment ID', u'Event', u'Array Name',
            u'Deployment Location ID', u'Longitude Resolution',
@@ -46,4 +46,4 @@ if __name__ == '__main__':
     merged['Camera Deployment Begin Date'] = pd.to_datetime(merged['Camera Deployment Begin Date'])
     merged['Camera Deployment End Date'] = pd.to_datetime(merged['Camera Deployment End Date'])
     merged['Date_Time Captured'] = pd.to_datetime(merged['Date_Time Captured'])
-    merged.to_csv('Merged.csv', index=False)
+    merged.to_csv('../data/intermediate/Merged.csv', index=False)

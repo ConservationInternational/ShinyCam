@@ -20,6 +20,7 @@ Here is the structure for our repo. Note that the `data` folder will not exist o
 |   | ├── code
 |   | |   └── code for processing data
 |   | ├── processed
+|   | ├── intermediate
 |   | └── original
 |   ├── ShinyApps
 |   | ├── ExampleShinyApp
@@ -61,3 +62,33 @@ install.packages("dplyr")
 install.packages("gstat")
 install.packages("sp")
 install.packages("intervals")
+
+## To run pyscripts
+
+### 1_DataMergeScript.py
+reads files:
+* data/original/ChedaJewel-Cheda-and-Jewel-GGNRA-Cameras.csv
+* data/original/ChedaJewel-Cheda-and-Jewel-GGNRA-Deployments.csv
+* data/original/ChedaJewel-Cheda-and-Jewel-GGNRA-Images.csv
+* data/original/Terrestrial_Vertebrate.csv
+
+writes files:
+* data/intermediate/Terrestrial_Vertebrate_Cols_Edited.csv
+* data/intermediate/Merged.csv
+
+### 2_EventBurstScript.py
+reads files:
+* data/original/Terrestrial_Vertebrate.csv
+
+writes files:
+* data/intermediate/Max_Animals_MARIN_data.csv
+
+### 3_DataPreparation.py
+reads files:
+* data/original/Terrestrial_Vertebrate.csv
+* data/intermediate/Max_Animals_TEAM_data.csv
+* data/intermediate/team_trap_days.csv
+
+writes files:
+* data/processed/rate_of_detection.csv
+

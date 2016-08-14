@@ -11,7 +11,7 @@ def fn(df, threshold):
 def fn_marin(df, threshold):
     return pd.DataFrame(df.groupby(['Sampling Period', 'Project ID_x', 'Deployment Location ID', 'Species']).apply(lambda x: x[x['Time Between Photos'] < threshold]['Count'].max()), columns = ['Number of Animals']).reset_index()
 if __name__ == '__main__':
-    team = pd.read_csv('../data/Terrestrial_Vertebrate.csv', index_col=0)
+    team = pd.read_csv('../data/original/Terrestrial_Vertebrate.csv', index_col=0)
     team = team.sort_values(['Site Name', 'Sampling Unit Name', 'Species', 'Photo Time'])
     team = team.reset_index()
 
@@ -39,4 +39,4 @@ if __name__ == '__main__':
     marin['Sampling Period'] = marin['Date_Time Captured'].apply(lambda x: x[0:7])
 
     marin_new = fn_marin(marin, 3)
-    marin_new.to_csv('Max_Animals_MARIN_data.csv')
+    marin_new.to_csv('../data/intermediate/Max_Animals_MARIN_data.csv')
