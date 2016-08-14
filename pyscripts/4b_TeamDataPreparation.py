@@ -9,10 +9,10 @@ if __name__ == '__main__':
     team['Year'] = team['Sampling Period'].apply(lambda x: x[0:4])
 
     lat_long = pd.read_csv('../data/original/Terrestrial_Vertebrate.csv', index_col=0)
-    lat_long = lat_long[['Sampling Unit Name', 'Latitude', 'Longitude']]
-    lat_long = lat_long.drop_duplicates('Sampling Unit Name').reset_index()
+    lat_long = lat_long[['Site Name', 'Sampling Unit Name' , 'Latitude', 'Longitude']]
+    lat_long = lat_long.drop_duplicates(['Sampling Unit Name', 'Site Name']).reset_index()
 
-    team = pd.merge(team, lat_long, on=['Sampling Unit Name'], how='left')
+    team = pd.merge(team, lat_long, on=['Sampling Unit Name', 'Site Name'], how='left')
     team['Sampling Type'] = 'Annual'
     team['Data Source'] = 'TEAM'
 
