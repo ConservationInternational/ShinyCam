@@ -48,13 +48,24 @@ write file:
 ### 4_DataPreparation.py
 Calculate rate of detection and join with metadata.
 
+*4a_MarinDataPreparation.py*
+reads files:
+* data/intermediate/Marin_Merged.csv
+* data/intermediate/Max_Animals_MARIN_data.csv
+* data/intermediate/marin_trap_nights.csv
+
+writes files:
+* data/processed/rate_of_detection_MARIN.csv
+
+*4b_TeamDataPreparation.py*
 reads files:
 * data/original/Terrestrial_Vertebrate.csv
 * data/intermediate/Max_Animals_TEAM_data.csv
 * data/intermediate/team_trap_days.csv
 
 writes files:
-* data/processed/rate_of_detection.csv
+* data/processed/team_rate_of_detection.csv
+
 
 ### create_sample_data.py
 Outputs fake data in the format needed for input into the front-end.
