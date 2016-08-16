@@ -14,29 +14,29 @@ createTimeStamp = function(samplingPeriod){
 }
 
 
-cameraID = "CT-VB-1-1"
-groupingID = "Species"
-samplingFrequency = "Annual"
-
-
-selectedData =
-    read.csv("data/rate_of_detection.csv", stringsAsFactors = FALSE)
-
-## HACK (Michael): Cleaning the data
-selectedData =
-    selectedData %>%
-    subset(., Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf) %>%
-    subset(., Genus %in% head(unique(.$Genus)))
-
-## Create time stamp
-timeStampData =
-    selectedData %>%
-    subset(Sampling.Type == samplingFrequency) %>%
-    mutate(., timeStamp = createTimeStamp(samplingPeriod = Sampling.Period))
-
-cameraData =
-    timeStampData %>%
-    subset(., Deployment.Location.ID == cameraID)
+# cameraID = "CT-VB-1-1"
+# groupingID = "Species"
+# samplingFrequency = "Annual"
+# 
+# 
+# selectedData =
+#     read.csv("data/team_rate_of_detection.csv", stringsAsFactors = FALSE)
+# 
+# ## HACK (Michael): Cleaning the data
+# selectedData =
+#     selectedData %>%
+#     subset(., Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf) %>%
+#     subset(., Genus %in% head(unique(.$Genus)))
+# 
+# ## Create time stamp
+# timeStampData =
+#     selectedData %>%
+#     subset(Sampling.Type == samplingFrequency) %>%
+#     mutate(., timeStamp = createTimeStamp(samplingPeriod = Sampling.Period))
+# 
+# cameraData =
+#     timeStampData %>%
+#     subset(., Deployment.Location.ID == cameraID)
 
 
 plotCameraBenchmark = function(full_data,
@@ -56,7 +56,7 @@ plotCameraBenchmark = function(full_data,
         subset(., .[[group]] %in% unique(camera_data[[group]])) %>%
         group_by_(.dots = grouping_formula) %>%
         summarise(., mean_rate = mean(Rate.Of.Detection))
-
+    
     dotdash = "dotdash"
     solid = "solid"
 
@@ -69,6 +69,7 @@ plotCameraBenchmark = function(full_data,
                       aes_string(x = time, y = "mean_rate", col = group,
                                  linetype = solid)) +
             theme(legend.position="top") +
+            ggtitle("Time Series of Genus Rate of Detection") + 
             scale_linetype_manual(name = "Line type",
                                   values = c("dotdash" = "dotdash",
                                              "solid" = "solid"),
@@ -225,7 +226,7 @@ health_timeseries = function(data, group, rate, year){
     form = as.formula(paste0(rate, " ~ ", year))
 
     estimatedData = lapply(splittedData, FUN = appendCoef, formula = form)
-    print(str(estimatedData))
+    #print(str(estimatedData))
     combinedData = unsplit(estimatedData, data[[group]])
 
     health_ts =

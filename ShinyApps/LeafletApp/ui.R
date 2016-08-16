@@ -41,7 +41,7 @@ shinyUI(navbarPage("Rates of detection", id="nav",
 
         h2("Rates of detection"),
 
-      	selectInput("dataset", "Camera Trap Project", c("TEAM")),
+      	selectInput("dataset", "Camera Trap Project", c("TEAM", "MWPIP")),
         uiOutput("site_checkbox"),
       	#####     SLIDER
 
@@ -60,8 +60,7 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         uiOutput("species.list"),
         uiOutput("frequency.control"),
         uiOutput("time.control"),
-      hr(),
-      hr()#,
+        hr(),
         #uiOutput("time.selection")#,
         # selectInput("color", "Color", vars),
         # selectInput("size", "Size", vars, selected = "adultpop"),
@@ -76,16 +75,25 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         #               label = "Show Human Activities?"),
         # plotOutput("histCentile", height = 200),
                                         # plotOutput("scatterCollegeIncome", height = 250)
-        ## conditionalPanel(
-        ##     condition = 'input["species.length"] > 0',
-        ##     plotOutput("histCentile", height = 200),
-        ## plotOutput("scatterCollegeIncome", height = 250),
-        # plotOutput("total_ts", height = 200),
-        # plotOutput("top_five_plot", height = 200),
-        # plotOutput("camera_ts_benchmark", height = 200),
-        # plotOutput("camera_ts_benchmark_facet", height = 200),
-        # plotOutput("health_ts", height = 200)
-        ## )
+        conditionalPanel(
+          condition = 'input.species != null',
+          #plotOutput("histCentile", height = 200),
+          #plotOutput("scatterCollegeIncome", height = 250),
+          h3("Site-Specific Plots"),
+          h4("Time Series of Site-Wide Rate of Detection"),
+          plotOutput("total_ts", height = 200),
+          h4("Top 5 Genera by Rate of Detection"),
+          plotOutput("top_five_plot", height = 200),
+
+          h4("Overall Trends"),
+          plotOutput("health_ts", height = 200),
+        hr(),
+        h3("Camera Specific Plots"),
+        h4("(Click a red point on the map to enable)"),
+        plotOutput("camera_ts_benchmark", height = 200),
+        plotOutput("camera_ts_benchmark_facet", height = 200)
+      )
+        
       ),
 
       tags$div(id="cite",
