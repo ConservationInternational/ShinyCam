@@ -20,7 +20,7 @@ samplingFrequency = "Annual"
 
 
 selectedData =
-    read.csv("data/rate_of_detection.csv", stringsAsFactors = FALSE)
+    read.csv("data/team_rate_of_detection.csv", stringsAsFactors = FALSE)
 
 ## HACK (Michael): Cleaning the data
 selectedData =
