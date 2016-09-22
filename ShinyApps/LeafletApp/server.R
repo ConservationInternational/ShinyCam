@@ -321,7 +321,7 @@ selected.names <- sort(as.character(selected.names))
         ##                 groupings are small.
 
         output$camera_ts_benchmark = renderPlot({
-          if (!is.null(values$clickedMarker$id)) {
+          if (!is.null(values$clickedMarker$id) & !is.null(input$species)) {
             plotCameraBenchmark(full_data = plotting_dataset(),
                                 camera_data = camera_dataset(),
                                 time = "timestamp",
@@ -332,7 +332,7 @@ selected.names <- sort(as.character(selected.names))
         })
 
         output$camera_ts_benchmark_facet = renderPlot({
-          if (!is.null(values$clickedMarker$id)) {
+          if (!is.null(values$clickedMarker$id) & !is.null(input$species)) {
             plotCameraBenchmark(full_data = plotting_dataset(),
                                 camera_data = camera_dataset(),
                                 time = "timestamp",
@@ -343,25 +343,31 @@ selected.names <- sort(as.character(selected.names))
         })
 
         output$total_ts = renderPlot({
+          if (!is.null(values$clickedMarker$id) & !is.null(input$species)) {
             plotTotalTs(full_data = plotting_dataset(),
                         time = "timestamp",
                         rate = "Rate.Of.Detection",
                         aggFUN = mean)
+          } else {NULL}
         })
 
         ## NOTE (Michael): This plot is not displayed correctly due to the Inf
         ##                 values in the data.
         output$top_five_plot = renderPlot({
+          if (!is.null(input$species)) {
             groupTopFive(plotting_dataset(),
                          group = "Genus",
                          rate = "Rate.Of.Detection")
+          } else {NULL}
         })
 
         output$health_ts = renderPlot({
+          if (!is.null(input$species)) {
             health_timeseries(data = plotting_dataset(),
                               group = "Genus",
                               rate = "Rate.Of.Detection",
                               year = "Year")
+          } else {NULL}
         })
 
 })
