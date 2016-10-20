@@ -12,17 +12,16 @@ We have developed standard wildlife monitoring protocols and flexible data manag
 
 # Code
 ## Directory Structure
-Here is the structure for our repo. Note that the `data` folder will not exist on Github - please match this directory structure on your machine:
+Here is the structure for our repo. Note that the `data` folder will not exist on Github - please match this directory structure on your machine and populate `data/original` with the raw data:
 
 ```.
 ├── team_ci
 |   ├── data
-|   | ├── code
-|   | |   └── code for processing data
 |   | ├── processed
+|   | ├── intermediate
 |   | └── original
 |   ├── ShinyApps
-|   | ├── ExampleShinyApp
+|   | ├── LeafletApp
 |   |   ├── data - either the folder containing data, or symlink /path/to/data
 |   |   ├── server.R
 |   |   └── ui.R
@@ -45,6 +44,7 @@ Python Setup (OS X and Linux ONLY)
 - Populate your data folder as in [Google drive](https://drive.google.com/folderview?id=0BzoemeOsgjRIb2R1ZWo5YjBCRHc&usp=sharing).
 - ```make python```
 - To start jupyter notebook run ```make notebook```
+- Python scripts are documented in `pyscripts/README.md`
 
 R Setup
 -----
@@ -61,3 +61,7 @@ install.packages("dplyr")
 install.packages("gstat")
 install.packages("sp")
 install.packages("intervals")
+
+Shiny app Setup
+------------
+See the documentation in `ShinyApps/LeafletApp/README.md`.
