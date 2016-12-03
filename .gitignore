@@ -65,3 +65,6 @@ target/
 .git/
 =======
 .Rproj.user
+
+# Data files
+ShinyApps/LeafletApp/data/*.csv
