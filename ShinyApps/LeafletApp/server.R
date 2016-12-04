@@ -27,7 +27,7 @@ OVERLAY_OPACITY <- 0.5
 species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
 
 red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
-red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   Column numbers are conservation statuses we care about
+red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   Id numbers help filter rows with conservation statuses we care about
                                                                            ##   when evaluating redlist categories.
 shinyServer(function(input, output, session) {
   # Set up values for delayed map display

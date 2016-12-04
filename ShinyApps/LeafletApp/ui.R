@@ -100,7 +100,7 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         
       ),
 
-      # Left footer
+      # Left# Portion of side panel always present.
       tags$div(id="cite",
         'Data compiled for ', vars['Data source']
       )
