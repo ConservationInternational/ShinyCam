@@ -20,6 +20,7 @@ samplingFrequency <- c(
 
 shinyUI(navbarPage("Rates of detection", id="nav",
 
+##   Tab for Interactive Map
   tabPanel("Interactive map",
     div(class="outer",
 
@@ -33,7 +34,8 @@ shinyUI(navbarPage("Rates of detection", id="nav",
       #tags$style('.leaflet {height: 100%; width: 100%;}'),
       #tags$head(tags$script(src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js")),
       #uiOutput('heatMap'),
-
+      
+      # Portion of side panel menu always present.
       # Shiny versions prior to 0.11 should use class="modal" instead.
       absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
         draggable = FALSE, top = 60, left = "auto", right = 20, bottom = 10,
@@ -75,6 +77,8 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         #               label = "Show Human Activities?"),
         # plotOutput("histCentile", height = 200),
                                         # plotOutput("scatterCollegeIncome", height = 250)
+      
+        # Portion of side panel menu that appears at bottom after species have been selected.
         conditionalPanel(
           condition = 'input.species != null',
           #plotOutput("histCentile", height = 200),
@@ -96,12 +100,14 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         
       ),
 
+      # Left footer
       tags$div(id="cite",
         'Data compiled for ', vars['Data source']
       )
     )
   ),
 
+##   Tab for Data Explorer
   tabPanel("Data explorer",
     fluidRow(
       column(1,

@@ -272,6 +272,7 @@ shinyServer(function(input, output, session) {
 
     }
 
+# Update species selection menu       
 selected.names <- sort(as.character(selected.names))
 
     updateSelectInput(session, "species", "Select Species (Multiple Possible)",
