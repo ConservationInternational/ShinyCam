@@ -27,8 +27,8 @@ OVERLAY_OPACITY <- 0.5
 species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
 
 red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
-red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))
-
+red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   Id numbers help filter rows with conservation statuses we care about
+                                                                           ##   when evaluating redlist categories.
 shinyServer(function(input, output, session) {
   # Set up values for delayed map display
   values <- reactiveValues(starting = TRUE,
@@ -37,14 +37,14 @@ shinyServer(function(input, output, session) {
     values$starting <- FALSE
   })
   
-  # Read in input data based on project
+  # Function to read in input data based on project (TEAM or Marin)
   dataset_input <- reactive({
     if (input$dataset=="TEAM") {
-      indat <- as.data.frame(fread("./data/team_rate_of_detection.csv")) 
+      indat <- as.data.frame(fread("./data/team_rate_of_detection.csv"))   
     } else if (input$dataset == "MWPIP") {
       indat <- as.data.frame(fread("./data/rate_of_detection_MARIN.csv"))
     }
-    names(indat) <- make.names(names(indat))
+    names(indat) <- make.names(names(indat))                               ##   Make column names syntactically-valid (no spaces)
     names(indat)[names(indat) == "Longitude.Resolution"] <- "Longitude"
     names(indat)[names(indat) == "Latitude.Resolution"] <- "Latitude"
     indat <- subset(indat, Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
@@ -60,13 +60,13 @@ shinyServer(function(input, output, session) {
     indat
   })
 
-  # Select Region
+  # Render Site Checkbox to select region
   output$site_checkbox <- renderUI({
     labels <- as.character(unique(dataset_input()$Project.ID))
     selectInput("site_selection", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
   })
 
-  # Select site
+  # Reactive function to select site
   site_selection <- reactive({
     subset(dataset_input(), as.character(Project.ID) %in% input$site_selection)
   })
@@ -212,7 +212,9 @@ shinyServer(function(input, output, session) {
   #  'Sampling Type'=Sampling.Type, 'Sampling Period'=Sampling.Period, 'Year'=Year,
   #  'Genus'=Genus, 'Species'=Species, 'Rate Of Detection'=Rate.Of.Detection
   #)
-
+  
+  
+  # Data-export functionality for "Download Data" button
   # TODO change file name based on filters
   output$downloadData <- downloadHandler(
     filename = function() { paste('data', '.csv', sep='') },
@@ -221,6 +223,8 @@ shinyServer(function(input, output, session) {
     }
   )
 
+  
+  #  Render JavaScript table widget for "Data Explorer" tab
   output$table <- DT::renderDataTable({
     #df <- subsettedData %>%
     # TODO: Confirm that mapping_dataset is the correct df to display
@@ -268,6 +272,7 @@ shinyServer(function(input, output, session) {
 
     }
 
+# Update species selection menu       
 selected.names <- sort(as.character(selected.names))
 
     updateSelectInput(session, "species", "Select Species (Multiple Possible)",
