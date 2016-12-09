@@ -237,7 +237,7 @@ health_timeseries = function(data, group, rate, year){
                   se = FALSE) +
         scale_colour_manual("Group Trend",
                             values = c("red" = "red", "green" = "green"),
-                            labels = c("Decreasing","Increasing")) +
+                            labels = c("Increasing", "Decreasing")) +
         scale_y_log10() +
         xlab("") +
         ylab("")
