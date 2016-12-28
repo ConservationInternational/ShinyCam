@@ -1,4 +1,5 @@
-detach("package:dplyr", unload=TRUE) # This is a truly aggregious hack necessitated by Hadley's abuse of the select function name
+detach("package:dplyr", unload=TRUE) # This is an unfortunate hack necessitated 
+# by multiple packages with a "select" function
 # Better solutions very much welcomed
 library(raster)
 library(shiny)
@@ -21,6 +22,9 @@ source("scripts/extra_plot.R")
 # By ordering by centile, we ensure that the (comparatively rare) SuperZIPs
 # will be drawn last and thus be easier to see
 #zipdata <- zipdata[order(zipdata$centile),]
+
+# Set parameters
+raster_col <- "Reds" # IDW raster pallette 
 
 # Read species information
 OVERLAY_OPACITY <- 0.5
@@ -132,7 +136,7 @@ shinyServer(function(input, output, session) {
   output$map <- renderLeaflet({
     #Make idw (Inverse Distance Weighted interpolation) raster
     if (!values$starting) {
-    if (nrow(mapping_dataset())>0) {
+    if (nrow(mapping_dataset())>1) {
       # Ideally, "zero" counts would be included in the raster interpolation. They
       # are not currently. The broken code below should get close to implementing 
       # this with the caveat that it assumes that valid counts were available at all
@@ -167,7 +171,10 @@ shinyServer(function(input, output, session) {
       tidw <- idw(Rate.Of.Detection ~ 1, locations=in.dat, newdata=grd, nmax=10, idp=4)
       dw.output = as.data.frame(tidw)
       names(dw.output)[1:3] <- c("long", "lat", "var1.pred")
-      dw.output[which(dw.output$var1.pred <= unname(quantile(dw.output$var1.pred, OVERLAY_OPACITY))), "var1.pred"] <- NA # Make parts of the raster opaque
+      
+      # Uncomment to turn on transparency for lowest quintile
+      #dw.output[which(dw.output$var1.pred <= unname(quantile(dw.output$var1.pred, OVERLAY_OPACITY))), "var1.pred"] <- NA # Make parts of the raster opaque
+      
       coordinates(dw.output) <- ~long+lat # Make the matrix into spatialPointsDataFrame
       proj4string(dw.output) <- CRS("+init=epsg:4326")
       gridded(dw.output) <- TRUE
@@ -191,12 +198,23 @@ shinyServer(function(input, output, session) {
         addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=2, color="black", fillOpacity=1)
       }
     if (!is.null(idw.raster)) {
-
+      
+      pal <- colorNumeric(
+        palette = raster_col,
+        domain = values(idw.raster)
+      )
+      
+      
       tmap %>%
         addCircleMarkers(~Longitude, ~Latitude, weight=1, data= in.dat.tab, radius=~sqrt(Rate.Of.Detection), color="red", 
                          fillOpacity=1, layerId=in.dat.tab$Deployment.Location.ID, 
                          popup = ~paste("Deployment ID:", in.dat.tab$Deployment.Location.ID, "<br>Mean Rate of Detection:",in.dat.tab$Rate.Of.Detection)) %>%
-        addRasterImage(idw.raster, opacity=0.4, colors = "Reds")
+        addRasterImage(idw.raster, opacity=0.4, colors=pal) %>%
+        # Using leaflet built in legend function, which provides limited 
+        # customizability. Consider updating to make custom legend in sidebar.
+        addLegend(position = "bottomleft", pal = pal, 
+                  values = values(idw.raster),
+                  title = "Species density<br>(Interpolated)") # Units?
     } else {
       tmap
     }
@@ -238,7 +256,7 @@ shinyServer(function(input, output, session) {
   # Generate controls
 
   # Update species selection based on RED and guild
-  # TODO: (Someday) Fix this awful logic, which works, not that that's saying much
+  # TODO: The if/else logic here could be cleaned up
   observe({
      #Modify selection based on nulls
     if (is.null(input$red) & is.null(input$guild)) {
