@@ -13,6 +13,8 @@ library(sp)
 library(data.table)
 library(KernSmooth)
 library(viridis)
+library(rgdal)
+library(rgeos)
 source("scripts/kernel_density_estimate.R")
 source("scripts/extra_plot.R")
 
@@ -33,6 +35,24 @@ species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
 red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   Id numbers help filter rows with conservation statuses we care about
                                                                            ##   when evaluating redlist categories.
+
+# Read shapefiles for park boundaries
+
+shapefile_path <- "data/Shapefiles"
+
+MCPparks <- readOGR(shapefile_path, "MCPparks", verbose = FALSE) %>%
+     spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+
+GGNRA_incChedaJewel <- readOGR(shapefile_path, "GGNRA_incChedaJewel", verbose = FALSE) %>%
+     spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+
+MMWD <- readOGR(shapefile_path, "MMWD", verbose = FALSE) %>%
+     spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+
+SamuelPTaylor <- readOGR(shapefile_path, "SamuelPTaylor", verbose = FALSE) %>%
+     spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+
+
 shinyServer(function(input, output, session) {
   # Set up values for delayed map display
   values <- reactiveValues(starting = TRUE,
@@ -196,14 +216,25 @@ shinyServer(function(input, output, session) {
     if (nrow(site_selection())>0) {
       tmap <- tmap %>%
         addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=2, color="black", fillOpacity=1)
-      }
+    }
+    
+    # Park Boundary Checkbox
+    if (input$boundary_checkbox == TRUE) {
+         tmap <- tmap %>% 
+              addPolygons(data = MCPparks, weight = 2, fill=FALSE) %>%
+              addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
+              addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
+              addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
+    }
+    
+    
+    
     if (!is.null(idw.raster)) {
       
       pal <- colorNumeric(
         palette = raster_col,
         domain = values(idw.raster)
       )
-      
       
       tmap %>%
         addCircleMarkers(~Longitude, ~Latitude, weight=1, data= in.dat.tab, radius=~sqrt(Rate.Of.Detection), color="red", 

@@ -57,6 +57,10 @@ shinyUI(navbarPage("Rates of detection", id="nav",
       # 	            max = 100, value = 50, timeFormat = "%Y-%m-%d"),
         #radioButtons("humans", "Show Humans?", c("Humans", "No Humans"),
         #            selected="No Humans"),
+      
+      
+        checkboxInput("boundary_checkbox", label = "Display Park Boundaries", value = TRUE),
+      
         uiOutput("guild.control"),
         uiOutput("red.control"),
         uiOutput("species.list"),
