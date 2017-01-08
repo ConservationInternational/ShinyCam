@@ -59,7 +59,7 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         #            selected="No Humans"),
       
       
-        checkboxInput("boundary_checkbox", label = "Display Park Boundaries", value = TRUE),
+        checkboxInput("boundary_checkbox", label = "Display Park Boundaries", value = FALSE),
       
         uiOutput("guild.control"),
         uiOutput("red.control"),
