@@ -210,9 +210,14 @@ shinyServer(function(input, output, session) {
     # It would be good to add a legend or a fixed color scale.
     unique_sites <-  unique(select(site_selection(), Deployment.Location.ID, Latitude, Longitude)) 
     tmap <- leaflet(unique_sites) %>%
-      addTiles(
-        urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
-      )
+      # addTiles(
+      #   urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
+      # )
+         
+         addProviderTiles("Thunderforest.Outdoors")
+         
+         
+         
     if (nrow(site_selection())>0) {
       tmap <- tmap %>%
         addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=2, color="black", fillOpacity=1)
