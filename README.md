@@ -1,4 +1,8 @@
-# Goals
+# Conservation International ShinyCam Project
+
+##### Please look [here](http://analytics.teamnetwork.org/efegraus/ShinyCam/ShinyApps/LeafletApp/) for version of the ShinyCam app currently in production. 
+
+## Goals
 
 ### Burning Question:
 
@@ -10,8 +14,8 @@ The Tropical Ecology Assessment and Monitoring (TEAM) Network is the first and l
 
 We have developed standard wildlife monitoring protocols and flexible data management systems that enable our growing network of global partners to organize and share camera trap images (meta data). To process the data, including assigning species names, we have also developed software to expedite the work for our scientists. This includes data management, data processing and analysis. Our flagship analytical product, the Wildlife Picture Index, uses TEAM data to monitor the health and status of over 500 species populations around the world (using the +2.6 million camera trap images plus 8 million climate measurements). The Wildlife Picture Index is our only analytical tool right now. It addresses a critical conservation question by calculating “occupancy” (i.e. how many animals of a given species are in a given area) and trends over time (i.e. is the population decreasing, increasing or stable).
 
-# Code
-## Directory Structure
+## Code
+### Directory Structure
 Here is the structure for our repo. Note that the `data` folder will not exist on Github - please match this directory structure on your machine and populate `data/original` with the raw data:
 
 ```.
@@ -31,12 +35,6 @@ Here is the structure for our repo. Note that the `data` folder will not exist o
 └──
 ```
 
-
-### ExampleShinyApp
-This is a small example app/intro to Shiny in R, using our data. Given a user-selected camera serial number, we show a bar chart of the animals that this camera has seen. Note that this is not one of the items as requested by CI; rather, it serves as an intro to our data and to Shiny.
-
-To use this app, please populate the /data folder as it is in Google drive and make your local directory match the structure above. Directions to run the app can be found [here](http://shiny.rstudio.com/articles/running.html). 
-
 Python Setup (OS X and Linux ONLY)
 -----
 - First make sure you have ```python, pip``` and ```virtualenv``` installed
@@ -48,11 +46,14 @@ Python Setup (OS X and Linux ONLY)
 
 R Setup
 -----
-- Make sure you have ```R``` installed.  
-- Clone this repo: ```git clone git@github.com:DataKind-SF/datadive_201608_ci.git```
+- Make sure you have `R` installed.  
+- Clone this repo: `git clone https://github.com/ConservationInternational/ShinyCam.git`
 - Populate the data folder as in [Google drive](https://drive.google.com/folderview?id=0BzoemeOsgjRIb2R1ZWo5YjBCRHc&usp=sharing).
-- Need to add a list of packages to install (this needs to be updated at the final version):
+- Enter and run the following in your R console to install packages neccessary to run app:
+
+```
 install.packages("shiny")
+install.packages("raster")
 install.packages("leaflet")
 install.packages("RColorBrewer")
 install.packages("scales")
@@ -61,6 +62,10 @@ install.packages("dplyr")
 install.packages("gstat")
 install.packages("sp")
 install.packages("intervals")
+install.packages("data.table")
+install.packages("KernSmooth")
+install.packages("rgdal")
+```
 
 Shiny app Setup
 ------------
