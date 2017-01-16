@@ -68,3 +68,4 @@ target/
 
 # Data files
 ShinyApps/LeafletApp/data/*.csv
+ShinyApps/LeafletApp/data/Shapefiles/*
