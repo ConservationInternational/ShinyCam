@@ -30,7 +30,7 @@ raster_col <- "Reds" # IDW raster pallette
 
 # Read species information
 OVERLAY_OPACITY <- 0.5
-species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
+species.table <- read.csv("data/taxonomy_scientific_name_20160813_marin.csv")
 
 red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   Id numbers help filter rows with conservation statuses we care about
@@ -66,7 +66,7 @@ shinyServer(function(input, output, session) {
     if (input$dataset=="TEAM") {
       indat <- as.data.frame(fread("./data/team_rate_of_detection.csv"))   
     } else if (input$dataset == "MWPIP") {
-      indat <- as.data.frame(fread("./data/rate_of_detection_MARIN.csv"))
+      indat <- as.data.frame(fread("./data/rate_of_detection_MARIN_total.csv"))
     }
     names(indat) <- make.names(names(indat))                               ##   Make column names syntactically-valid (no spaces)
     names(indat)[names(indat) == "Longitude.Resolution"] <- "Longitude"
@@ -210,12 +210,11 @@ shinyServer(function(input, output, session) {
     # It would be good to add a legend or a fixed color scale.
     unique_sites <-  unique(select(site_selection(), Deployment.Location.ID, Latitude, Longitude)) 
     tmap <- leaflet(unique_sites) %>%
-      # addTiles(
-      #   urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
-      # )
+       addTiles(
+         urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
+       )  %>% setView(-122.6,37.9,zoom=11) # Modify this later to be dynamic based on protected area/project selected.
          
-         addProviderTiles("Thunderforest.Outdoors")
-         
+         #addProviderTiles("Thunderforest.Outdoors") # Like this one but let's integrate above.
          
          
     if (nrow(site_selection())>0) {
