@@ -30,12 +30,11 @@ Here is the structure for our repo. Note that the `data` folder will not exist o
 |   |   ├── server.R
 |   |   └── ui.R
 |   ├── rscripts
-|   ├── pyscripts
-|   └── notebooks
+|   
 └──
 ```
 
-**Application Backend:** Data processing and calculation of relevant metrics is carried out using Python scripts contained in `pyscripts` folder. See [README](https://github.com/ConservationInternational/ShinyCam/tree/master/pyscripts) file in `pyscripts` folder for more information. 
+**Application Backend:** Data processing and calculation of relevant metrics is carried out using R scripts contained in ` ` folder. See [README](https://github.com/ConservationInternational/ShinyCam/tree/master/pyscripts) file in `pyscripts` folder for more information. 
 
 **Application Frontend:** The user interface of the app is created using R and the Shiny web framework - corresponding scripts for which are found in `LeafletApp` folder. See [README](https://github.com/ConservationInternational/ShinyCam/tree/master/ShinyApps/LeafletApp) file in `LeafletApp` folder for more information.
 
