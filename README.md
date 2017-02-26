@@ -34,18 +34,9 @@ Here is the structure for our repo. Note that the `data` folder will not exist o
 └──
 ```
 
-**Application Backend:** Data processing and calculation of relevant metrics is carried out using R scripts contained in `ShinyCam/ShinyApps/LeafletApp/scripts/ ` folder. See [README](https://github.com/ConservationInternational/ShinyCam/tree/master/pyscripts) file in `pyscripts` folder for more information. 
+**Application Backend:** Data processing and calculation of relevant metrics is carried out using R scripts (contained in `ShinyCam/ShinyApps/LeafletApp/scripts/ ` folder.) See [README](https://github.com/ConservationInternational/ShinyCam/tree/master/pyscripts) file in `pyscripts` folder for more information. 
 
 **Application Frontend:** The user interface of the app is created using R and the Shiny web framework - corresponding scripts for which are found in `LeafletApp` folder. See [README](https://github.com/ConservationInternational/ShinyCam/tree/master/ShinyApps/LeafletApp) file in `LeafletApp` folder for more information.
-
-Python Setup (OS X and Linux ONLY)
------
-- First make sure you have ```python, pip``` and ```virtualenv``` installed
-- Clone this repo: `git clone https://github.com/ConservationInternational/ShinyCam.git`
-- Populate your data folder as in [Google drive](https://drive.google.com/folderview?id=0BzoemeOsgjRIb2R1ZWo5YjBCRHc&usp=sharing).
-- ```make python```
-- To start jupyter notebook run ```make notebook```
-- Python scripts are documented in [`pyscripts/README.md`](https://github.com/ConservationInternational/ShinyCam/tree/master/pyscripts)
 
 R Setup
 -----
