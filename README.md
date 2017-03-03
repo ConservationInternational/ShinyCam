@@ -34,7 +34,8 @@ Here is the structure for our repo. Note that the `data` folder will not exist o
 └──
 ```
 
-**Application Backend:** Data processing and calculation of relevant metrics is carried out using R scripts.
+**Application Backend:** Data processing and calculation of relevant metrics is carried out using scripts found in the `rscripts` folder.
+
 **Application Frontend:** The user interface of the app is created using R and the Shiny web framework - corresponding scripts for which are found in `LeafletApp` folder. See [README](https://github.com/ConservationInternational/ShinyCam/tree/master/ShinyApps/LeafletApp) file in `LeafletApp` folder for more information.
 
 R Setup
@@ -59,4 +60,3 @@ install.packages("data.table")
 install.packages("KernSmooth")
 install.packages("rgdal")
 ```
-- R scripts are documented in [`LeafletApp/README.md`](https://github.com/ConservationInternational/ShinyCam/blob/master/ShinyApps/LeafletApp/README.md)
