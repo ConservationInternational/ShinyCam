@@ -14,6 +14,8 @@ The Tropical Ecology Assessment and Monitoring (TEAM) Network is the first and l
 
 We have developed standard wildlife monitoring protocols and flexible data management systems that enable our growing network of global partners to organize and share camera trap images (metadata). To process the data, including assigning species names, we have also developed software to expedite the work for our scientists. This includes data management, data processing and analysis. Our flagship analytical product, the Wildlife Picture Index, uses TEAM data to monitor the health and status of over 500 species populations around the world (using the +2.6 million camera trap images plus 8 million climate measurements). The Wildlife Picture Index is our only analytical tool right now. It addresses a critical conservation question by calculating “occupancy” (i.e. how many animals of a given species are in a given area) and trends over time (i.e. is the population decreasing, increasing or stable).
 
+![alt tag](https://github.com/ConservationInternational/ShinyCam/blob/master/shinycam.gif)
+
 ## Code
 ### Directory Structure
 Here is the structure for our repo. Note that the `data` folder will not exist on Github - please match this directory structure on your machine and populate `data/original` with the raw data:
