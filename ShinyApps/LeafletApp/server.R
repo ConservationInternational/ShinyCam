@@ -201,7 +201,9 @@ shinyServer(function(input, output, session) {
       idw.raster <- raster(dw.output, layer=1, values=TRUE) # Make spatialPointsDataFrame into raster
     } else {
       idw.raster <- NULL
-      in.dat     <- NULL
+      # this selects the data for the whole site - we do this to support the dynamic view based on protected species/site selected
+      in.dat <- site_selection()[c("Latitude", "Longitude", "Deployment.Location.ID", "Rate.Of.Detection")]
+
     }
 
     #dat <- get_KDE_polygons(site_selection())
@@ -209,13 +211,23 @@ shinyServer(function(input, output, session) {
     # that the rasters can't really be compared when the species selection changes.
     # It would be good to add a legend or a fixed color scale.
     unique_sites <-  unique(select(site_selection(), Deployment.Location.ID, Latitude, Longitude)) 
-    tmap <- leaflet(unique_sites) %>%
-       addTiles(
-         urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Shaded_Relief/MapServer/tile/{z}/{y}/{x}"
-       )  %>% setView(-122.6,37.9,zoom=11) # Modify this later to be dynamic based on protected area/project selected.
-         
-         #addProviderTiles("Thunderforest.Outdoors") # Like this one but let's integrate above.
-         
+    if(nrow(in.dat)<1){ # this is never displayed, it only helps to avoid error at the very beginning (the rows of in.dat are 0 which doesn't help the view) 
+      tmap <- leaflet(unique_sites) %>%
+         addTiles(
+           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
+         )  %>% setView(-122.6,37.9,zoom=10)  
+           
+           #addProviderTiles("Thunderforest.Outdoors") # Like this one but let's integrate above.
+    } else {
+      # Allows dynamic view based on protected species/site selected
+      # it takes the mean position of the selected species - if none was selected, considers all the species
+      tmap <- leaflet(unique_sites) %>%
+        addTiles(
+          urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+          attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
+        )  %>% setView(mean(in.dat$Longitude),mean(in.dat$Latitude),zoom=10) 
+    }
          
     if (nrow(site_selection())>0) {
       tmap <- tmap %>%
@@ -241,7 +253,7 @@ shinyServer(function(input, output, session) {
       )
       
       tmap %>%
-        addCircleMarkers(~Longitude, ~Latitude, weight=1, data= in.dat.tab, radius=~sqrt(Rate.Of.Detection), color="red", 
+        addCircleMarkers(~Longitude, ~Latitude, weight=2, data= in.dat.tab, radius=~sqrt(Rate.Of.Detection), color="red", 
                          fillOpacity=1, layerId=in.dat.tab$Deployment.Location.ID, 
                          popup = ~paste("Deployment ID:", in.dat.tab$Deployment.Location.ID, "<br>Mean Rate of Detection:",in.dat.tab$Rate.Of.Detection)) %>%
         addRasterImage(idw.raster, opacity=0.4, colors=pal) %>%
