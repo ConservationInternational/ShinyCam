@@ -122,5 +122,16 @@ shinyUI(navbarPage("Rates of detection", id="nav",
     DT::dataTableOutput("table")
   ),
 
-  conditionalPanel("false", icon("crosshair"))
+  
+
+##   Tab for Operational Statistics
+##   NOTE: ADD OPERATIONAL STATS FEATURES TO THE UI HERE
+     tabPanel("Operational stats"),
+
+
+##   Tab for Administrative Statistics
+##   NOTE: ADD ADMIN STATS FEATURES TO THE UI HERE
+     tabPanel("Administrative stats"),
+
+conditionalPanel("false", icon("crosshair"))
 ))
