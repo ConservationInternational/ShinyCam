@@ -4,11 +4,6 @@ library(leaflet)
 
 # Choices for drop-downs
 vars <- c(
-  "Is SuperZIP?" = "superzip",
-  "Centile score" = "centile",
-  "College education" = "college",
-  "Median income" = "income",
-  "Population" = "adultpop",
   "Data source" = "TEAM"
 )
 
@@ -68,25 +63,18 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         uiOutput("time.control"),
         hr(),
         #uiOutput("time.selection")#,
-        # selectInput("color", "Color", vars),
-        # selectInput("size", "Size", vars, selected = "adultpop"),
-        # conditionalPanel("input.color == 'superzip' || input.size == 'superzip'",
-        #                  # Only prompt for threshold when coloring or sizing by superzip
-        #                  numericInput("threshold", "SuperZIP threshold (top n percentile)", 5)
-        # ),
+
         # selectInput(inputId = "samplingFrequency",
         #             label = "Sampling Frequency",
         #             choices = samplingFrequency),
         # checkboxInput(inputId = "show_human",
         #               label = "Show Human Activities?"),
-        # plotOutput("histCentile", height = 200),
-                                        # plotOutput("scatterCollegeIncome", height = 250)
+
       
         # Portion of side panel menu that appears at bottom after species have been selected.
         conditionalPanel(
           condition = 'input.species != null',
-          #plotOutput("histCentile", height = 200),
-          #plotOutput("scatterCollegeIncome", height = 250),
+
           h3("Site-Specific Plots"),
           h4("Time Series of Site-Wide Rate of Detection"),
           plotOutput("total_ts", height = 200),
