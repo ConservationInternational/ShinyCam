@@ -87,12 +87,34 @@ shinyServer(function(input, output, session) {
   # Render Site Checkbox to select region
   output$site_checkbox <- renderUI({
     labels <- as.character(unique(dataset_input()$Project.ID))
+    
+    ##    Add "All Sites" option to labels vector if dataset is "MWPIP"
+    if(input$dataset == "MWPIP"){
+         labels <- c(labels, "All Sites")
+    }
+    
     selectInput("site_selection", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
   })
+  
+  ## Check if "All Sites" is the selected site
+     check_allsites <- reactive({
+          input$site_selection == "All Sites" %>%
+          return()
+     })
+  
 
   # Reactive function to select site
   site_selection <- reactive({
-    subset(dataset_input(), as.character(Project.ID) %in% input$site_selection)
+          print(check_allsites())
+       
+       
+          if(req(input$site_selection) == "All Sites"){
+               dataset_input()
+          } else{
+          
+          subset(dataset_input(), as.character(Project.ID) %in% input$site_selection)
+          }
+     
   })
 
   # Create reactive data.frame containing only species present in selected sites
