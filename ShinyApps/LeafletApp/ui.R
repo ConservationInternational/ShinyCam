@@ -110,7 +110,61 @@ shinyUI(navbarPage("Rates of detection", id="nav",
     DT::dataTableOutput("table")
   ),
 
-  
+  ##   Tab for Species Alert
+  tabPanel("Species alert",
+     div(class="outer",
+         
+         tags$head(
+           # Include our custom CSS
+           includeCSS("styles.css"),
+           includeScript("gomap.js")
+         ),
+         leafletOutput("map.2", width="100%", height="100%"),
+
+         # Portion of side panel menu always present.
+         # Shiny versions prior to 0.11 should use class="modal" instead.
+         absolutePanel(id = "controls.2", class = "panel panel-default", fixed = TRUE,
+           draggable = FALSE, top = 60, left = "auto", right = 20, bottom = 10,
+           width = 330, height = "auto", style = "overflow-y:scroll",
+
+           h2("Species alert"),
+
+           selectInput("dataset.2", "Camera Trap Project", c("TEAM", "MWPIP")),
+           uiOutput("site_checkbox.2"),
+
+           checkboxInput("boundary_checkbox.2", label = "Display Park Boundaries", value = FALSE),
+
+           uiOutput("guild.control.2"),
+           uiOutput("red.control.2"),
+           uiOutput("species.list.2"),
+           uiOutput("frequency.control.2"),
+           uiOutput("time.control.2"),
+           hr()
+
+           # # Portion of side panel menu that appears at bottom after species have been selected.
+           # conditionalPanel(
+           #   condition = 'input.species != null',
+           #
+           #   h3("Site-Specific Plots"),
+           #   h4("Time Series of Site-Wide Rate of Detection"),
+           #   plotOutput("total_ts", height = 200),
+           #   h4("Top 5 Genera by Rate of Detection"),
+           #   plotOutput("top_five_plot", height = 200),
+           #
+           #   h3("Camera Specific Plots"),
+           #   h4("(Click a red point on the map to enable)"),
+           #   plotOutput("camera_ts_benchmark", height = 200),
+           #   plotOutput("camera_ts_benchmark_facet", height = 200)
+           # )
+
+         ),
+
+         # Left# Portion of side panel always present.
+         tags$div(id="cite2",
+                  'Data compiled for ', vars['Data source']
+         )
+     )
+  ),
 
 ##   Tab for Operational Statistics
 ##   NOTE: ADD OPERATIONAL STATS FEATURES TO THE UI HERE
