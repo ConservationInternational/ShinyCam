@@ -413,7 +413,8 @@ selected.names <- sort(as.character(selected.names))
         })
 
         output$total_ts = renderPlot({
-          if (!is.null(values$clickedMarker$id) & !is.null(input$species)) {
+          #if (!is.null(values$clickedMarker$id) & !is.null(input$species)) {
+          if (!is.null(input$species)) {
             plotTotalTs(full_data = plotting_dataset(),
                         time = "timestamp",
                         rate = "Rate.Of.Detection",
