@@ -57,6 +57,9 @@ shinyServer(function(input, output, session) {
   # Set up values for delayed map display
   values <- reactiveValues(starting = TRUE,
                            clickedMarker=list(id=NULL))
+  # the same for species alert tab
+  values.2 <- reactiveValues(starting = TRUE,
+                           clickedMarker=list(id=NULL))
   session$onFlushed(function() {
     values$starting <- FALSE
   })
@@ -448,7 +451,7 @@ shinyServer(function(input, output, session) {
   # Create the map
   output$map.2 <- renderLeaflet({
     #Make idw (Inverse Distance Weighted interpolation) raster
-    if (!values$starting) {
+    if (!values.2$starting) {
     if (nrow(mapping_dataset.2())>1) {
       # Ideally, "zero" counts would be included in the raster interpolation. They
       # are not currently. The broken code below should get close to implementing 
@@ -602,7 +605,8 @@ shinyServer(function(input, output, session) {
     selected.names <- sort(as.character(selected.names))
     
     updateSelectInput(session, "species.2", "Select Species (Multiple Possible)",
-                      choices=sort(as.character(present.species.names.2())), selected=selected.names)
+                      choices=sort(as.character(present.species.names.2())), 
+                      selected=selected.names)
     
   })
   
@@ -630,19 +634,20 @@ shinyServer(function(input, output, session) {
   # Subset dataframe for plotting based on map click 
   # This is subsetted on camera and speecies. Possibly species could be removed from filter.
   camera_dataset <- reactive ({
-    subset(site_selection.2(), Deployment.Location.ID==values$clickedMarker$id & (paste(Genus, Species) %in% input$species.2))
+    subset(site_selection.2(), Deployment.Location.ID==values.2$clickedMarker$id & (paste(Genus, Species) %in% input$species.2))
   })
   
   # observe the marker click info and change the value depending on click location 
   observeEvent(input$map_marker_click.2,{
-    values$clickedMarker <- input$map_marker_click
+    values.2$clickedMarker <- input$map_marker_click.2
   }
   )
   observeEvent(input$map_click.2,{
-    values$clickedMarker$id <- NULL
+    values.2$clickedMarker$id <- NULL
   })
   observeEvent(input$species.2, {
-    values$clickedMarker$id <- NULL
+    print("Hello!!!")
+    values.2$clickedMarker$id <- NULL
   })
   
 
