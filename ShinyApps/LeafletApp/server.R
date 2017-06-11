@@ -30,11 +30,21 @@ raster_col <- "Reds" # IDW raster pallette
 
 # Read species information
 OVERLAY_OPACITY <- 0.5
-species.table <- read.csv("data/taxonomy_scientific_name_20160813_marin.csv")
+species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
 
 red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   Id numbers help filter rows with conservation statuses we care about
                                                                            ##   when evaluating redlist categories.
+
+# Read Camera Stats
+
+dm_01_count_images <- read.csv('data/processed/dm_01_count_images.csv', stringsAsFactors = FALSE) 
+dm_02_count_blanks <- read.csv('data/processed/dm_02_count_blanks.csv', stringsAsFactors = FALSE)
+dm_03_count_unknowns <- read.csv('data/processed/dm_03_count_unknowns.csv', stringsAsFactors = FALSE)
+dm_04_count_uncatalogued <- read.csv('data/processed/dm_04_count_uncatalogued.csv', stringsAsFactors = FALSE)
+dm_05_count_wildlife <- read.csv('data/processed/dm_05_count_wildlife.csv', stringsAsFactors = FALSE)
+dm_06_count_human_related <- read.csv('data/processed/dm_06_count_human_related.csv', stringsAsFactors = FALSE)
+dm_07_avg_photos_per_deployment <- read.csv('data/processed/dm_07_avg_photos_per_deployment.csv', stringsAsFactors = FALSE)
 
 # Read shapefiles for park boundaries
 
@@ -66,7 +76,7 @@ shinyServer(function(input, output, session) {
     if (input$dataset=="TEAM") {
       indat <- as.data.frame(fread("./data/team_rate_of_detection.csv"))   
     } else if (input$dataset == "MWPIP") {
-      indat <- as.data.frame(fread("./data/rate_of_detection_MARIN_total.csv"))
+      indat <- as.data.frame(fread("./data/rate_of_detection_MARIN.csv"))
     }
     names(indat) <- make.names(names(indat))                               ##   Make column names syntactically-valid (no spaces)
     names(indat)[names(indat) == "Longitude.Resolution"] <- "Longitude"
@@ -321,6 +331,60 @@ shinyServer(function(input, output, session) {
 
     DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
   })
+  
+  
+  ## Render JavaScript table widget for "Camera Stats" tab
+  
+  camera_stat <- reactive({
+       
+       if(input$selectStat == 1){
+            
+            camera_df <- dm_01_count_images
+            
+       } else if (input$selectStat == 2 ){
+            
+            camera_df <- dm_02_count_blanks
+            
+       } else if (input$selectStat == 3){
+            
+            camera_df <- dm_03_count_unknowns
+            
+       } else if (input$selectStat == 4){
+            
+            camera_df <- dm_04_count_uncatalogued
+            
+       } else if (input$selectStat == 5) {
+            
+            camera_df <- dm_05_count_wildlife
+            
+       } else if (input$selectStat == 6) {
+            
+            camera_df <- dm_06_count_human_related
+            
+       } else {
+            camera_df <- dm_07_avg_photos_per_deployment
+       }
+       
+       return(camera_df)
+       
+  })
+  
+       
+     # camera_calc <- reactive({
+     #      
+     #      camera_stat() %>% group_by(Project.ID)
+     #           summarize(sum(count_images))
+     # })
+     # 
+  output$camtable <- DT::renderDataTable({
+ 
+       df <- camera_stat()
+       
+       action <- DT::dataTableAjax(session, df)
+       
+       DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
+  })
+  
 
   # Generate controls
 
