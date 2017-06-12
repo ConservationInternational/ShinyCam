@@ -36,7 +36,8 @@ final_trap4 <- filter(final_trap3, TotalTrapDays < 33)
 combined <- left_join(final_count2,final_trap4, by = c("Project.ID" = "Project.ID", "Deployment.Location.ID" = "Deployment.Location.ID","Year"="Year","Month"="Month"))
 final_combined <- arrange(combined,Project.ID,Deployment.Location.ID,Year,Month)
 ###
-# Shorten the dataset by problematic dates
+# Shorten the dataset by problematic dates ######
+#### Keep all data from 2014-10 to 2016-02
 final_combined$year_month <- paste(final_combined$Year,final_combined$Month,sep="-")
 final_combined <- filter(final_combined,year_month != "2014-1")
 final_combined <- filter(final_combined,year_month != "2014-2")
