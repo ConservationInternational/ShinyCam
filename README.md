@@ -1,6 +1,6 @@
 # Conservation International ShinyCam Project
 
-##### Please look [here](http://analytics.teamnetwork.org/efegraus/ShinyCam/ShinyApps/LeafletApp/) for version of the ShinyCam app currently in production. 
+##### Please look [here](http://analytics.teamnetwork.org/efegraus/ShinyCam/ShinyApps/LeafletApp/) for version of the ShinyCam app currently in production. See the [project wiki](https://github.com/ConservationInternational/ShinyCam/wiki) for additional information regarding project background and how to contribute.
 
 ## Goals
 
@@ -13,6 +13,8 @@ How can Conservation International better respond to and implement solutions for
 The Tropical Ecology Assessment and Monitoring (TEAM) Network is the first and largest global-scale conservation observation network on the planet —essentially an early warning system for life on earth. Conservation International launched TEAM in 2002 as part of an innovative partnership with the Smithsonian Institution, Wildlife Conservation Society, and more than 80 local, academic and government partners. It is now one of the most robust datasets on the health of tropical forests in the world, with more than 1,000 camera traps capturing almost 3 million images, ~8 million weather observations and 70,000 forest trees measurements. These measurements come from 17 protected areas (TEAM Sites) that serve as our data collection and monitoring hubs. Please look [here](https://vimeo.com/93627505) for a video introduction to TEAM.
 
 We have developed standard wildlife monitoring protocols and flexible data management systems that enable our growing network of global partners to organize and share camera trap images (metadata). To process the data, including assigning species names, we have also developed software to expedite the work for our scientists. This includes data management, data processing and analysis. Our flagship analytical product, the Wildlife Picture Index, uses TEAM data to monitor the health and status of over 500 species populations around the world (using the +2.6 million camera trap images plus 8 million climate measurements). The Wildlife Picture Index is our only analytical tool right now. It addresses a critical conservation question by calculating “occupancy” (i.e. how many animals of a given species are in a given area) and trends over time (i.e. is the population decreasing, increasing or stable).
+
+![alt tag](https://github.com/ConservationInternational/ShinyCam/blob/master/shinycam.gif)
 
 ## Code
 ### Directory Structure
@@ -30,23 +32,13 @@ Here is the structure for our repo. Note that the `data` folder will not exist o
 |   |   ├── server.R
 |   |   └── ui.R
 |   ├── rscripts
-|   ├── pyscripts
-|   └── notebooks
+|   
 └──
 ```
 
-**Application Backend:** Data processing and calculation of relevant metrics is carried out using Python scripts contained in `pyscripts` folder. See [README](https://github.com/ConservationInternational/ShinyCam/tree/master/pyscripts) file in `pyscripts` folder for more information. 
+**Application Backend:** Data processing and calculation of relevant metrics is carried out using scripts found in the `rscripts` folder. Such calculations were previously performed using Python scripts in the `pyscripts` folder, but these scripts will soon be deprecated. 
 
 **Application Frontend:** The user interface of the app is created using R and the Shiny web framework - corresponding scripts for which are found in `LeafletApp` folder. See [README](https://github.com/ConservationInternational/ShinyCam/tree/master/ShinyApps/LeafletApp) file in `LeafletApp` folder for more information.
-
-Python Setup (OS X and Linux ONLY)
------
-- First make sure you have ```python, pip``` and ```virtualenv``` installed
-- Clone this repo: `git clone https://github.com/ConservationInternational/ShinyCam.git`
-- Populate your data folder as in [Google drive](https://drive.google.com/folderview?id=0BzoemeOsgjRIb2R1ZWo5YjBCRHc&usp=sharing).
-- ```make python```
-- To start jupyter notebook run ```make notebook```
-- Python scripts are documented in [`pyscripts/README.md`](https://github.com/ConservationInternational/ShinyCam/tree/master/pyscripts)
 
 R Setup
 -----
@@ -70,4 +62,3 @@ install.packages("data.table")
 install.packages("KernSmooth")
 install.packages("rgdal")
 ```
-- R scripts are documented in [`LeafletApp/README.md`](https://github.com/ConservationInternational/ShinyCam/blob/master/ShinyApps/LeafletApp/README.md)
