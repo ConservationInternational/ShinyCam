@@ -16,7 +16,8 @@ setwd("/Users/efegraus/work/DataKind/ShinyCam")
 ## Use the full dataset or subset by project. Make sure to use all images regardless of whether they are photo typ = Animal.
 marin_data <- read.csv("data/marin_data.csv")
 # Subset by project if needed
-sub_data <-c("ChedaJewel") # Set variable to label future dataframes and .csv's
+sub_data <-c("Samuel-P-Taylor") # Set variable to label future dataframes and .csv's
+# ChedaJewel      Samuel-P-Taylor MMWD            GaryGiacomini   MCP-South       MCP-North
 marin_data_sub <- filter(marin_data,Project.ID == sub_data)
 marin_data_new <- select(marin_data_sub,Project.ID,Deployment.Location.ID,Camera.Deployment.Begin.Date,Camera.Deployment.End.Date,Date_Time.Captured)
 
@@ -49,7 +50,8 @@ for (i in 1:length(unique_deployments)) {
   # Get all the begin Dates for each deployment
   unique_begin <- unique(temp$Camera.Deployment.Begin.Date)
   # After getting all data for a deployment locations go through each deployment at that location
-  for (j in 1:length(unique_begin)) {# shoudl be total number of sampling periods
+  for (j in 1:length(unique_begin)) {
+    # Check for date problems
     temp2 <- filter(temp,Camera.Deployment.Begin.Date == unique_begin[j])
     # get the start month
     start_eom <- eom(unique_begin[j])
@@ -60,10 +62,17 @@ for (i in 1:length(unique_deployments)) {
     # end_eom has both the last day of the first month and the last day of the last month 
     # from the images
     end_eom<- eom(max_date)
-    #end_eom <-eom(end_date)
-    #max_date <- as.POSIXct(max(temp2$Date_Time.Captured),tz="PST")
+    
+    # PUT THE ENTIRE THING WITHIN an IF
+    
+    # Need to identify the image dates (max and min) that don't fit within the deployment begin and End
+    # dates
+    interval1 <- interval(unique_begin[j],end_eom[2]+86399) # add 23:59:59 time to the last day
+    if ((max_date[1] %within% interval1) & (max_date[2] %within% interval1)) {
+      print(paste("ok",unique_deployments[i],unique_begin[j],max_date[1],i,j,sep=","))
+    
+    
     # Begin to build the dataframe
-    #output_temp <- output_df[NA,]
     #output_temp <- output_temp[(1),]
     month_diff_start <- round((as.yearmon(strptime(max_date[2], format = "%Y-%m-%d"))-
                      as.yearmon(strptime(start_eom, format = "%Y-%m-%d")))*12)
@@ -96,7 +105,7 @@ for (i in 1:length(unique_deployments)) {
           } else if ( k==1 & k==total_months) { # Get the number of days if the camera only ran in one month (i.e., started and stopped in same month)
             output_temp$TrapDays[k] <- as.numeric(difftime(max_date[2],unique_begin[j],units = c("days"))+1) 
           } else { 
-            print(paste("ERROR"))
+            print(paste("ERROR2222"))
             break
           }
           
@@ -108,8 +117,15 @@ for (i in 1:length(unique_deployments)) {
       }
       output_df <-rbind(output_df,output_temp)
           
-  }
+    } else {
+      print(paste("ERROR4",unique_deployments[i],interval1,max_date[1],max_date[2],i,j,sep=","))
+      break
+    }  
+    
+  } 
 }  
+
+
 out_file_name <- paste("data/",sub_data,"_trap_days.csv",sep="")
 write.csv(output_df,out_file_name)
 ######################
