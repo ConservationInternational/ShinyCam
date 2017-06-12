@@ -17,6 +17,8 @@ shinyUI(navbarPage("Rates of detection", id="nav",
 
 ##   Tab for Interactive Map
   tabPanel("Interactive map",
+           
+     fluidRow(
     div(class="outer",
 
       tags$head(
@@ -97,6 +99,7 @@ shinyUI(navbarPage("Rates of detection", id="nav",
         'Data compiled for ', vars['Data source']
       )
     )
+  )
   ),
 
 ##   Tab for Data Explorer
@@ -112,9 +115,33 @@ shinyUI(navbarPage("Rates of detection", id="nav",
 
   
 
-##   Tab for Operational Statistics
+##   Tab for Camera Statistics Statistics
 ##   NOTE: ADD OPERATIONAL STATS FEATURES TO THE UI HERE
-     tabPanel("Operational stats"),
+     tabPanel("Camera stats",
+          fluidRow(
+
+               column(3,
+                      
+                      selectInput("selectStat", label = h3("Select Statistic"), 
+                                  choices = list("Count of images" = 1, "Count of blank images" = 2, "Count of unknown images" = 3,
+                                                 "Count of uncatalogued images" = 4, "Count of wildlife images" = 5, "Count of human-related images" =6,
+                                                 "Average photos per deployment" = 7), 
+                                  selected = 1)
+                      # , selectInput("selectAgg", label = h3("Select Aggregation Field"), 
+                      #             choices = list("Project ID & Camera ID" = 1, "Project ID" = 2, "Camera ID" = 3), 
+                      #             selected = 1)
+                      
+                      ),
+               
+               column(9,
+               DT::dataTableOutput("camtable")
+               )
+               
+               
+          )
+              
+              
+              ),
 
 
 ##   Tab for Administrative Statistics
