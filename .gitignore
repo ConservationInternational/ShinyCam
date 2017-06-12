@@ -67,5 +67,6 @@ target/
 .Rproj.user
 
 # Data files
+data/*
 ShinyApps/LeafletApp/data/*.csv
 ShinyApps/LeafletApp/data/Shapefiles/*
