@@ -31,10 +31,15 @@ wh_cameras <- read.csv("data/26-Marin-County-Parks-Cascade-Canyon-and-White-Hill
 wh_deployments <- read.csv("data/26-Marin-County-Parks-Cascade-Canyon-and-White-Hill/MCP-South-Marin-County-Parks-Cascade-Canyon-and-White-Hill-Deployments.csv")
 wh_images <-      read.csv("data/26-Marin-County-Parks-Cascade-Canyon-and-White-Hill/MCP-South-Marin-County-Parks-Cascade-Canyon-and-White-Hill-Images.csv")
 
+# South
+s_cameras <- read.csv("data/27-Marin-County-Parks-French-Ranch-and-Roy-s-Redwoods/MCP-North-Marin-County-Parks-French-Ranch-and-Roy-s-Redwoods-Cameras.csv")
+s_deployments <- read.csv("data/27-Marin-County-Parks-French-Ranch-and-Roy-s-Redwoods/MCP-North-Marin-County-Parks-French-Ranch-and-Roy-s-Redwoods-Deployments.csv")
+s_images <-      read.csv("data/27-Marin-County-Parks-French-Ranch-and-Roy-s-Redwoods/MCP-North-Marin-County-Parks-French-Ranch-and-Roy-s-Redwoods-Images.csv")
+
 #Bind the datasetst together
-cameras <-rbind(cj_cameras, sp_cameras,wd_cameras,gg_cameras,wh_cameras)
-deployments <-rbind(cj_deployments, sp_deployments,wd_deployments,gg_deployments,wh_deployments)
-images <-rbind(cj_images, sp_images,wd_images,gg_images,wh_images)
+cameras <-rbind(cj_cameras, sp_cameras,wd_cameras,gg_cameras,wh_cameras,s_cameras)
+deployments <-rbind(cj_deployments, sp_deployments,wd_deployments,gg_deployments,wh_deployments,s_deployments)
+images <-rbind(cj_images, sp_images,wd_images,gg_images,wh_images,s_images)
 
 # Join them together
 cam_deploy <-inner_join(deployments,cameras,by="Camera.ID")
@@ -53,7 +58,8 @@ marin_data_animals <-read.csv("data/marin_data_animals.csv")
 # Shrink data frame
 marin_data_new <- select(marin_data_animals,Project.ID,Camera.Deployment.Begin.Date,Camera.Deployment.End.Date,Latitude.Resolution,Longitude.Resolution,Photo.Type,Image.ID,Genus.Species,Count,Deployment.Location.ID,Event,Date_Time.Captured)
 # Subset by project if needed
-sub_data <-c("ChedaJewel") # Set variable to label future dataframes and .csv's
+sub_data <-c("MCP-South") # Set variable to label future dataframes and .csv's
+# ChedaJewel      Samuel-P-Taylor MMWD            GaryGiacomini   MCP-South       MCP-North
 marin_data_subset <- filter(marin_data_new,Project.ID == sub_data)
 ################################
 # CALCULATE FINAL COUNTS PER MONTH PER YEAR PER PROJECT PER DEPLOYMENT
@@ -69,6 +75,7 @@ problems <-as.data.frame(table(marin_events$grp))
 
 # Dates with more than 15 images per group
 actual_problems <- problems[which(problems$Freq >9),]
+# Need to handle an empty data frame here!!!!!!!!!!!!
 actual_problems$Check <- NA
 for (i in 1:length(actual_problems$Freq)) {
   check_data <- marin_events[which(marin_events$grp== actual_problems$Var1[i]),]
@@ -126,7 +133,7 @@ output_df$Month <- month(output_df$Date_Time.Captured)
 # Calculate  summary information
 final_count <- ddply(output_df,.(Project.ID,Latitude.Resolution,Longitude.Resolution,
                           Event,Deployment.Location.ID,Month,Year,Genus.Species),summarize,total=sum(Count))
-out_file_name <- paste("data/final_count_",sub_data,".csv",sep="")
+out_file_name <- paste("data/FinalCounts/final_count_",sub_data,".csv",sep="")
 write.csv(final_count,file=out_file_name)
 
 
