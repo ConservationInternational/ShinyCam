@@ -397,7 +397,24 @@ shinyServer(function(input, output, session) {
                if (input$selectAgg == 1) {
                     
                     return(camera_df)    
-               } 
+                    
+               } else if (input$selectAgg == 2) {
+                    
+                    camera_df %>%
+                         group_by(Project.ID) %>%
+                         summarize(num_deployments = sum(num_deployments), count_photos = sum(count_photos)) %>%
+                         mutate(avg_photos_per_deployment = round(count_photos / num_deployments, 2)) %>%
+                         return()
+                    
+               } else if (input$selectAgg == 3) {
+                    
+                    camera_df %>%
+                         group_by(Camera.ID) %>%
+                         summarize(num_deployments = sum(num_deployments), count_photos = sum(count_photos)) %>%
+                         mutate(avg_photos_per_deployment = round(count_photos / num_deployments, 2)) %>%
+                         return()
+                    
+               }
        }
        
        
