@@ -116,27 +116,27 @@ shinyUI(navbarPage("Rates of detection", id="nav",
   
 
 ##   Tab for Camera Statistics Statistics
-##   NOTE: ADD OPERATIONAL STATS FEATURES TO THE UI HERE
      tabPanel("Camera stats",
           fluidRow(
-
+               
+               ##   Dropdown widgets
                column(3,
-                      
-                      selectInput("selectStat", label = h3("Select Statistic"), 
-                                  choices = list("Count of images" = 1, "Count of blank images" = 2, "Count of unknown images" = 3,
-                                                 "Count of uncatalogued images" = 4, "Count of wildlife images" = 5, "Count of human-related images" =6,
-                                                 "Average photos per deployment" = 7), 
+                    selectInput("selectStat", label = h4("Select Statistic"), 
+                         choices = list("Count of images" = 1, "Count of blank images" = 2, "Count of unknown images" = 3,
+                                        "Count of uncatalogued images" = 4, "Count of wildlife images" = 5, "Count of human-related images" =6,
+                                        "Average photos per deployment" = 7), 
+                                  selected = 1),
+                    
+                    selectInput("selectAgg", label = h4("Select Aggregation Field"),
+                         choices = list("Project ID & Camera ID" = 1, "Project ID" = 2, "Camera ID" = 3),
                                   selected = 1)
-                      # , selectInput("selectAgg", label = h3("Select Aggregation Field"), 
-                      #             choices = list("Project ID & Camera ID" = 1, "Project ID" = 2, "Camera ID" = 3), 
-                      #             selected = 1)
                       
                       ),
                
+               ##   Data Table
                column(9,
                DT::dataTableOutput("camtable")
                )
-               
                
           )
               

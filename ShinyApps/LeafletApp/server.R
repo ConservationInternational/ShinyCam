@@ -337,35 +337,86 @@ shinyServer(function(input, output, session) {
   
   camera_stat <- reactive({
        
-       if(input$selectStat == 1){
+       ## A resuable function for all the aggregations that involve counting images
+       ## Note the use of both Standard and Nonstandard Evalution in dplyr functions
+       
+       aggregations <- function(df, metric) {
             
-            camera_df <- dm_01_count_images
+            sum_param <- paste0("sum(", metric,")") 
             
-       } else if (input$selectStat == 2 ){
+            if (input$selectAgg == 2) {
             
-            camera_df <- dm_02_count_blanks
-            
-       } else if (input$selectStat == 3){
-            
-            camera_df <- dm_03_count_unknowns
-            
-       } else if (input$selectStat == 4){
-            
-            camera_df <- dm_04_count_uncatalogued
-            
-       } else if (input$selectStat == 5) {
-            
-            camera_df <- dm_05_count_wildlife
-            
-       } else if (input$selectStat == 6) {
-            
-            camera_df <- dm_06_count_human_related
-            
-       } else {
-            camera_df <- dm_07_avg_photos_per_deployment
+               df %>%
+                 group_by(Project.ID) %>%
+                 summarise_(sum_param) %>%
+                 return()
+                 
+            } else if (input$selectAgg == 3) {
+                 
+                 df %>%
+                    group_by(Camera.ID) %>%
+                    summarise_(sum_param) %>%
+                    return()
+            } else {
+                 
+                 return(df)
+            }
+                 
        }
        
-       return(camera_df)
+       ## Control flow for aggregations for every camera-related stat
+       
+       if(input$selectStat == 1){
+
+            aggregations(dm_01_count_images, "count_images") 
+
+       } else if (input$selectStat == 2 ){
+
+            aggregations(dm_02_count_blanks, "count_blanks")
+
+       } else if (input$selectStat == 3){
+
+            aggregations(dm_03_count_unknowns, "count_unknowns")
+
+       } else if (input$selectStat == 4){
+
+            aggregations(dm_04_count_uncatalogued, "count_uncatalogued")
+
+       } else if (input$selectStat == 5) {
+
+            aggregations(dm_05_count_wildlife, "count_wildlife")
+
+       } else if (input$selectStat == 6) {
+
+            aggregations(dm_06_count_human_related, "count_human_related")
+
+       } else {
+
+            camera_df <- dm_07_avg_photos_per_deployment
+            
+               if (input$selectAgg == 1) {
+                    
+                    return(camera_df)    
+                    
+               } else if (input$selectAgg == 2) {
+                    
+                    camera_df %>%
+                         group_by(Project.ID) %>%
+                         summarize(num_deployments = sum(num_deployments), count_photos = sum(count_photos)) %>%
+                         mutate(avg_photos_per_deployment = round(count_photos / num_deployments, 2)) %>%
+                         return()
+                    
+               } else if (input$selectAgg == 3) {
+                    
+                    camera_df %>%
+                         group_by(Camera.ID) %>%
+                         summarize(num_deployments = sum(num_deployments), count_photos = sum(count_photos)) %>%
+                         mutate(avg_photos_per_deployment = round(count_photos / num_deployments, 2)) %>%
+                         return()
+                    
+               }
+       }
+       
        
   })
   
