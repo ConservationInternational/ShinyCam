@@ -686,12 +686,16 @@ selected.names <- sort(as.character(selected.names))
             group_by(Latitude, Longitude, Deployment.Location.ID, Binomial) %>% mutate(Binomial.count = n())
           
           alert_vector <- c()
-          
+          # print(unique(terrestrial_mammals$binomial))
           if (nrow(present.species.2()) >= 1){  # if there is data in the current selection
             for (i in 1:nrow(in.dat)){
               # convert each coordinate in in.dat to spacial point
               sp <- SpatialPoints(matrix(c(in.dat$Longitude[i],in.dat$Latitude[i]), ncol=2), proj4string = CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
               # subset for the species for row i
+              index = sum(terrestrial_mammals$binomial == in.dat$Binomial[i])
+              if(index > 0){
+                print(paste("Found specie", in.dat$Binomial[i]))
+              }
               spgeom <- terrestrial_mammals[terrestrial_mammals$binomial == in.dat$Binomial[i],]
               # union of shapefiles that belong to that specie
               # try to convert
@@ -773,12 +777,13 @@ selected.names <- sort(as.character(selected.names))
         }
         
         # palette for the three cases: true (inside boundaries), false (outside boudaries), or not found.
-        pal <- colorFactor(c("black", "red", "blue"), domain = c("TRUE", "FALSE", "NOT FOUND"))
+        pal <- colorFactor(c("black", "red", "blue"), 
+                           levels = c("TRUE", "FALSE", "NOT FOUND"))
         
         if (nrow(mapping_dataset.2())>0) {
           # print(head(unique_sites,30))
           tmap <- tmap %>%
-            addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=2,
+            addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4,
                              color=~pal(InsideBoundaries), fillOpacity=1, 
                              popup = ~paste("Deployment ID:", Deployment.Location, 
                              "<br>Species out of boundaries:", Species)) %>%  # alert
@@ -794,13 +799,10 @@ selected.names <- sort(as.character(selected.names))
             addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
             addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
         }
-        # show boundaries for selected species 
-        # ==== FIX: add colors and legend to polygons!! ===== 
-        
+        # show boundaries for selected species (and if you click on them, it will tell you which specie)
         if (length(input$species.2)>0) {
           selected_polygons = terrestrial_mammals[terrestrial_mammals$binomial %in% input$species.2,]
           pal2 <- colorFactor(heat.colors(8), selected_polygons$binomial)
-          # print(paste("polygons:", names(selected_polygons)))
           tmap <- tmap %>%
             addPolygons(data = selected_polygons, weight = 5, fill=FALSE,
                         color=~pal2(binomial),

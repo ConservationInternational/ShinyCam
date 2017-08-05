@@ -29,10 +29,11 @@ dataFiles <-
     gsub(pattern = paste0(".", fileExtension), replacement = "", x = .)
 
 isPointInBoundaries <- function(sp, spgeom, specie_name){
+  # if spgeom is empty (specie not found in shapefile), then it will throw an expection
   tryCatch({
-    spgeom= unionSpatialPolygons(spgeom, 1)  # instead of 1, it was spgeom$rowNo
-    # check if it is inside or outside the specie boundary
-    return(gContains(spgeom,sp, byid = T))  # true, if points is inside boundaries
+    ID = 1:nrow(spgeom)
+    spgeom= unionSpatialPolygons(spgeom, ID)  # instead of 1, it was spgeom$rowNo
+    return(gContains(spgeom,sp, byid = F))  # true, if points is inside boundaries
   },
   error=function(cond){
     print(paste0("Shapefiles for specie ", specie_name, " were not found."))
