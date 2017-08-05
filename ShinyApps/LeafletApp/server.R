@@ -676,7 +676,7 @@ selected.names <- sort(as.character(selected.names))
     output$map.2 <- renderLeaflet({
       # Prepare data
       if (!values.2$starting) {
-        if (nrow(mapping_dataset.2())>1) {
+        if (nrow(mapping_dataset.2())>0) {
           
           # subset and unite Genus and Species to get Binomial (which is more useful for specie identification)
           in.dat.raw <- mapping_dataset.2()[c("Latitude", "Longitude", "Deployment.Location.ID", "Genus", "Species")] %>%
@@ -687,29 +687,19 @@ selected.names <- sort(as.character(selected.names))
           
           alert_vector <- c()
           
-          if (nrow(in.dat) >= 1){  # if there is data in the current selection
+          if (nrow(present.species.2()) >= 1){  # if there is data in the current selection
             for (i in 1:nrow(in.dat)){
               # convert each coordinate in in.dat to spacial point
               sp <- SpatialPoints(matrix(c(in.dat$Longitude[i],in.dat$Latitude[i]), ncol=2), proj4string = CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
               # subset for the species for row i
               spgeom <- terrestrial_mammals[terrestrial_mammals$binomial == in.dat$Binomial[i],]
               # union of shapefiles that belong to that specie
-              # spgeom$rowNo = 1
               # try to convert
               alert_vector <- c(alert_vector, isPointInBoundaries(sp, spgeom, in.dat$Binomial[i]))
             }
-            print(alert_vector)
             in.dat$alert <- alert_vector
           } 
-          # else {
-          #   idw.raster <- NULL
-          #   # this selects the data for the whole site - we do this to support the dynamic view based on protected species/site selected
-          #   in.dat <- site_selection.2()[c("Latitude", "Longitude", "Deployment.Location.ID", "Genus", "Species")] %>%
-          #     unite("Binomial", Genus, Species, sep =" ",remove = TRUE)
-          #   in.dat$alert <- c()
-          # }
         } else {
-          # idw.raster <- NULL
           # this selects the data for the whole site - we do this to support the dynamic view based on protected species/site selected
           in.dat <- site_selection.2()[c("Latitude", "Longitude", "Deployment.Location.ID", "Genus", "Species")] %>%
             unite("Binomial", Genus, Species, sep =" ",remove = TRUE)
@@ -743,7 +733,6 @@ selected.names <- sort(as.character(selected.names))
           df$Longitude = dt$Longitude
           df$CountSpecies = dt$count
           df$InsideBoundaries <- "TRUE"  # start with all TRUE (all inside)
-          print(unique_sites)
           # first set the not founds
           for(i in 1:nrow(unique_sites)){
               if(unique_sites$alert[i] == "NOT FOUND"){
@@ -759,7 +748,6 @@ selected.names <- sort(as.character(selected.names))
               df[row_index, "Species"] <- paste(df[row_index, "Species"], unique_sites$binomial[i])  # ALEX: NEEDS IMPROVEMENT - WHAT IF THERE ARE TOO MANY REPETEAD SPECIES
             }
           }
-          print(df)
           unique_sites <- df
         }
         else{
@@ -784,26 +772,21 @@ selected.names <- sort(as.character(selected.names))
             )  %>% setView(mean(in.dat$Longitude),mean(in.dat$Latitude),zoom=10) 
         }
         
-        # icon <- icons(
-        #   # if alert is true, then turn point into red
-        #   color = ifelse(alert, "red", "black") 
-        # )
         # palette for the three cases: true (inside boundaries), false (outside boudaries), or not found.
         pal <- colorFactor(c("black", "red", "blue"), domain = c("TRUE", "FALSE", "NOT FOUND"))
         
-        # if (nrow(site_selection.2())>0) {
-        if (nrow(in.dat) >= 1) {
-          print(head(unique_sites,30))
+        if (nrow(mapping_dataset.2())>0) {
+          # print(head(unique_sites,30))
           tmap <- tmap %>%
             addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=2,
                              color=~pal(InsideBoundaries), fillOpacity=1, 
                              popup = ~paste("Deployment ID:", Deployment.Location, 
-                             "<br>Specie out of boundaries:", Species)) %>%  # alert
+                             "<br>Species out of boundaries:", Species)) %>%  # alert
             addLegend(position = "topleft", title = "Legend",
                       labels=c("Inside boundaries","Outside boundaries", "Not found in shapefiles"), colors=c("black", "red", "blue"))
         }
         
-        # Park Boundary Checkbox
+        # Park Boundary Checkbox === looks like it doesn't work
         if (input$boundary_checkbox.2 == TRUE) {
           tmap <- tmap %>% 
             addPolygons(data = MCPparks, weight = 2, fill=FALSE) %>%
@@ -811,40 +794,21 @@ selected.names <- sort(as.character(selected.names))
             addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
             addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
         }
-        # show boundaries for selected species
+        # show boundaries for selected species 
+        # ==== FIX: add colors and legend to polygons!! ===== 
+        
         if (length(input$species.2)>0) {
           selected_polygons = terrestrial_mammals[terrestrial_mammals$binomial %in% input$species.2,]
+          pal2 <- colorFactor(heat.colors(8), selected_polygons$binomial)
+          # print(paste("polygons:", names(selected_polygons)))
           tmap <- tmap %>%
-            addPolygons(data = selected_polygons, weight = 2, fill=FALSE)
-          
-          # tmap <- tmap %>%
-          #   addPolygons(data = selected_polygons, weight = 2, fill=FALSE, 
-          #               color=~pal(binomial)) %>%
-          #   addLegend(position = "bottomleft", pal = ~factpal,
-          #             values = input$species.2,
-          #             title = "Species")
+            addPolygons(data = selected_polygons, weight = 5, fill=FALSE,
+                        color=~pal2(binomial),
+                        popup = ~paste("Specie:", binomial))
         }
-        
-        # if (length(input$species.2) > 0) {
-        #   # for(i in 1:length(input$species.2)){
-        #   #   print("Showing boundaries for selected species")
-        #   #   data_specie = site_selection.2() # intersection between site_selection.2 and the shapefiles
-        #   #   tmap <- tmap %>%
-        #   #     addPolygons(data = MCPparks, weight = 2, fill=FALSE) 
-        #   # }
-        #   # create pallete - one color for each specie
-        #   factpal <- colorFactor(topo.colors(length(input$species.2)), factor(input$species.2))
-        #   # Add legend
-        #   tmap <- tmap %>% 
-        #     addLegend(position = "bottomleft", pal = ~factpal, 
-        #               values = input$species.2,
-        #               title = "Species")
-        # }
-        
-        tmap
-      } else {
-        NULL
       }
+      tmap
+
     })
     
     # Update species selection based on RED and guild
