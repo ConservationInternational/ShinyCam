@@ -27,3 +27,16 @@ fileExtension = "csv"
 dataFiles <-
     dir(path = "data/", pattern = paste0("*.", "csv")) %>%
     gsub(pattern = paste0(".", fileExtension), replacement = "", x = .)
+
+isPointInBoundaries <- function(sp, spgeom, specie_name){
+  tryCatch({
+    spgeom= unionSpatialPolygons(spgeom, 1)  # instead of 1, it was spgeom$rowNo
+    # check if it is inside or outside the specie boundary
+    return(gContains(spgeom,sp, byid = T))  # true, if points is inside boundaries
+  },
+  error=function(cond){
+    print(paste0("Shapefiles for specie ", specie_name, " were not found."))
+    # FIX later: if the specie is not in the shapefiles, then don't show alert
+    return("NOT FOUND")
+  })
+}
