@@ -15,6 +15,7 @@ library(KernSmooth)
 library(viridis)
 library(rgdal)
 library(rgeos)
+library(tidyr)
 source("scripts/kernel_density_estimate.R")
 source("scripts/extra_plot.R")
 

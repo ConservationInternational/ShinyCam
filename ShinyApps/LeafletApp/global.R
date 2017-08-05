@@ -28,16 +28,22 @@ dataFiles <-
     dir(path = "data/", pattern = paste0("*.", "csv")) %>%
     gsub(pattern = paste0(".", fileExtension), replacement = "", x = .)
 
+# loading terrestrial_mammals - do it global to only load it once, otherwise, it could be added to map.2 in server.R to make it slow only for species alert tab
+# load this big shapefile only once (if it already as global variable it won't load again)
+shapefile_path <- "data/Shapefiles"
+# terrestrial mammals shapefiles 
+if(!exists("terrestrial_mammals")){
+  terrestrial_mammals <- readOGR(shapefile_path, "new_terrestrial_mammals", verbose = FALSE) %>%
+    spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+}
+
 isPointInBoundaries <- function(sp, spgeom, specie_name){
   # if spgeom is empty (specie not found in shapefile), then it will throw an expection
   tryCatch({
-    ID = 1:nrow(spgeom)
-    spgeom= unionSpatialPolygons(spgeom, ID)  # instead of 1, it was spgeom$rowNo
     return(gContains(spgeom,sp, byid = F))  # true, if points is inside boundaries
   },
   error=function(cond){
     print(paste0("Shapefiles for specie ", specie_name, " were not found."))
-    # FIX later: if the specie is not in the shapefiles, then don't show alert
     return("NOT FOUND")
   })
 }
