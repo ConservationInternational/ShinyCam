@@ -70,3 +70,7 @@ target/
 data/*
 ShinyApps/LeafletApp/data/*.csv
 ShinyApps/LeafletApp/data/Shapefiles/*
+ShinyApps/LeafletApp/data/processed/*
+rscripts/*.csv
+rscripts/shapefiles/*
+rscripts/shrinked_data/*
