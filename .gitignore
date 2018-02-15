@@ -16,6 +16,7 @@ __pycache__/
 .Rproj.user
 .RData
 .Rhistory
+ShinyCam.Rproj
 
 # Individual Data Files
 *.csv
