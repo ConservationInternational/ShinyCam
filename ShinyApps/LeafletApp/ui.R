@@ -1,3 +1,6 @@
+# ShinyCam ui.R
+#
+
 library(raster)
 library(shiny)
 library(leaflet)
