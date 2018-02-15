@@ -4,6 +4,7 @@
 *.zip
 *.xls
 *.xlsx
+*.DS_Store
 
 #data/*
 ShinyApps/LeafletApp/data/*.csv
