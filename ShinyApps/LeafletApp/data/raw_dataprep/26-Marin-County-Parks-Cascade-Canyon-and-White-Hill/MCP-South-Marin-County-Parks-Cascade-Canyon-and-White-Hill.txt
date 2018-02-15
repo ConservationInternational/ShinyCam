@@ -1,0 +1,29 @@
+
+
+Project Id = MCP-South
+Project Name = Marin County Parks Cascade Canyon and White Hill
+Project Objective	= Wildlife monitoring in the MWPIP north project
+Project Status = Active
+Data Use And Constraints = Please contact the One Tam data manager about using this dataset
+Publish Date = 2016-11-29
+Country Code = US
+projectOwnerName = 
+projectOwnerEmail= 
+Principal Investigator Name = null
+Principal Investigator Email = null
+
+
+Users associated with this  project: 
+1.) anwi.ennui@yahoo.com
+2.) benelan@yahoo.com
+3.) chendrickson@marincounty.org
+4.) larellano@parksconservancy.org
+5.) ledson@parksconservancy.org
+6.) lmichl@marincounty.org
+7.) mcpresources@gmail.com
+8.) nathaniel.w.clark@gmail.com
+9.) nevinpc@comcast.net
+10.) rob_donna@hotmail.com
+11.) rschneider@onetam.org
+12.) sdhubert@gmail.com
+13.) townsend_s@sbcglobal.net

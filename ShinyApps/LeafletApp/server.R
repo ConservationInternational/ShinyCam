@@ -38,7 +38,6 @@ red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   
                                                                            ##   when evaluating redlist categories.
 
 # Read Camera Stats
-
 dm_01_count_images <- read.csv('data/processed/dm_01_count_images.csv', stringsAsFactors = FALSE) 
 dm_02_count_blanks <- read.csv('data/processed/dm_02_count_blanks.csv', stringsAsFactors = FALSE)
 dm_03_count_unknowns <- read.csv('data/processed/dm_03_count_unknowns.csv', stringsAsFactors = FALSE)
@@ -48,20 +47,26 @@ dm_06_count_human_related <- read.csv('data/processed/dm_06_count_human_related.
 dm_07_avg_photos_per_deployment <- read.csv('data/processed/dm_07_avg_photos_per_deployment.csv', stringsAsFactors = FALSE)
 
 # Read shapefiles for park boundaries
+## Need to modify 
+#shapefile_path <- "data/Shapefiles"
+# Read shapefiles for park boundaries
 
-shapefile_path <- "data/Shapefiles"
+shapefile_path <- "data/Shapefiles/GunturPapandayan/"
 
-MCPparks <- readOGR(shapefile_path, "MCPparks", verbose = FALSE) %>%
-     spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
-
-GGNRA_incChedaJewel <- readOGR(shapefile_path, "GGNRA_incChedaJewel", verbose = FALSE) %>%
-     spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
-
-MMWD <- readOGR(shapefile_path, "MMWD", verbose = FALSE) %>%
-     spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
-
-SamuelPTaylor <- readOGR(shapefile_path, "SamuelPTaylor", verbose = FALSE) %>%
-     spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+#GunturPapandayan
+GP <- readOGR(shapefile_path, "KPHK GUNTUR-PAPANDAYAN", verbose = FALSE) %>%
+   spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+# MCPparks <- readOGR(shapefile_path, "MCPparks", verbose = FALSE) %>%
+#  spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+# 
+# GGNRA_incChedaJewel <- readOGR(shapefile_path, "GGNRA_incChedaJewel", verbose = FALSE) %>%
+#   spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+# 
+# MMWD <- readOGR(shapefile_path, "MMWD", verbose = FALSE) %>%
+#      spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+# 
+# SamuelPTaylor <- readOGR(shapefile_path, "SamuelPTaylor", verbose = FALSE) %>%
+#      spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
 
 
 shinyServer(function(input, output, session) {
@@ -78,15 +83,16 @@ shinyServer(function(input, output, session) {
   
   # Function to read in input data based on project (TEAM or Marin)
   dataset_input <- reactive({
-    if (input$dataset=="TEAM") {
-      indat <- as.data.frame(fread("./data/team_rate_of_detection.csv"))   
-    } else if (input$dataset == "MWPIP") {
-      indat <- as.data.frame(fread("./data/rate_of_detection_MARIN.csv"))
-    }
+  #  if (input$dataset=="TEAM") {
+    #  indat <- as.data.frame(fread("./data/team_rate_of_detection.csv"))   
+   # } else if (input$dataset == "MWPIP") {
+      indat <- as.data.frame(fread("./data/KPHK_Guntur_Papandayan_rate_of_detection_120.csv"))
+    #}
     names(indat) <- make.names(names(indat))                               ##   Make column names syntactically-valid (no spaces)
     names(indat)[names(indat) == "Longitude.Resolution"] <- "Longitude"
     names(indat)[names(indat) == "Latitude.Resolution"] <- "Latitude"
-    indat <- subset(indat, Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
+    # Why subset
+   # indat <- subset(indat, Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
     
 
     createTimeStamp <- function(samplingPeriod, year) {
@@ -104,7 +110,7 @@ shinyServer(function(input, output, session) {
     labels <- as.character(unique(dataset_input()$Project.ID))
     
     ##    Add "All Sites" option to labels vector if dataset is "MWPIP"
-    if(input$dataset == "MWPIP"){
+    if(input$dataset == "KPHK_Guntur_Papandayan"){
          labels <- c(labels, "All Sites")
     }
     
@@ -161,7 +167,7 @@ shinyServer(function(input, output, session) {
   output$time.control <- renderUI({
     tmin <- min(dataset_input()$timestamp, na.rm=TRUE)
     tmax <- max(dataset_input()$timestamp, na.rm=TRUE)
-    selectInput("time_slider", label = "Select Time", choices = as.character(unique(site_selection()$timestamp)))
+    selectInput("time_slider", label = "Select Time", choices = sort(as.character(unique(site_selection()$timestamp))))
   })
 
   # Render guild selector
@@ -187,7 +193,7 @@ shinyServer(function(input, output, session) {
   })
 
 
-  ## Interactive Map ###########################################
+  ## Leaflet Detection Rate Map ###########################################
 
   # Create the map
   output$map <- renderLeaflet({
@@ -271,13 +277,13 @@ shinyServer(function(input, output, session) {
         addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=2, color="black", fillOpacity=1)
     }
     
-    # Park Boundary Checkbox
+    # Park Boundary Checkbox - Showing Shapefile names needs to be dynamic
     if (input$boundary_checkbox == TRUE) {
          tmap <- tmap %>% 
-              addPolygons(data = MCPparks, weight = 2, fill=FALSE) %>%
-              addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
-              addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
-              addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
+              addPolygons(data = GP, weight = 2, fill=FALSE)# %>%
+              #addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
+              #addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
+              #addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
     }
     
     
@@ -298,7 +304,7 @@ shinyServer(function(input, output, session) {
         # customizability. Consider updating to make custom legend in sidebar.
         addLegend(position = "bottomleft", pal = pal, 
                   values = values(idw.raster),
-                  title = "Species density<br>(Interpolated)") # Units?
+                  title = "Rates of Detection<br>(Interpolated)") # Units?
     } else {
       tmap
     }
@@ -317,14 +323,26 @@ shinyServer(function(input, output, session) {
   
   
   # Data-export functionality for "Download Data" button
-  # TODO change file name based on filters
-  output$downloadData <- downloadHandler(
+  # TODO Update downloads...
+  data_event <- as.data.frame(fread("./data/_trap_days.csv"))
+  
+  output$downloadData1 <- downloadHandler(
     filename = function() { paste('data', '.csv', sep='') },
     content = function(file) {
-      write.csv(subsettedData, file)
+      write.csv(data_event, file)
     }
   )
-
+  # Code to download a file
+  output$downloadData2 <- downloadHandler(
+    filename <- function() {
+      paste("combined", ".csv", sep=".")
+    },
+    
+    content <- function(file) {
+      file.copy("data/combined.csv", file)
+    },
+    contentType = "application/zip"
+  )
   
   #  Render JavaScript table widget for "Data Explorer" tab
   output$table <- DT::renderDataTable({
@@ -584,13 +602,13 @@ selected.names <- sort(as.character(selected.names))
     
     # ############# Species Alert Tab ##############################
     # Copy/pasted the previous functions and added ".2" to them to avoid repetition of previous input/output
-    
+    #T his should be same as inital load..no need to reload
     # Function to read in input data based on project (TEAM or Marin)
     dataset_input.2 <- reactive({
       if (input$dataset.2=="TEAM") {
         indat <- as.data.frame(fread("./data/team_rate_of_detection.csv"))   
       } else if (input$dataset.2 == "MWPIP") {
-        indat <- as.data.frame(fread("./data/rate_of_detection_MARIN_total.csv"))
+        indat <- as.data.frame(fread("./data/rate_of_detection_MARIN_total_120secs.csv")) ## This should be same as inital load..no need to reload
       }
       names(indat) <- make.names(names(indat))                               ##   Make column names syntactically-valid (no spaces)
       names(indat)[names(indat) == "Longitude.Resolution"] <- "Longitude"
@@ -668,6 +686,12 @@ selected.names <- sort(as.character(selected.names))
     output$species.list.2 <- renderUI({
       selectInput("species.2", "Select Species (Multiple Possible)",
                   choices=sort(as.character(present.species.names.2())), selected=NULL, multiple=TRUE)
+    })
+    
+    #Choose the data event subsetting. All data is now preprocessed and matches these subsets
+    output$subsettingradio <- renderUI({
+      radioButtons("radiosubsetting", label = HTML("<b>Time Duration Subsetting</b>"),
+                   choices = list(" 2 Minutes" = 1, "30 Minutes" = 2,"1 Day" = 3), selected = 1)
     })
     
     

@@ -1,15 +1,24 @@
+# IPython Notebook
+.ipynb_checkpoints/
 
-# Data filest to ignore
+# Mac
+.DS_Store
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
+
+=======
+# R Information
+.Rproj.user
+.RData
+.Rhistory
+
+# Individual Data Files
 *.csv
 *.zip
 *.xls
 *.xlsx
-*.DS_Store
-
-#data/*
-ShinyApps/LeafletApp/data/*.csv
-ShinyApps/LeafletApp/data/Shapefiles/*
-ShinyApps/LeafletApp/data/processed/*
-#rscripts/*.csv
-#rscripts/shapefiles/*
-#rscripts/shrinked_data/*

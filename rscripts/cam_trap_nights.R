@@ -1,6 +1,7 @@
 ####
 # cam_trap_nights.R
 # Calculate the number of camera trap nights per camera per deployment
+# Needs more description
 
 rm(list = ls())
 # Load libraries
@@ -9,32 +10,33 @@ library(lubridate)
 library(plyr)
 library(zoo)
 
-#Set working dir
-setwd("/Users/efegraus/work/DataKind/ShinyCam")
-## For Marin the trap day aggregation will be at YYYY and MM level not Sampling Period
+# Set the path and workspace to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
+shinycam_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam"
+prj_name<- "KPHK_Guntur_Papandayan" # No spaces in names
+setwd(shinycam_path)
+source("rscripts/RShiny_functions.R")
+###############################
+#Load Data
+df_name <- "indonesia_joined_data.csv" # This should be a file name that is in the correct format. See README process for explanation
+ct_data <-read.csv(paste("ShinyApps/LeafletApp/data/raw_dataprep/",df_name, sep=""))
+ct_data_new <- select(ct_data,Project.ID,Deployment.Location.ID,Camera.Deployment.Begin.Date,Camera.Deployment.End.Date,Date_Time.Captured)
+old <- Sys.time() 
 
-## Use the full dataset or subset by project. Make sure to use all images regardless of whether they are photo typ = Animal.
-marin_data <- read.csv("data/marin_data.csv")
-# Subset by project if needed
-sub_data <-c("Samuel-P-Taylor") # Set variable to label future dataframes and .csv's
-# ChedaJewel      Samuel-P-Taylor MMWD            GaryGiacomini   MCP-South       MCP-North
-marin_data_sub <- filter(marin_data,Project.ID == sub_data)
-marin_data_new <- select(marin_data_sub,Project.ID,Deployment.Location.ID,Camera.Deployment.Begin.Date,Camera.Deployment.End.Date,Date_Time.Captured)
+# Ensure date columns are correct
+ct_data_new$Date_Time.Captured <- as.POSIXct(strptime(ct_data_new$Date_Time.Captured,"%Y-%m-%d %H:%M:%S"))
+no_dates <- ct_data_new[which(is.na(ct_data_new$Date_Time.Captured)==TRUE),]
+# if no_dates has any records this means you need to do some data cleaning.
+# Pop-off these records as we can't use them
+ct_data_new <- filter(ct_data_new,!is.na(Date_Time.Captured))
 
-# Handle date columns
-# Ran into problem with MMWD- Below works
-marin_data_new$Date_Time.Captured <- as.POSIXct(strptime(marin_data_new$Date_Time.Captured,"%Y-%m-%d %H:%M:%S"))
-no_dates <- marin_data_new[which(is.na(marin_data_new$Date_Time.Captured)==TRUE),]
-# Pop-off NA's
-marin_data_new <- filter(marin_data_new,!is.na(Date_Time.Captured))
-
-marin_data_new$Camera.Deployment.Begin.Date <- as.POSIXct(marin_data_new$Camera.Deployment.Begin.Date)
-marin_data_new$Camera.Deployment.End.Date <- as.POSIXct(marin_data_new$Camera.Deployment.End.Date)
+# Creat date data types
+ct_data_new$Camera.Deployment.Begin.Date <- as.POSIXct(ct_data_new$Camera.Deployment.Begin.Date)
+ct_data_new$Camera.Deployment.End.Date <- as.POSIXct(ct_data_new$Camera.Deployment.End.Date)
 
 # Get the unique list of deploymnets
-unique_deployments <- unique(marin_data_new$Deployment.Location.ID)
+unique_deployments <- unique(ct_data_new$Deployment.Location.ID)
 # Setup the output dataframe for trap nights/days
-output_df <- marin_data_new[NA,]
+output_df <- ct_data_new[NA,]
 output_df <- select(output_df,Project.ID,Deployment.Location.ID,Camera.Deployment.Begin.Date,Camera.Deployment.End.Date)
 output_df <- output_df[(1),]
 output_df$Year <-NA
@@ -42,11 +44,10 @@ output_df$Month <-NA
 output_df$TrapDays <- NA
 output_df$TotalCheck <- NA
 output_df$LastDay <- as.POSIXct(NA)
-
+prob_deployments <-NA
 # Begin the loops. Go by deployment location ID first
 for (i in 1:length(unique_deployments)) {
-  temp <- filter(marin_data_new,Deployment.Location.ID == unique_deployments[i])
-  #temp$Camera.Deployment.Begin.Date <- as.POSIXct(temp$Camera.Deployment.Begin.Date,"%Y-%m-%d")
+  temp <- filter(ct_data_new,Deployment.Location.ID == unique_deployments[i])
   # Get all the begin Dates for each deployment
   unique_begin <- unique(temp$Camera.Deployment.Begin.Date)
   # After getting all data for a deployment locations go through each deployment at that location
@@ -58,7 +59,7 @@ for (i in 1:length(unique_deployments)) {
     # Get the date of the last image
     max_date <- as.POSIXct(range(temp2$Date_Time.Captured))
     #end_date <- as.POSIXct(max_date)
-    tz(max_date)<-"America/Los_Angeles"
+    tz(max_date) <- "America/Los_Angeles"
     # end_eom has both the last day of the first month and the last day of the last month 
     # from the images
     end_eom<- eom(max_date)
@@ -119,32 +120,24 @@ for (i in 1:length(unique_deployments)) {
           
     } else {
       print(paste("ERROR4",unique_deployments[i],interval1,max_date[1],max_date[2],i,j,sep=","))
+        prob_deployments <- rbind(paste(unique_deployments[i],unique_begin[j],max_date[1],max_date[2],sep="|"),prob_deployments)
       break
     }  
     
   } 
 }  
+new <- Sys.time() - old 
+# Print out the events file and then the final_counts
+output_path <-"ShinyApps/LeafletApp/data/raw_dataprep/"
+write.csv(output_df,file=paste(output_path,"trap_days_",prj_name,".csv", sep=""))
+if (length(prob_deployments) > 1) {
+  print("There are some problems with the deployments that snuck past the filters check out the file PRJNAME_problem_deployments.csv")
+  prob_file_name <- paste("data/raw_dataprep/",prj_name,"_problem_deployments.csv",sep="")
+  write.csv(prob_deployments,prob_file_name)
+}
 
-
-out_file_name <- paste("data/",sub_data,"_trap_days.csv",sep="")
-write.csv(output_df,out_file_name)
 ######################
 
 
 
-
-##############################################################
-#END OF SCRIPT
-##############################################################
-#eom <- function(date) {
-#  # date character string containing POSIXct date
-#  date.lt <- as.POSIXlt(date) # add a month, then subtract a day:
-#  mon <- date.lt$mon + 2 
-#  year <- date.lt$year
-#  year <- year + as.integer(mon==13) # if month was December add a year
-#  mon[mon==13] <- 1
-#  iso = ISOdate(1900+year, mon, 1,hour=0,tz=attr(date,"tz"))
-#  result = as.POSIXct(iso) - 86400 # subtract one day
-#  result + (as.POSIXlt(iso)$isdst - as.POSIXlt(result)$isdst)*3600
-#}
 

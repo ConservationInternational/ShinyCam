@@ -4,6 +4,10 @@
 # This shrinks the huge terrestrial mammals shapefile dataset and takes only the species that are in our data
 # As it is terrestrial mammals, this was done only to TEAM dataset
 # From 600 Mb to 100 Mb
+# Please, refer to this to website http://www.iucnredlist.org/technical-documents/spatial-data and search for 
+# Terrestrial Mammals that is under the main dataset Mammals. We only worked with terrestrial mammals in danger, 
+# but the same procedure can be extended to other datasets.
+
 
 library(dplyr)
 library(rgeos)
