@@ -14,3 +14,5 @@ marin_data_complete2$Photo.Type.Identified.by2 <- ifelse(marin_data_complete2$Ph
 my.table <- table(toupper(gsub(pattern = '^ *', replacement = '', x =marin_data_complete2$Photo.Type.Identified.by2)), marin_data_complete2$Uncertainty2)
 my.table.proportions <- round(prop.table(my.table, 1)*100,2)
 
+
+
