@@ -15,6 +15,7 @@ __pycache__/
 # R Information
 .RData
 .Rhistory
+.Rproj.user
 
 
 # Individual Data Files
