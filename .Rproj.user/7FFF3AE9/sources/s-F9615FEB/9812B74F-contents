@@ -1,0 +1,310 @@
+#Here is the user interface for the Shiny app. This app requires pre processed files to compute subsetted data events, 
+#detection rates, and detection rates with zero detections.
+
+#Load general libraries and data
+library(raster)
+library(shiny)
+library(leaflet)
+
+# Choices for drop-downs
+vars <- c(
+  "Is SuperZIP?" = "superzip",
+  "Centile score" = "centile",
+  "College education" = "college",
+  "Median income" = "income",
+  "Population" = "adultpop",
+  "Data source" = "TEAM"
+)
+
+
+shinyUI(navbarPage("Camera-Trap Project", id="nav",
+#############################
+#############################
+#The first tab should have the detection rate map.
+#
+tabPanel("Detection Rate",
+
+	
+	
+#the sidebar includes all the subsetting rules	
+sidebarPanel(
+      # Inputs excluded for brevity
+    	
+	 #  HTML("<b>Species:</b>"), textOutput("text1"),
+	 # 	br(),
+	 # 	HTML("<b>Data Set:</b>"),textOutput("text2"),
+	 # 	br(),
+	 # 	HTML("<b>Site Selection:</b>"), textOutput("text3"),
+	 #  br(),
+	#	 wellPanel(
+		 	  #selectInput("dataset", "Camera Trap Project", c("MWPIP", "TEAM")),
+				selectInput("dataset", "Camera Trap Project", c("MWPIP")),
+	      uiOutput('subsettingradio'),
+			uiOutput("frequency.control"),
+        uiOutput("site_checkbox"),
+        uiOutput("guild.control"),
+        uiOutput("red.control"),
+        uiOutput("species.list")
+        
+   
+,width=3),
+	
+#the mainpanel is the detection rate map	
+mainPanel(
+tabsetPanel(##   Tab for Interactive Map
+  tabPanel("Map",
+     div(class="inner",
+     	
+     	#This style is intended to control the leaflet app dimensions
+    	tags$style(type = "text/css", "
+     	.inner {
+    float: left;
+    position: fixed;
+margin-left:-150px;
+    width: 400px;
+    height: 50px;
+}"),
+    
+      tags$head(
+        # Include our custom CSS
+        includeCSS("styles.css"),
+        includeScript("gomap.js")
+      ),
+      
+      leafletOutput("map", width="120%", height="110%"),
+
+      # Portion of side panel menu always present.
+      # Shiny versions prior to 0.11 should use class="modal" instead.
+      absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+        draggable = FALSE, top = 140, left = "auto", right = 100, bottom = 10,
+        width = 300, height = 160,
+
+
+        checkboxInput("boundary_checkbox", label = "Display Park Boundaries", value = FALSE),
+      	uiOutput("time.control")
+      	##############################
+      	
+
+#BDG - eric suggested to turn off all conditional panels for now - as they are hard to see.
+      #   conditionalPanel(
+      #     condition = 'input.species != null',
+      #     #plotOutput("histCentile", height = 200),
+      #     #plotOutput("scatterCollegeIncome", height = 250),
+      #     h3("Site-Specific Plots"),
+      #     h4("Time Series of Site-Wide Rate of Detection"),
+      #     plotOutput("total_ts", height = 200),
+      #     h4("Top 5 Genera by Rate of Detection"),
+      #     plotOutput("top_five_plot", height = 200),
+      # 
+      #     #h4("Overall Trends"),
+      #     #plotOutput("health_ts", height = 200),
+      #   #hr(),
+      #   h3("Camera Specific Plots"),
+      #   h4("(Click a red point on the map to enable)"),
+      #   plotOutput("camera_ts_benchmark", height = 200),
+      #   plotOutput("camera_ts_benchmark_facet", height = 200)
+      # )
+        
+      ),
+
+      # Left# Portion of side panel always present.
+      tags$div(id="cite",
+        'Data compiled for ', vars['Data source']
+      )
+    )
+  ),
+	
+	
+	
+	#this subtab displays the data event table and allows it to be dowbloaded
+	tabPanel("Data Event Table",
+   fluidRow(
+      column(1,br(), 
+        downloadButton('downloadData1', 'Download')
+      )
+    ),
+		br(),
+		fluidRow(HTML("The data event table shows all photograph events
+      	(after subsetting by the time interval) for each species selected for the Site/Subregion selected. The temporal activity analysis is based on these data.")),
+hr(),
+DT::dataTableOutput('dataeventtable')),
+       
+tabPanel("Detection Rate Table",
+	fluidRow(
+      column(1,br(),
+        downloadButton('downloadData2', 'Download')
+      )
+    ),
+	br(),
+			fluidRow(HTML("The detection rate table shows the number of data events per 100 trap nights for each species and for all camera sites within the selected Site/Subregion.")),
+
+hr(),
+DT::dataTableOutput('datacapturerates')
+),
+
+#this tab shows the detection rates plus all the sites without detections. NOt a useful visualization but is needed for mapping	
+tabPanel("Detection Rate Table with Zeros",
+	fluidRow(
+		column(1, br(),
+	downloadButton('downloadData3', 'Download'))),
+		br(),
+			fluidRow(HTML("The detection rate table includes the detection rates from the previous table and adds the sites that were deployed but did not detect the selected species at the camera site.")),
+
+	hr(),
+	DT::dataTableOutput('datacaptureratesZeros')
+	)#,
+	# tabPanel("Temp",
+	# fluidRow(
+	# DT::dataTableOutput('tempout')
+	# ))
+	
+))
+), #End main tab
+	
+
+#This sub tab displayes the temporal activity analysis for two species	
+tabPanel("Temporal Activity",	
+	tabsetPanel(tabPanel("Species Kernel Density Plot(s)",
+		fluidRow(column(3,uiOutput("temporal_activity_time"))),
+	fluidRow(column(3,uiOutput("ta.species1")),column(5,uiOutput("ta.species2")))	,
+		
+	#br(),
+	HTML("Select two species to fit a circular kernel density and evaluate temporal actvity via the methods of Ridout and Linkie (2009). The species available to be selected here are based on the species selected in the Detection Rate tab. If a species does not have a minimum of five data events, there will be no kernel analysis; there will be a rose plot.
+		The temporal activity analysis uses the data event table. One can subset these data by sampling month or year. The default is to us all data from all months and years. In the next sub-tab,
+		one can plot both species together; the title will display three estimates of overlap."),
+		br(),
+		fluidRow(
+      column(1,plotOutput("tempact1", height = 700, width=1200)))
+	),
+	tabPanel("Species Kernel Overlap Plot",
+	fluidRow(
+      column(1,plotOutput("tempact2", height = 700, width=1200)))
+	),
+		tabPanel("Rose Plots",
+	fluidRow(
+      column(1,plotOutput("tempact3", height = 700, width=1200)))
+	)
+		)),
+
+#This tab displayes species richness and occupancy estimates- it does not depend on the data event tables. It is processed separately.
+tabPanel("Species Richness/Occupancy",
+tabsetPanel(
+		tabPanel("Species Accumulation",
+			br(),
+			HTML("Species accumulation data is based on the Site/Subregion selected in the Detection Rate tab. The sampling frequency selection within the Detection Rate"),br(),
+      HTML(" tab will dictate the time periods that can be selected for mapping species accumulation. The occupancy analyses in the adjacent sub-tabs are based on the sites displayed
+      	here in the species accumulation map and the time period selected. "),
+		  #textOutput("text9")
+    fluidRow(column(12,div(class="inner",
+      tags$head(
+        # Include our custom CSS
+        includeCSS("styles.css"),
+        includeScript("gomap.js")
+      ),
+      leafletOutput("mapsac", width="100%", height="100%"),
+
+      # Portion of side panel menu always present.
+      # Shiny versions prior to 0.11 should use class="modal" instead.
+      absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
+        draggable = FALSE, top = 120, left = "auto", right = 20, bottom = 10,
+        width = 600, height = "auto", style = "overflow-y:scroll",
+
+
+        checkboxInput("boundary_checkbox2", label = "Display Park Boundaries", value = FALSE),
+      	HTML('Species accumulation can be negatively biased. We can use our sample to estimate the species richness using the non-parameteric Jackknife estimator.'),
+      	checkboxInput("species.richness.estimate", label = "Estimate Species Richness?", value = FALSE),
+				uiOutput("time.control.sac"),
+			plotOutput("sac1")
+     ),
+
+      # Left# Portion of side panel always present.
+      tags$div(id="cite",
+        'Data compiled for ', vars['Data source']
+      )
+    )
+  ))),
+	
+	#Display the community occupancy tab. This model runs when the radiobutton is clicked for MCMC configuration
+	tabPanel("Community Occupancy Model",
+
+mainPanel( 
+ sidebarPanel(
+   HTML("This tab will run the Community-Occupancy model of Dorazio et al. 2006. 
+        Note that 'monthly' time periods will estimate daily detection probabiliy, while
+        'annual' time periods will estimate monthly detection probabilities. Occurence and detection
+        probailities are species specific."),
+   br(),br(),
+ 	HTML("To Run the Species Occupancy/Community Model,"),
+  br(),
+	HTML("1) Select month in 'Species Accumulation' tab."),
+ 	br(),
+  HTML("2) Choose an MCMC setup here."),
+ 	br(),
+ 	br(),
+ 	uiOutput("jags.n.mcmc"),
+ 	downloadButton("downloadZip", label = "Download Detection/NonDetection Data")),
+	mainPanel(
+	conditionalPanel(condition = "input.checkjags > 0",
+		fluidRow(column(6,DT::dataTableOutput('jagsout'))),
+		fluidRow(	column(5,DT::dataTableOutput('jagsout2'))),
+		fluidRow(column(8,plotOutput("speciesrichness")))
+	)
+	#fluidRow(column(10,plotOutput("speciesrichness")))
+		)
+)
+ 	),
+	#Display the species occupancy analysis. This is a different analysis than the community occupancy. It does not share information
+	#across the species.
+tabPanel("SS-SS Occupancy",
+	HTML("Fit the MacKenzie et al. 2002 occupancy model to each species. Species must have at least three detections. The first table
+		shows the estimates of occupancy and detection for each species at the Site/Subregion level. The second table shows the probability
+		of species occurence for each camear site, given the detection history."),
+	br(),
+	br(),
+	fluidRow(column(8,DT::dataTableOutput('ss_occupancy'))),
+	br(),
+	br(),
+	fluidRow(column(8,DT::dataTableOutput('mapping_occ_dataframe')))
+	),
+			tabPanel("Map Occupancy",
+		  #textOutput("text9")
+			fluidRow(column(8,div(class="inner",
+#This style is intended to control the dimension of the leaflet map
+				HTML('<style>
+ .inner {
+position:absolute; top: 55px; left: 160px;
+    width: 960px;
+    height: 700px;
+     padding: 0px;
+ }
+</style> '),
+       tags$head(
+        # Include our custom CSS
+        includeCSS("styles.css"),
+        includeScript("gomap.js")
+      ),
+	    leafletOutput("mapocc", width="100%",height="100%"),
+				
+      # Left# Portion of side panel always present.
+      tags$div(id="cite",
+        'Data compiled for ', vars['Data source']
+      ))),column(5,
+				uiOutput('occ.species.mapping'))
+			)
+    ),
+	
+	#sub tab for Royle NIchols model output
+	tabPanel("RN Occupancy",
+	HTML("Fit the occupancy model of Royle and Nichols (2003); estimates a table of the predicted abundance (mode) for each species at each site."),
+		br(),
+		br(),
+		DT::dataTableOutput('RN_occupancy')
+	)
+	
+	
+	)),	
+
+
+
+conditionalPanel("false", icon("crosshair"))	
+))
