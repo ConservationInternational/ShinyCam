@@ -12,8 +12,17 @@ library(lubridate)
 library(plyr)
 library(data.table)
 library(measurements)
-#Set working dir
-setwd("/Users/efegraus/work/DataKind/Indonesia/RawData/csv_format/")
+# Set you local path to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
+local_path <- "/Users/efegraus/Documents/GitHub/ShinyCam/"
+# Set your project name
+prj_name<- "KPHK_Guntur_Papandayan" # No spaces in names
+############################ 
+# relative paths and set working directory
+shinycam_path <- "ShinyApps/LeafletApp/data/raw_dataprep/"
+# comment this out if you don't need a directory below raw_dataprep
+your_data_dir_or_file <- "csv_format"
+# set the working directory
+setwd(paste(local_path,shinycam_path,your_data_dir_or_file,sep=""))
 ############################ 
 # This file will work with exports from Wild.ID, specifically the .csv format and the Wildlife Insights format. 
 # Load CSV exported file types here
@@ -25,7 +34,7 @@ ct_data <- ldply( .data = list.files(pattern="*.csv",recursive = TRUE),
 ct_data <- subset(ct_data,!is.na(Photo.Type)) # just in case empty rows come in from your datafiles
 #####
 # Load the Wildlife Insights exported file types here. You only need to use one of these depending on what you exported from Wild.ID
-# Code to be complete here
+# Code to be completed here
 #
 #
 #
@@ -105,8 +114,9 @@ joined_data <- full_data
 ############################
 # Write out the fully combined dataset.
 # Create a path for output
-my_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam/ShinyApps/LeafletApp/data/raw_dataprep/"
-write.csv(joined_data,file=paste(my_path,"indonesia_joined_data.csv", sep=""))
+#my_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam/ShinyApps/LeafletApp/data/raw_dataprep/"
+file_name<- paste(prj_name,joined,".csv",sep="")
+write.csv(joined_data,file=file_name)
 
 
 

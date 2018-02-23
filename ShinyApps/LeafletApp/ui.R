@@ -22,7 +22,7 @@ shinyUI(navbarPage("ShinyCam", id="nav",
   tabPanel("Rates of Detection",
    #the sidebar includes all the subsetting rules	
     sidebarPanel(
-      selectInput("dataset", "Camera Trap Project", c("KPHK_Guntur_Papandayan")),  ## THIS NEEDS TO BE CUSTOMIZED
+      selectInput("dataset", "Camera Trap Project", c("MWPIP")),  ## THIS NEEDS TO BE CUSTOMIZED
       uiOutput('subsettingradio'),
       uiOutput("frequency.control"),
       uiOutput("site_checkbox"),

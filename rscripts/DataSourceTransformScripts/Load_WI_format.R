@@ -9,7 +9,9 @@ library(lubridate)
 library(plyr)
 
 #Set working dir
-setwd("..")
+shinycam_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam"
+setwd(shinycam_path)
+
 ############################ 
 # Make this generic so loads all WI formatted data in a top level directory and creates one big dataframe.
 # Change the paths and datasets names to make this work. Data MUST be in Wildlife Insights downloadformat.

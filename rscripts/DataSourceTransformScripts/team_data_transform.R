@@ -2,8 +2,8 @@
 # Get team dataset to be the same as the Wildlife Insights template that used in ShinyCam.
 # This is for a custom, advanced download of camera trap data from the TEAM database.
 library(dplyr)
-setwd("/Users/efegraus/work/DataKind/")
-
+shinycam_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam"
+setwd(shinycam_path)
 team <- load("ct_data_adv2017-07-18")
 team_names <- colnames(cam_trap_data_adv)
 
