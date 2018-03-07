@@ -3,6 +3,7 @@
 # Aggregate occurences across time for each camera/location
 # The count is a crude number that doesn't account for the number of individuals in a picture
 
+library(tidyverse)
 library(lubridate)
 library(dplyr)
 library(plyr)
