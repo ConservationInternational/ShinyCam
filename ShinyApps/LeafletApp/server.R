@@ -919,9 +919,6 @@ shinyServer(function(input, output, session) {
     values.2$clickedMarker$id <- NULL
   })
   
-})
-
-
 ###########################################
 ############ Species Spotter Tab ##########
 ###########################################
@@ -1230,3 +1227,4 @@ observeEvent(input$species_occ, {
 })
 
 })
+
