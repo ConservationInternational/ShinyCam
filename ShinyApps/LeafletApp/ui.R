@@ -10,32 +10,31 @@ vars <- c(
   "Data source" = "ShinyCam"
 )
 
-samplingFrequency <- c(
-    "Annual" = "annual",
-    "Seasonal" = "season",
-    "Monthly" = "monthly"
-    )
+samplingFrequency <- c("Annual" = "annual",
+                       "Seasonal" = "season",
+                       "Monthly" = "monthly")
 
-shinyUI(navbarPage("ShinyCam", id="nav",
-
-  ##   Tab for Interactive Map
-  tabPanel("Rates of Detection",
-   #the sidebar includes all the subsetting rules	
-    sidebarPanel(
-      selectInput("dataset", "Camera Trap Project", c("MWPIP")),  ## THIS NEEDS TO BE CUSTOMIZED
-      uiOutput('subsettingradio'),
-      uiOutput("frequency.control"),
-      uiOutput("site_checkbox"),
-      uiOutput("guild.control"),
-      uiOutput("red.control"),
-      uiOutput("species.list")
-      ,width=3),
-   #the mainpanel is the detection rate map	
-    mainPanel(
-      tabsetPanel(##   Tab for Interactive Map
-        tabPanel("Map",
-          div(class="inner",
-    #This style is intended to control the leaflet app dimensions
+shinyUI(navbarPage("ShinyCam",id = "nav",
+    
+    ##   Tab for Interactive Map
+    tabPanel("Rates of Detection",
+      #the sidebar includes all the subsetting rules
+      sidebarPanel(
+        selectInput("dataset", "Camera Trap Project", c("MWPIP")),
+        ## THIS NEEDS TO BE CUSTOMIZED
+        uiOutput('subsettingradio'),
+        uiOutput("frequency.control"),
+        uiOutput("site_checkbox"),
+        uiOutput("guild.control"),
+        uiOutput("red.control"),
+        uiOutput("species.list"),
+        width = 3),
+      #the mainpanel is the detection rate map
+      mainPanel(
+        tabsetPanel(##   Tab for Interactive Map
+          tabPanel("Map",
+            div(class = "inner",
+      #This style is intended to control the leaflet app dimensions
             tags$style(type = "text/css", "
               .inner {
               float: left;
@@ -46,60 +45,69 @@ shinyUI(navbarPage("ShinyCam", id="nav",
               margin-top:10px;
               }"),
             tags$head(
-            # Include our custom CSS
+              # Include our custom CSS
               includeCSS("styles.css"),
               includeScript("gomap.js")
-            ), 
-            leafletOutput("map", width="120%", height="110%"),
+            ),
+            leafletOutput("map", width = "120%", height = "110%"),
             # Portion of side panel menu always present.
             # Shiny versions prior to 0.11 should use class="modal" instead.
-            absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
-            draggable = FALSE, top = 140, left = "auto", right = 100, bottom = 10,
-              width = 300, height = 160,
+            absolutePanel(
+              id = "controls",
+              class = "panel panel-default",
+              fixed = TRUE,
+              draggable = FALSE,
+              top = 140,
+              left = "auto",
+              right = 100,
+              bottom = 10,
+              width = 300,
+              height = 160,
               checkboxInput("boundary_checkbox", label = "Display Park Boundaries", value = FALSE),
               uiOutput("time.control")
             ),
-          # Left# Portion of side panel always present.
-            tags$div(id="cite",
-              'Powered by ShinyCam' # , vars['Data source']
-            )
-          )
-        ),
-    #this subtab displays the data event table and allows it to be dowbloaded
-        tabPanel("Data Event Table",
-          fluidRow(
-            column(1,br(), 
-              downloadButton('downloadData1', 'Download')
+            # Left# Portion of side panel always present.
+              tags$div(id = "cite",
+                     'Powered by ShinyCam' # , vars['Data source']
+              )
             )
           ),
-          br(),
-          fluidRow(HTML("The data event table shows all photograph events
-            (after subsetting by the time interval) for each species.")),
-          hr(),
-          DT::dataTableOutput('dataeventtable')
-        ),
-    
-        tabPanel("Detection Rate Table",
-          fluidRow(
-            column(1,br(),
-              downloadButton('downloadData2', 'Download')
-            )
-          ),
-          br(),
-          fluidRow(HTML("The detection rate table shows the number of data events per 100 trap nights for each species and for all camera sites within the selected Site/Subregion.")),
-          hr(),
-          DT::dataTableOutput('datacapturerates')
-        ),
-    
-    #this tab shows the detection rates plus all the sites without detections. NOt a useful visualization but is needed for mapping	
-        tabPanel("Detection Rate Table with Zeros",
-          fluidRow(
-            column(1, br(),
-            downloadButton('downloadData3', 'Download')
+      #this subtab displays the data event table and allows it to be downloaded
+      tabPanel("Data Event Table",
+        fluidRow(
+          column(1, br(),
+            downloadButton('downloadData1', 'Download')
           )
         ),
         br(),
-        fluidRow(HTML("The detection rate table includes the detection rates from the previous table and adds the sites that were deployed but did not detect the selected species at the camera site.")),
+        fluidRow(HTML("The data event table shows all photograph events
+            (after subsetting by the time interval) for each species.")),
+        hr(),
+        DT::dataTableOutput('dataeventtable')
+      ),
+      
+      tabPanel("Detection Rate Table",
+        fluidRow(column(1, br(),
+          downloadButton('downloadData2', 'Download')
+        )),
+        br(),
+        fluidRow(HTML("The detection rate table shows the number of data events per 100 trap nights for each species and for all camera sites within the selected Site/Subregion."
+          )
+        ),
+        hr(),
+        DT::dataTableOutput('datacapturerates')
+      ),
+      
+      #this tab shows the detection rates plus all the sites without detections. NOt a useful visualization but is needed for mapping
+      tabPanel("Detection Rate Table with Zeros",
+        fluidRow(column(1, br(),
+          downloadButton('downloadData3', 'Download')
+        )),
+        br(),
+        fluidRow(
+          HTML("The detection rate table includes the detection rates from the previous table and adds the sites that were deployed but did not detect the selected species at the camera site."
+          )
+        ),
         hr(),
         DT::dataTableOutput('datacaptureratesZeros')
         )
@@ -112,31 +120,31 @@ shinyUI(navbarPage("ShinyCam", id="nav",
 #div(class="outer",
 
 #tags$head(
-        # Include our custom CSS
+# Include our custom CSS
 #        includeCSS("styles.css"),
 #        includeScript("gomap.js")
- #     ),
-      #chartOutput("baseMap", "leaflet"),
+#     ),
+#chartOutput("baseMap", "leaflet"),
 #      leafletOutput("map", width="100%", height="100%"),
-      #tags$style('.leaflet {height: 100%; width: 100%;}'),
-      #tags$head(tags$script(src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js")),
-      #uiOutput('heatMap'),
-      
-      # Portion of side panel menu always present.
-      # Shiny versions prior to 0.11 should use class="modal" instead.
+#tags$style('.leaflet {height: 100%; width: 100%;}'),
+#tags$head(tags$script(src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js")),
+#uiOutput('heatMap'),
+
+# Portion of side panel menu always present.
+# Shiny versions prior to 0.11 should use class="modal" instead.
 #      absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
 #        draggable = FALSE, top = 60, left = "auto", right = 20, bottom = 10,
 #        width = 330, height = "auto", style = "overflow-y:scroll",
 
 #        h2("Rates of detection"),
-# 
+#
 #       	#selectInput("dataset", "Camera Trap Project", c("TEAM", "MWPIP")), #### EHF - ONE PROJECT AT A TIME
 #         selectInput("dataset", "Camera Trap Project", c("MWPIP")),
-#         
+#
 #         uiOutput("site_checkbox"),
-#         
+#
 #       	#####     SLIDER
-# 
+#
 #       #   # TODO: Make this reactive based on frequencies present in input data
 #       # 	selectInput("select_time", label = "Sampling Frequency",
 #       # 	            choices = list("Annual" = 'annual', "Seasonal" = 'seasonal', "Monthly" = 'monthly'),
@@ -147,22 +155,22 @@ shinyUI(navbarPage("ShinyCam", id="nav",
 #       # 	            max = 100, value = 50, timeFormat = "%Y-%m-%d"),
 #         #radioButtons("humans", "Show Humans?", c("Humans", "No Humans"),
 #         #            selected="No Humans"),
-#       
-#       
+#
+#
 #         checkboxInput("boundary_checkbox", label = "Display Park Boundaries", value = FALSE),
-#       
+#
 #         uiOutput("guild.control"),
 #         uiOutput("red.control"),
 #         uiOutput("species.list"),
 #         uiOutput("frequency.control"),
 #         uiOutput("time.control"),
 #       width=3),
-#       
+#
 #       mainPanel(
 #         tabsetPanel(##   Tab for Interactive Map
 #           tabPanel("Map",
 #                    div(class="inner",
-#                        
+#
 #                        #This style is intended to control the leaflet app dimensions
 #                        tags$style(type = "text/css", "
 #                                   .inner {
@@ -172,15 +180,15 @@ shinyUI(navbarPage("ShinyCam", id="nav",
 #                                   width: 400px;
 #                                   height: 50px;
 #                                   }"),
-#                        
+#
 #                        tags$head(
 #                          # Include our custom CSS
 #                          includeCSS("styles.css"),
 #                          includeScript("gomap.js")
 #                        ),
-#                        
+#
 #                        leafletOutput("map", width="120%", height="110%"),
-#                        
+#
 #                        # Portion of side panel menu always present.
 #                        # Shiny versions prior to 0.11 should use class="modal" instead.
 #                        absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
@@ -189,24 +197,24 @@ shinyUI(navbarPage("ShinyCam", id="nav",
 #                                      checkboxInput("boundary_checkbox", label = "Display Park Boundaries", value = FALSE),
 #                                      uiOutput("time.control")
 #         #uiOutput("time.selection")#,
-# 
+#
 #         # selectInput(inputId = "samplingFrequency",
 #         #             label = "Sampling Frequency",
 #         #             choices = samplingFrequency),
 #         # checkboxInput(inputId = "show_human",
 #         #               label = "Show Human Activities?"),
-# 
-#       
+#
+#
 #         # Portion of side panel menu that appears at bottom after species have been selected.
 #        # conditionalPanel(
 #         #  condition = 'input.species != null',
-# 
+#
 #          # h3("Site-Specific Plots"),
 #           #h4("Time Series of Site-Wide Rate of Detection"),
 #           #plotOutput("total_ts", height = 200),
 #           #h4("Top 5 Genera by Rate of Detection"),
 #           #plotOutput("top_five_plot", height = 200),
-# 
+#
 #           #h4("Overall Trends"),
 #           #plotOutput("health_ts", height = 200),
 #         #hr(),
@@ -215,9 +223,9 @@ shinyUI(navbarPage("ShinyCam", id="nav",
 #         #plotOutput("camera_ts_benchmark", height = 200),
 #         #plotOutput("camera_ts_benchmark_facet", height = 200)
 #       #)
-#         
+#
 #       ),
-# 
+#
 #       # Left# Portion of side panel always present.
 #       tags$div(id="cite",
 #         'Data compiled for ', vars['Data source']
@@ -225,7 +233,7 @@ shinyUI(navbarPage("ShinyCam", id="nav",
 #     )
 #   )
 #   ),
-# 
+#
 # ##   Tab for Data Explorer
 # #  tabPanel("Data explorer",
 # #    fluidRow(
@@ -236,67 +244,140 @@ shinyUI(navbarPage("ShinyCam", id="nav",
 # #    hr(),
 # #    DT::dataTableOutput("table")
 # #  ),
-# 
+#
 #############################
 #### Tab for Camera Statistics Statistics
 tabPanel("Camera stats",
-  fluidRow(
-       ##   Dropdown widgets
-      column(3,
-        selectInput("selectStat", label = h4("Select Statistic"),
-          choices = list("Count of images" = 1, "Count of blank images" = 2, "Count of unknown images" = 3,
-          "Count of uncatalogued images" = 4, "Count of wildlife images" = 5, "Count of human-related images" =6,
-          "Average photos per deployment" = 7), selected = 1),
+         fluidRow(
+           ##   Dropdown widgets
+           column(
+             3,
+             selectInput(
+               "selectStat",
+               label = h4("Select Statistic"),
+               choices = list(
+                 "Count of images" = 1,
+                 "Count of blank images" = 2,
+                 "Count of unknown images" = 3,
+                 "Count of uncatalogued images" = 4,
+                 "Count of wildlife images" = 5,
+                 "Count of human-related images" = 6,
+                 "Average photos per deployment" = 7
+               ),
+               selected = 1
+             ),
              
-        selectInput("selectAgg", label = h4("Select Aggregation Field"),
-          choices = list("Project ID & Camera ID" = 1, "Project ID" = 2, "Camera ID" = 3), selected = 1)
-      ),
-       ##   Data Table
-      column(9,
-        DT::dataTableOutput("camtable")
-      )
-    )
-  ),
+             selectInput(
+               "selectAgg",
+               label = h4("Select Aggregation Field"),
+               choices = list(
+                 "Project ID & Camera ID" = 1,
+                 "Project ID" = 2,
+                 "Camera ID" = 3
+               ),
+               selected = 1
+             )
+           ),
+           ##   Data Table
+           column(9,
+                  DT::dataTableOutput("camtable"))
+         )),
+
+#' #############################
+#' ##    Tab for Species Alert
+#' ##    NOTE: This code is based on Interactive Map Tab
+#' tabPanel(
+#'   "Species alert",
+#'   div(
+#'     class = "outer",
+#'     tags$head(# Include our custom CSS
+#'       includeCSS("styles.css"),
+#'       includeScript("gomap.js")),
+#'     leafletOutput("map.2", width = "100%", height =
+#'                     "100%"),
+#'     # Portion of side panel menu always present.
+#'     # Shiny versions prior to 0.11 should use class="modal" instead.
+#'     absolutePanel(
+#'       id = "controls.2",
+#'       class = "panel panel-default",
+#'       fixed = TRUE,
+#'       draggable = FALSE,
+#'       top = 60,
+#'       left = "auto",
+#'       right = 20,
+#'       bottom = 10,
+#'       width = 330,
+#'       height = "auto",
+#'       style = "overflow-y:scroll",
+#'       
+#'       h2("Species alert"),
+#' 
+#'       selectInput("dataset.2", "Camera Trap Project", c("TEAM", "MWPIP")),
+#'       uiOutput("site_checkbox.2"),
+#' 
+#'       checkboxInput("boundary_checkbox.2", label = "Display Park Boundaries", value = FALSE),
+#' 
+#'       uiOutput("guild.control.2"),
+#'       uiOutput("red.control.2"),
+#'       uiOutput("species.list.2"),
+#'       uiOutput("frequency.control.2"),
+#'       uiOutput("time.control.2"),
+#'       hr()
+#'     ),
+#'     
+#'     # Left# Portion of side panel always present.
+#'     tags$div(id = "cite2",
+#'              #'Data compiled for ', vars['Data source']
+#'              'Powered by ShinyCam')
+#'   )
+#' ),
+#' conditionalPanel("false", icon("crosshair")),
 
 #############################
-##    Tab for Species Alert 
+##    Tab for Species Spotter
 ##    NOTE: This code is based on Interactive Map Tab
-  tabPanel("Species alert",
-    div(class="outer",
-        tags$head(
-          # Include our custom CSS
-          includeCSS("styles.css"),
-          includeScript("gomap.js")
-          ),
-        leafletOutput("map.2", width="100%", height="100%"),
-        # Portion of side panel menu always present.
-        # Shiny versions prior to 0.11 should use class="modal" instead.
-        absolutePanel(id = "controls.2", class = "panel panel-default", fixed = TRUE,
-           draggable = FALSE, top = 60, left = "auto", right = 20, bottom = 10,
-           width = 330, height = "auto", style = "overflow-y:scroll",
-
-           h2("Species alert"),
-
-           selectInput("dataset.2", "Camera Trap Project", c("TEAM", "MWPIP")),
-           uiOutput("site_checkbox.2"),
-
-           checkboxInput("boundary_checkbox.2", label = "Display Park Boundaries", value = FALSE),
-
-           uiOutput("guild.control.2"),
-           uiOutput("red.control.2"),
-           uiOutput("species.list.2"),
-           uiOutput("frequency.control.2"),
-           uiOutput("time.control.2"),
-           hr()
-
-        ),
-
-        # Left# Portion of side panel always present.
-        tags$div(id="cite2",
-                #'Data compiled for ', vars['Data source']
-                'Powered by ShinyCam'
-        )
-     )
-  ),
+tabPanel(
+  "Species Spotter",
+  div(
+    class = "outer",
+    tags$head(# Include our custom CSS
+      includeCSS("styles.css"),
+      includeScript("gomap.js")),
+    leafletOutput("map_occ", width = "100%", height =
+                    "100%"),
+    # Portion of side panel menu always present.
+    # Shiny versions prior to 0.11 should use class="modal" instead.
+    absolutePanel(
+      id = "controls_occ",
+      class = "panel panel-default",
+      fixed = TRUE,
+      draggable = FALSE,
+      top = 60,
+      left = "auto",
+      right = 20,
+      bottom = 10,
+      width = 330,
+      height = "auto",
+      style = "overflow-y:scroll",
+      
+      h2("Species alert"),
+      
+      selectInput("dataset_occ", "Camera Trap Project", c("TEAM", "MWPIP")),
+      uiOutput("site_checkbox_occ"),
+      
+      checkboxInput("boundary_checkbox_occ", label = "Display Park Boundaries", value = FALSE),
+      
+      uiOutput("guild.control_occ"),
+      #uiOutput("red.control_occ"),
+      uiOutput("species.list_occ"),
+      hr()
+    ),
+    
+    # Left# Portion of side panel always present.
+    tags$div(id = "cite2",
+             #'Data compiled for ', vars['Data source']
+             'Powered by ShinyCam')
+  )
+),
 conditionalPanel("false", icon("crosshair"))
 ))# Close shiny
