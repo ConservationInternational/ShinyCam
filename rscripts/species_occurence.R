@@ -24,4 +24,4 @@ colnames(genus_species) <- c("Genus", "Species")
 data_names <- cbind(data_new, genus_species)
 
 output_path <-"ShinyApps/LeafletApp/data/"
-write.csv(data_new, paste(output_path, "marin_species_occurence.csv"))
+write.csv(data_names, paste(output_path, "marin_species_occurence.csv"))
