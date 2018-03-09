@@ -979,10 +979,10 @@ present.species_occ <- reactive({
 
 # Create reactive vector containing the genus and species (concatenated) that
 # are present in the selected sites in the project area
-present.species.names_occ <- reactive({
-  species <- unique(site_selection_occ()[c("Genus", "Species")])
-  as.character(paste(species$Genus, species$Species))
-})
+# present.species.names_occ <- reactive({
+#   species <- unique(site_selection_occ()[c("Genus", "Species")])
+#   as.character(paste(species$Genus, species$Species))
+# })
 
 # Render guild selector
 output$guild.control_occ <- renderUI({
@@ -1001,7 +1001,7 @@ output$guild.control_occ <- renderUI({
 # Render species selection
 output$species.list_occ <- renderUI({
   selectInput("species_occ", "Select Species (Multiple Possible)",
-              choices=sort(as.character(present.species.names_occ())), selected=NULL, multiple=TRUE)
+              choices=sort(as.character(site_selection_occ()$Genus.Species)), selected=NULL, multiple=TRUE)
 })
 
 
@@ -1163,7 +1163,7 @@ observe({
   selected.names_occ <- sort(as.character(selected.names_occ))
   
   updateSelectInput(session, "species_occ", "Select Species (Multiple Possible)",
-                    choices=sort(as.character(present.species.names_occ())), 
+                    choices=sort(as.character(site_selection_occ()$Genus.Species)), 
                     selected=selected.names_occ)
   
 })
