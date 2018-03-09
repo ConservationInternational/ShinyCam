@@ -343,8 +343,8 @@ tabPanel(
     tags$head(# Include our custom CSS
       includeCSS("styles.css"),
       includeScript("gomap.js")),
-    leafletOutput("map_occ", width = "100%", height =
-                    "100%"),
+    #leafletOutput("map_occ", width = "100%", height =
+    #                "100%"),
     # Portion of side panel menu always present.
     # Shiny versions prior to 0.11 should use class="modal" instead.
     absolutePanel(
