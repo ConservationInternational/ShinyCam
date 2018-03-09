@@ -927,8 +927,6 @@ shinyServer(function(input, output, session) {
 # Read Data into reactive for flexiblity in using other datasets
 dataset_input_occ <- reactive({
   occ <- rename_cols(as.data.frame(fread("./data/marin_species_occurence.csv")))
-  occ$timestamp <- createTimeStamp(occ$Sampling.Period, occ$Year)
-
   occ
 })
 
@@ -972,17 +970,11 @@ present.species_occ <- reactive({
   present.species_occ <- species.table[species.table$genus %in% species$Genus &
                                      species.table$species %in% species$Species,]
   # Switch out "" with "Unknown"
-  present.species_occ$guild <- as.factor(ifelse(as.character(present.species_occ$guild) == "", "Unknown", as.character(present.species_occ$guild)))
+  present.species_occ$guild <- as.factor(ifelse(as.character(present.species_occ$guild) == "", "Unknown", 
+                                                as.character(present.species_occ$guild)))
   
   present.species_occ
 })
-
-# Create reactive vector containing the genus and species (concatenated) that
-# are present in the selected sites in the project area
-# present.species.names_occ <- reactive({
-#   species <- unique(site_selection_occ()[c("Genus", "Species")])
-#   as.character(paste(species$Genus, species$Species))
-# })
 
 # Render guild selector
 output$guild.control_occ <- renderUI({
@@ -991,12 +983,6 @@ output$guild.control_occ <- renderUI({
                      selected=NULL)
 })
 
-# # Render RED selector
-# output$red.control_occ <- renderUI({
-#   red.list <- sort(unique(as.character(red.list.table$description[red.list.table$id %in% present.species()$red_list_status_id])))
-#   checkboxGroupInput("red_occ", "Select Red List Categories", choices=red.list,
-#                      selected=NULL)
-# })
 
 # Render species selection
 output$species.list_occ <- renderUI({
