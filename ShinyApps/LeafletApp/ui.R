@@ -343,8 +343,8 @@ tabPanel(
     tags$head(# Include our custom CSS
       includeCSS("styles.css"),
       includeScript("gomap.js")),
-    #leafletOutput("map_occ", width = "100%", height =
-    #                "100%"),
+    leafletOutput("map_occ", width = "100%", height =
+                    "100%"),
     # Portion of side panel menu always present.
     # Shiny versions prior to 0.11 should use class="modal" instead.
     absolutePanel(
@@ -360,7 +360,7 @@ tabPanel(
       height = "auto",
       style = "overflow-y:scroll",
       
-      h2("Species alert"),
+      h2("Species Spotter"),
       
       selectInput("dataset_occ", "Camera Trap Project", c("TEAM", "MWPIP")),
       uiOutput("site_checkbox_occ"),
@@ -368,7 +368,6 @@ tabPanel(
       checkboxInput("boundary_checkbox_occ", label = "Display Park Boundaries", value = FALSE),
       
       uiOutput("guild.control_occ"),
-      #uiOutput("red.control_occ"),
       uiOutput("species.list_occ"),
       hr()
     ),
