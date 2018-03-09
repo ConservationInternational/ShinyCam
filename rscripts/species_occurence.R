@@ -19,5 +19,5 @@ data_marin %>%
   add_count(Project.ID, Latitude.Resolution, Longitude.Resolution, Genus.Species, Deployment.Location.ID) %>%
   unique() -> data_new
 
-output_path <-"ShinyApps/LeafletApp/data/"
+output_path <-"~/Documents/Projects/ShinyCam/ShinyApps/LeafletApp/data/"
 write.csv(data_new, paste(output_path, "marin_species_occurence.csv"))
