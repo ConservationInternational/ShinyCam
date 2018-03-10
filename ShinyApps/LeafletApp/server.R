@@ -90,6 +90,9 @@ shinyServer(function(input, output, session) {
   # the same for species alert tab -- not sure if it is necessary
   values.2 <- reactiveValues(starting = TRUE,
                              clickedMarker=list(id=NULL))
+  # the same for species spotter tab -- not sure if it is necessary
+  values_occ <- reactiveValues(starting = TRUE,
+                             clickedMarker=list(id=NULL))
   session$onFlushed(function() {
     values$starting <- FALSE
     values.2$starting <- FALSE
@@ -921,142 +924,145 @@ shinyServer(function(input, output, session) {
   # 
 
 
-###########################################
-############ Species Spotter Tab ##########
-###########################################
-# Read Data into reactive for flexiblity in using other datasets
-dataset_input_occ <- reactive({
-  occ <- rename_cols(as.data.frame(fread("./data/marin_species_occurence.csv")))
-  occ
-})
-
-# Render Site Checkbox to select region
-output$site_checkbox_occ <- renderUI({
-  labels <- as.character(unique(dataset_input_occ()$Project.ID))
-  labels <- c(labels, "All Sites")
-  selectInput("site_selection_occ", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
-})
-
-# ## Check if "All Sites" is the selected site
-# check_allsites <- reactive({
-#   input$site_selection_occ == "All Sites" %>%
-#     return()
-# })
-# 
-# 
-# # Reactive function to select site
-# site_selection <- reactive({
-#   print(check_allsites())
-#   
-#   
-#   if(req(input$site_selection_occ) == "All Sites"){
-#     dataset_input()
-#   } else{
-#     
-#     subset(dataset_input(), as.character(Project.ID) %in% input$site_selection)
-#   }
-#   
-# })
-
-# Reactive function to select site
-site_selection_occ <- reactive({
-  subset(dataset_input_occ(), as.character(Project.ID) %in% input$site_selection_occ)
-})
-
-# Create reactive data.frame containing only species present in selected sites
-# in selected project area
-present.species_occ <- reactive({
-  species <- unique(site_selection_occ()[c("Genus", "Species")])
-  present.species_occ <- species.table[species.table$genus %in% species$Genus &
-                                     species.table$species %in% species$Species,]
-  # Switch out "" with "Unknown"
-  present.species_occ$guild <- as.factor(ifelse(as.character(present.species_occ$guild) == "", "Unknown", 
-                                                as.character(present.species_occ$guild)))
+  ###########################################
+  ############ Species Spotter Tab ##########
+  ###########################################
+  # Read Data into reactive for flexiblity in using other datasets
+  dataset_input_occ <- reactive({
+    occ <- rename_cols(as.data.frame(fread("./data/marin_species_occurence.csv")))
+    occ
+  })
   
-  present.species_occ
-})
-
-# Render guild selector
-output$guild.control_occ <- renderUI({
-  guild.list <- sort(unique(as.character(present.species_occ()$guild)))
-  checkboxGroupInput("guild_occ", "Select Guilds", choices=guild.list,
-                     selected=NULL)
-})
-
-
-# Render species selection
-output$species.list_occ <- renderUI({
-  selectInput("species_occ", "Select Species (Multiple Possible)",
-              choices=sort(as.character(site_selection_occ()$Genus.Species)), selected=NULL, multiple=TRUE)
-})
-
-
-## Interactive Map for Species Spotter Tab ####
-
-#Create the map
-output$map_occ <- renderLeaflet({
-  # Prepare data
-  if (!values.2$starting) {
-    if (nrow(species_dataset_occ())>0) {
-      species_sites <-  unique(select(species_dataset_occ(), Deployment.Location.ID, Latitude, Longitude))
-      tmap_occ <- leaflet(unique_sites) %>%
-        addTiles(
-          urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
-          attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
-        )  %>% 
-        setView(mean(species_dataset_occ$Longitude),mean(species_dataset_occ$Latitude),zoom=10) 
+  # Render Site Checkbox to select region
+  output$site_checkbox_occ <- renderUI({
+    labels <- as.character(unique(dataset_input_occ()$Project.ID))
+    labels <- c(labels, "All Sites")
+    selectInput("site_selection_occ", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
+  })
+  
+  # ## Check if "All Sites" is the selected site
+  # check_allsites <- reactive({
+  #   input$site_selection_occ == "All Sites" %>%
+  #     return()
+  # })
+  # 
+  # 
+  # # Reactive function to select site
+  # site_selection <- reactive({
+  #   print(check_allsites())
+  #   
+  #   
+  #   if(req(input$site_selection_occ) == "All Sites"){
+  #     dataset_input()
+  #   } else{
+  #     
+  #     subset(dataset_input(), as.character(Project.ID) %in% input$site_selection)
+  #   }
+  #   
+  # })
+  
+  # Reactive function to select site
+  site_selection_occ <- reactive({
+    subset(dataset_input_occ(), as.character(Project.ID) %in% input$site_selection_occ)
+  })
+  
+  # Create reactive data.frame containing only species present in selected sites
+  # in selected project area
+  present.species_occ <- reactive({
+    species <- unique(site_selection_occ()[c("Genus", "Species")])
+    present.species_occ <- species.table[species.table$genus %in% species$Genus &
+                                           species.table$species %in% species$Species,]
+    # Switch out "" with "Unknown"
+    present.species_occ$guild <- as.factor(ifelse(as.character(present.species_occ$guild) == "", "Unknown", 
+                                                  as.character(present.species_occ$guild)))
+    
+    present.species_occ
+  })
+  
+  # Render guild selector
+  output$guild.control_occ <- renderUI({
+    guild.list <- sort(unique(as.character(present.species_occ()$guild)))
+    checkboxGroupInput("guild_occ", "Select Guilds", choices=guild.list,
+                       selected=NULL)
+  })
+  
+  
+  # Render species selection
+  output$species.list_occ <- renderUI({
+    selectInput("species_occ", "Select Species (Multiple Possible)",
+                choices=sort(as.character(site_selection_occ()$Genus.Species)), selected=NULL, multiple=TRUE)
+  })
+  
+  
+  ## Interactive Map for Species Spotter Tab ####
+  
+  #Create the map
+  output$map_occ <- renderLeaflet({
+    # Prepare data
+    if (!values_occ$starting) {
+      if (nrow(species_dataset_occ())>0) {
+        
+        unique_sites <-  unique(select(species_dataset_occ(), Deployment.Location.ID, Latitude, Longitude))
+        
+        leaflet(unique_sites) %>%
+          addTiles(
+            urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+            attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
+          )  %>% 
+          
+          setView(mean(species_dataset_occ$Longitude),mean(species_dataset_occ$Latitude),zoom=10) -> tmap_occ
+      }
     }
-  }
-  tmap_occ
-})
-
-# Update species selection based on RED and guild
-# TODO: The if/else logic here could be cleaned up
-observe({
-  #Modify selection based on nulls
-  if (is.null(input$guild_occ)) {
-    selected.names_occ <- NULL
-  } else {
-    trows <- as.character(present.species_occ()$guild) %in% input$guild_occ
-    selected.names_occ <- present.species_occ()[trows,]
-    selected.names_occ <- paste(selected.names_occ$genus, selected.names_occ$species)
-  } 
-  # Update species selection menu       
-  selected.names_occ <- sort(as.character(selected.names_occ))
+    tmap_occ
+  })
   
-  updateSelectInput(session, "species_occ", "Select Species (Multiple Possible)",
-                    choices=sort(as.character(site_selection_occ()$Genus.Species)), 
-                    selected=selected.names_occ)
+  # Update species selection based on RED and guild
+  # TODO: The if/else logic here could be cleaned up
+  observe({
+    #Modify selection based on nulls
+    if (is.null(input$guild_occ)) {
+      selected.names_occ <- NULL
+    } else {
+      trows <- as.character(present.species_occ()$guild) %in% input$guild_occ
+      selected.names_occ <- present.species_occ()[trows,]
+      selected.names_occ <- paste(selected.names_occ$genus, selected.names_occ$species)
+    } 
+    # Update species selection menu       
+    selected.names_occ <- sort(as.character(selected.names_occ))
+    
+    updateSelectInput(session, "species_occ", "Select Species (Multiple Possible)",
+                      choices=sort(as.character(site_selection_occ()$Genus.Species)), 
+                      selected=selected.names_occ)
+    
+  })
   
-})
-
-# Subset dataframe for plotting (no time subset)
-# Subset by project, site, selected species
-species_dataset_occ <- reactive({
-  if (!is.null(input$species_occ)) {
-    subset(site_selection_occ(), (paste(Genus, Species) %in% input$species_occ))
-  } else {
-    data.frame()
+  # Subset dataframe for plotting (no time subset)
+  # Subset by project, site, selected species
+  species_dataset_occ <- reactive({
+    if (!is.null(input$species_occ)) {
+      subset(site_selection_occ(), (paste(Genus, Species) %in% input$species_occ))
+    } else {
+      data.frame()
+    }
+  })
+  
+  # Subset dataframe for plotting based on map click
+  # This is subsetted on camera and speecies. Possibly species could be removed from filter.
+  camera_dataset_occ <- reactive ({
+    subset(site_selection_occ(), Deployment.Location.ID==values_occ$clickedMarker$id & (paste(Genus, Species) %in% input$species_occ))
+  })
+  
+  # observe the marker click info and change the value depending on click location
+  observeEvent(input$map_marker_click_occ,{
+    values_occ$clickedMarker <- input$map_marker_click_occ
   }
-})
-
-# Subset dataframe for plotting based on map click
-# This is subsetted on camera and speecies. Possibly species could be removed from filter.
-camera_dataset_occ <- reactive ({
-  subset(site_selection_occ(), Deployment.Location.ID==values.2$clickedMarker$id & (paste(Genus, Species) %in% input$species_occ))
-})
-
-# observe the marker click info and change the value depending on click location
-observeEvent(input$map_marker_click_occ,{
-  values.2$clickedMarker <- input$map_marker_click_occ
-}
-)
-observeEvent(input$map_click_occ,{
-  values.2$clickedMarker$id <- NULL
-})
-observeEvent(input$species_occ, {
-  values.2$clickedMarker$id <- NULL
-})
-
+  )
+  observeEvent(input$map_click_occ,{
+    values_occ$clickedMarker$id <- NULL
+  })
+  observeEvent(input$species_occ, {
+    values_occ$clickedMarker$id <- NULL
+  })
+  
 })
 
