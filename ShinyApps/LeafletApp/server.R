@@ -937,31 +937,31 @@ output$site_checkbox_occ <- renderUI({
   selectInput("site_selection_occ", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
 })
 
-# ## Check if "All Sites" is the selected site
-# check_allsites <- reactive({
-#   input$site_selection_occ == "All Sites" %>%
-#     return()
-# })
-# 
-# 
-# # Reactive function to select site
-# site_selection <- reactive({
-#   print(check_allsites())
-#   
-#   
-#   if(req(input$site_selection_occ) == "All Sites"){
-#     dataset_input()
-#   } else{
-#     
-#     subset(dataset_input(), as.character(Project.ID) %in% input$site_selection)
-#   }
-#   
-# })
+## Check if "All Sites" is the selected site
+check_allsites_occ <- reactive({
+  input$site_selection_occ == "All Sites" %>%
+    return()
+})
+
 
 # Reactive function to select site
 site_selection_occ <- reactive({
-  subset(dataset_input_occ(), as.character(Project.ID) %in% input$site_selection_occ)
+  print(check_allsites_occ())
+
+
+  if(req(input$site_selection_occ) == "All Sites"){
+    dataset_input_occ()
+  } else{
+
+    subset(dataset_input_occ(), as.character(Project.ID) %in% input$site_selection_occ)
+  }
+
 })
+
+# # Reactive function to select site
+# site_selection_occ <- reactive({
+#   subset(dataset_input_occ(), as.character(Project.ID) %in% input$site_selection_occ)
+# })
 
 # Create reactive data.frame containing only species present in selected sites
 # in selected project area
@@ -998,14 +998,28 @@ output$map_occ <- renderLeaflet({
   # Prepare data
   if (!values.2$starting) {
     if (nrow(species_dataset_occ())>0) {
+      print(head(species_dataset_occ()))
       species_sites <-  unique(select(species_dataset_occ(), Deployment.Location.ID, Latitude, Longitude))
-      tmap_occ <- leaflet(unique_sites) %>%
+      print("hey 2!")
+      tmap_occ <- leaflet(species_sites) %>%
         addTiles(
           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
         )  %>% 
-        setView(mean(species_dataset_occ$Longitude),mean(species_dataset_occ$Latitude),zoom=10) 
+        setView(mean(species_dataset_occ()$Longitude),mean(species_dataset_occ()$Latitude),zoom=10) %>%
+        addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1,
+                         #popup = ~paste("Deployment ID:", Deployment.Location,
+                         #"<br>Species out of boundaries:", Species)
+                         )
+    } else{
+      tmap_occ <- leaflet() %>%
+        addTiles(
+          urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+          attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, 
+                        NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
+        )  %>% setView(-122.6,37.9,zoom=10) 
     }
+    
   }
   tmap_occ
 })
@@ -1033,6 +1047,7 @@ observe({
 # Subset dataframe for plotting (no time subset)
 # Subset by project, site, selected species
 species_dataset_occ <- reactive({
+  print("hey")
   if (!is.null(input$species_occ)) {
     subset(site_selection_occ(), (paste(Genus, Species) %in% input$species_occ))
   } else {
