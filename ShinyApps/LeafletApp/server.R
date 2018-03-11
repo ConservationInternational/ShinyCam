@@ -1019,7 +1019,6 @@ output$map_occ <- renderLeaflet({
                         NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
         )  %>% setView(-122.6,37.9,zoom=10) 
     }
-    
   }
   tmap_occ
 })
