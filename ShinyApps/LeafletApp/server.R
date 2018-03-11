@@ -998,9 +998,7 @@ output$map_occ <- renderLeaflet({
   # Prepare data
   if (!values.2$starting) {
     if (nrow(species_dataset_occ())>0) {
-      print(head(species_dataset_occ()))
       species_sites <-  unique(select(species_dataset_occ(), Deployment.Location.ID, Latitude, Longitude))
-      print("hey 2!")
       tmap_occ <- leaflet(species_sites) %>%
         addTiles(
           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
@@ -1046,7 +1044,6 @@ observe({
 # Subset dataframe for plotting (no time subset)
 # Subset by project, site, selected species
 species_dataset_occ <- reactive({
-  print("hey")
   if (!is.null(input$species_occ)) {
     subset(site_selection_occ(), (paste(Genus, Species) %in% input$species_occ))
   } else {
