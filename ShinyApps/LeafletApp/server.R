@@ -932,119 +932,322 @@ shinyServer(function(input, output, session) {
     occ <- rename_cols(as.data.frame(fread("./data/marin_species_occurence.csv")))
     occ
   })
-  
+
   # Render Site Checkbox to select region
   output$site_checkbox_occ <- renderUI({
-    labels <- as.character(unique(dataset_input_occ()$Project.ID))
-    labels <- c(labels, "All Sites")
-    selectInput("site_selection_occ", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
+    labels_occ <- as.character(unique(dataset_input_occ()$Project.ID))
+    
+    ##    Add "All Sites" option to labels vector if dataset is "MWPIP"
+    if(input$dataset_occ == "MWPIP"){
+      labels_occ <- c(labels_occ, "All Sites")
+    }
+    
+    selectInput("site_selection_occ", "Select Sites/Subregions", choices = labels_occ, selected = labels_occ[[1]])
   })
   
-  # ## Check if "All Sites" is the selected site
-  # check_allsites <- reactive({
-  #   input$site_selection_occ == "All Sites" %>%
-  #     return()
-  # })
-  # 
-  # 
-  # # Reactive function to select site
-  # site_selection <- reactive({
-  #   print(check_allsites())
-  #   
-  #   
-  #   if(req(input$site_selection_occ) == "All Sites"){
-  #     dataset_input()
-  #   } else{
-  #     
-  #     subset(dataset_input(), as.character(Project.ID) %in% input$site_selection)
-  #   }
-  #   
-  # })
+  ## Check if "All Sites" is the selected site
+  check_allsites_occ <- reactive({
+    input$site_selection_occ == "All Sites" %>%
+      return()
+  })
+  
   
   # Reactive function to select site
   site_selection_occ <- reactive({
-    subset(dataset_input_occ(), as.character(Project.ID) %in% input$site_selection_occ)
+    print(check_allsites_occ())
+    
+    
+    if(req(input$site_selection_occ) == "All Sites"){
+      dataset_input_occ()
+    } else{
+      
+      subset(dataset_input_occ(), as.character(Project.ID) %in% input$site_selection_occ)
+    }
+    
   })
   
   # Create reactive data.frame containing only species present in selected sites
   # in selected project area
   present.species_occ <- reactive({
-    species <- unique(site_selection_occ()[c("Genus", "Species")])
-    present.species_occ <- species.table[species.table$genus %in% species$Genus &
-                                           species.table$species %in% species$Species,]
+    species_occ <- unique(site_selection_occ()[c("Genus", "Species")])
+    present.species_occ <- species.table[species.table$genus %in% species_occ$Genus &
+                                       species.table$species %in% species_occ$Species,]
     # Switch out "" with "Unknown"
-    present.species_occ$guild <- as.factor(ifelse(as.character(present.species_occ$guild) == "", "Unknown", 
-                                                  as.character(present.species_occ$guild)))
+    present.species_occ$guild <- as.factor(ifelse(as.character(present.species_occ$guild) == "", "Unknown", as.character(present.species_occ$guild)))
     
     present.species_occ
   })
-  
+  # Create reactive vector containing the genus and species (concatenated) that
+  # are present in the selected sites in the project area
+  present.species.names_occ <- reactive({
+    species_occ <- unique(site_selection_occ()[c("Genus", "Species")])
+    as.character(paste(species_occ$Genus, species_occ$Species))
+  })
+
   # Render guild selector
   output$guild.control_occ <- renderUI({
-    guild.list <- sort(unique(as.character(present.species_occ()$guild)))
-    checkboxGroupInput("guild_occ", "Select Guilds", choices=guild.list,
+    guild.list_occ <- sort(unique(as.character(present.species_occ()$guild)))
+    checkboxGroupInput("guild", "Select Guilds", choices=guild.list_occ,
                        selected=NULL)
+    
   })
-  
   
   # Render species selection
   output$species.list_occ <- renderUI({
+    
     selectInput("species_occ", "Select Species (Multiple Possible)",
-                choices=sort(as.character(site_selection_occ()$Genus.Species)), selected=NULL, multiple=TRUE)
+                choices=sort(as.character(present.species.names_occ())), selected=NULL, multiple=TRUE)
   })
   
   
   ## Interactive Map for Species Spotter Tab ####
   
-  #Create the map
+  #Create the map attempt 1
   output$map_occ <- renderLeaflet({
     # Prepare data
-    if (!values_occ$starting) {
-      if (nrow(species_dataset_occ())>0) {
-        
-        unique_sites <-  unique(select(species_dataset_occ(), Deployment.Location.ID, Latitude, Longitude))
-        
+    # if (!values_occ$starting) {
+    #   if (nrow(species_dataset_occ())>0) {
+    #
+    #print(head(site_selection_occ))
+    print(head(species_dataset_occ))    
+    unique_sites <-  unique(select(species_dataset_occ(), Latitude, Longitude))
+
         leaflet(unique_sites) %>%
           addTiles(
             urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
             attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
-          )  %>% 
-          
-          setView(mean(species_dataset_occ$Longitude),mean(species_dataset_occ$Latitude),zoom=10) -> tmap_occ
-      }
-    }
-    tmap_occ
+          )  %>%
+          setView(mean(species_dataset_occ$Longitude),mean(species_dataset_occ$Latitude),zoom=10)
+    #   }
+    # }
   })
   
-  # Update species selection based on RED and guild
-  # TODO: The if/else logic here could be cleaned up
+  # #Create the map attempt 2
+  # output$map_occ <- renderLeaflet({
+  #   #Make idw (Inverse Distance Weighted interpolation) raster
+  #   if (!values_occ$starting) {
+  #     if (nrow(species_dataset_occ())>1) {
+  #       in.dat <- species_dataset_occ()[c("Latitude", "Longitude", "Deployment.Location.ID")]
+  #     } else {
+  #       idw.raster <- NULL
+  #       # this selects the data for the whole site - we do this to support the dynamic view based on protected species/site selected
+  #       in.dat <- site_selection()[c("Latitude", "Longitude", "Deployment.Location.ID")]
+  #     }
+  #     unique_sites <-  unique(select(site_selection(), Deployment.Location.ID, Latitude, Longitude)) 
+  #     if(nrow(in.dat)<1){ # this is never displayed, it only helps to avoid error at the very beginning (the rows of in.dat are 0 which doesn't help the view) 
+  #       tmap <- leaflet(unique_sites) %>%
+  #         addTiles(
+  #           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+  #           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
+  #         )  %>% setView(-122.6,37.9,zoom=10)  
+  # 
+  #     } else {
+  #       # Allows dynamic view based on protected species/site selected
+  #       # it takes the mean position of the selected species - if none was selected, considers all the species
+  #       tmap <- leaflet(unique_sites) %>%
+  #         addTiles(
+  #           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+  #           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
+  #         )  %>% setView(mean(in.dat$Longitude),mean(in.dat$Latitude),zoom=10) 
+  #     }
+  #     
+  #     if (nrow(site_selection())>0) {
+  #       tmap <- tmap %>%
+  #         addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=2, color="black", fillOpacity=1)
+  #     }
+  #     
+  #     # Park Boundary Checkbox - Showing Shapefile names needs to be dynamic
+  #     if (input$boundary_checkbox == TRUE) {
+  #       tmap <- tmap %>% 
+  #         # UPDATE HERE for SPATIAL
+  #         #addPolygons(data = GP, weight = 2, fill=FALSE)# %>%
+  #         addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
+  #         addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
+  #         addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
+  #     }
+  #     
+  #     
+  #     
+  #     # if (!is.null(idw.raster)) {
+  #     #   
+  #     #   pal <- colorNumeric(
+  #     #     palette = raster_col,
+  #     #     domain = values(idw.raster)
+  #     #   )
+  #     #   
+  #     #   tmap %>%
+  #     #     addCircleMarkers(~Longitude, ~Latitude, weight=2, data= in.dat.tab, radius=~sqrt(Rate.Of.Detection), color="red", 
+  #     #                      fillOpacity=1, layerId=in.dat.tab$Deployment.Location.ID, 
+  #     #                      popup = ~paste("Deployment ID:", in.dat.tab$Deployment.Location.ID, "<br>Mean Rate of Detection:",in.dat.tab$Rate.Of.Detection)) %>%
+  #     #     addRasterImage(idw.raster, opacity=0.4, colors=pal) %>%
+  #     #     # Using leaflet built in legend function, which provides limited 
+  #     #     # customizability. Consider updating to make custom legend in sidebar.
+  #     #     addLegend(position = "bottomleft", pal = pal, 
+  #     #               values = values(idw.raster),
+  #     #               title = "Rates of Detection<br>(Interpolated)") # Units?
+  #     # } else {
+  #       tmap
+  #  #   }
+  #   } else {
+  #     NULL
+  #   }
+  # })
+
+# #Create the map attempt 3
+#   output$map_occ <- renderLeaflet({
+#       # Prepare data
+#       if (!values_occ$starting) {
+#         if (nrow(species_dataset_occ())>0) {
+#           in.dat <- species_dataset_occ()[c("Latitude", "Longitude", "Deployment.Location.ID", "Genus.Species")]
+#         } else {
+#           # this selects the data for the whole site - we do this to support the dynamic view based on protected species/site selected
+#           in.dat <- site_selection_occ()[c("Latitude", "Longitude", "Deployment.Location.ID", "Genus.Species")]
+#         }
+# 
+#         # if (nrow(species_dataset_occ()) >= 1) {
+#         #   # adding different colors to circles (points representing cameras) in map
+#         #   unique_sites <-  unique(select(site_selection_occ(), Deployment.Location.ID, Latitude, Longitude))
+#         #   unique_sites <- left_join(unique_sites, in.dat, by=c("Latitude", "Longitude"))
+#         # 
+#         #   # aggregate data in unique_sites to have in one column all the names of the out of boundaries species
+#         #   # also if the site has at least one FALSE, which means, one specie out of boundaries, it will be marked as FALSE and colored red
+#         #   # remove all missing data before manipulating
+#         #   unique_sites <- unique_sites[complete.cases(unique_sites), ]
+#         #   # initialize new dataframe
+#         #   dt <- unique_sites %>%
+#         #     group_by(Deployment.Location.ID.x, Latitude, Longitude) %>%
+#         #     summarize(count=n())
+#         #   n <- nrow(dt)
+#         #   df <- data.frame(Deployment.Location=character(n),
+#         #                    Latitude=double(n),
+#         #                    Longitude=double(n),
+#         #                    Species=character(n),
+#         #                    CountSpecies=integer(n),
+#         #                    InsideBoundaries=character(n),
+#         #                    stringsAsFactors=FALSE)
+#         # 
+#         #   df$Deployment.Location <-dt$Deployment.Location.ID.x
+#         #   df$Latitude = dt$Latitude
+#         #   df$Longitude = dt$Longitude
+#         #   df$CountSpecies = dt$count
+#         #   df$InsideBoundaries <- "TRUE"  # start with all TRUE (all inside)
+#         #   # first set the not founds
+#         #   for(i in 1:nrow(unique_sites)){
+#         #     if(unique_sites$alert[i] == "NOT FOUND"){
+#         #       row_index <- which(df$Deployment.Location == unique_sites$Deployment.Location.ID.x[i])
+#         #       df[row_index, "InsideBoundaries"] <- "NOT FOUND"
+#         #     }
+#         #   }
+#         #   # now overwrite anything if there is a FALSE found
+#         #   for(i in 1:nrow(unique_sites)){
+#         #     if(unique_sites$alert[i] == "FALSE"){
+#         #       row_index <- which(df$Deployment.Location == unique_sites$Deployment.Location[i])
+#         #       df[row_index, "InsideBoundaries"] <- "FALSE"
+#         #       df[row_index, "Species"] <- paste(df[row_index, "Species"], unique_sites$binomial[i])  # ALEX: NEEDS IMPROVEMENT - WHAT IF THERE ARE TOO MANY REPETEAD SPECIES
+#         #     }
+#         #   }
+#         #   unique_sites <- df
+#         # }
+#         # else{
+#         #   unique_sites <- c()
+#         # }
+# 
+#         if(nrow(in.dat)<1){ # this is never displayed, it only helps to avoid error at the very beginning (the rows of in.dat are 0 which doesn't help the view)
+#           tmap_occ <- leaflet(unique_sites) %>%
+#             addTiles(
+#               urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+#               attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
+#             )  %>% setView(-122.6,37.9,zoom=10)
+#         } else {
+#           # Allows dynamic view based on protected species/site selected
+#           # it takes the mean position of the selected species - if none was selected, considers all the species
+#           tmap_occ <- leaflet(unique_sites) %>%
+#             addTiles(
+#               urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+#               attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
+#             )  %>% setView(mean(in.dat$Longitude),mean(in.dat$Latitude),zoom=10)
+#         }
+# 
+#         if (nrow(species_dataset_occ())>0) {
+#           # print(head(unique_sites,30))
+#           tmap_occ <- tmap_occ %>%
+#             addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4,
+#                              color=~pal(InsideBoundaries), fillOpacity=1,
+#                              popup = ~paste("Deployment ID:", Deployment.Location,
+#                                             "<br>Species out of boundaries:", Species)) %>%  # alert
+#             addLegend(position = "topleft", title = "Legend",
+#                       labels=c("Inside boundaries","Outside boundaries", "Not found in shapefiles"), colors=c("black", "red", "blue"))
+#         }
+# 
+#         # Park Boundary Checkbox === looks like it doesn't work
+#         if (input$boundary_checkbox.2 == TRUE) {
+#           tmap_occ <- tmap_occ %>%
+#             addPolygons(data = MCPparks, weight = 2, fill=FALSE) %>%
+#             addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
+#             addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
+#             addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
+#         }
+#         # # show boundaries for selected species (and if you click on them, it will tell you which specie)
+#         # if (length(input$species.2)>0) {
+#         #   selected_polygons = terrestrial_mammals[terrestrial_mammals$binomial %in% input$species.2,]
+#         #   pal2 <- colorFactor(heat.colors(8), selected_polygons$binomial)
+#         #   tmap_occ <- tmap_occ %>%
+#         #     addPolygons(data = selected_polygons, weight = 5, fill=FALSE,
+#         #                 color=~pal2(binomial),
+#         #                 popup = ~paste("Specie:", binomial))
+#         #}
+#       }
+#       #tmap_occ
+# 
+#     })
+    
   observe({
     #Modify selection based on nulls
-    if (is.null(input$guild_occ)) {
+    if (is.null(input$guild_occ)) { 
       selected.names_occ <- NULL
-    } else {
+    } else { 
       trows <- as.character(present.species_occ()$guild) %in% input$guild_occ
-      selected.names_occ <- present.species_occ()[trows,]
-      selected.names_occ <- paste(selected.names_occ$genus, selected.names_occ$species)
+      selected.species_occ <- present.species_occ()[trows,]
+      selected.names_occ <- paste(selected.species_occ$genus, selected.species_occ$species)
     } 
+    
     # Update species selection menu       
     selected.names_occ <- sort(as.character(selected.names_occ))
     
     updateSelectInput(session, "species_occ", "Select Species (Multiple Possible)",
-                      choices=sort(as.character(site_selection_occ()$Genus.Species)), 
-                      selected=selected.names_occ)
+                      choices=sort(as.character(present.species.names_occ())), selected=selected.names_occ)
     
   })
   
   # Subset dataframe for plotting (no time subset)
-  # Subset by project, site, selected species
+  # Subset by project, site, frequency, and selected species
   species_dataset_occ <- reactive({
     if (!is.null(input$species_occ)) {
-      subset(site_selection_occ(), (paste(Genus, Species) %in% input$species_occ))
+      subset(site_selection_occ(), paste(Genus, Species) %in% input$species_occ)
     } else {
       data.frame()
     }
   })
+      
+  # # Update species selection based on RED and guild
+  # # TODO: The if/else logic here could be cleaned up
+  # observe({
+  #   #Modify selection based on nulls
+  #   if (is.null(input$guild_occ)) {
+  #     selected.names_occ <- NULL
+  #   } else {
+  #     trows <- as.character(present.species_occ()$guild) %in% input$guild_occ
+  #     selected.species_occ <- present.species_occ()[trows,]
+  #     selected.names_occ <- paste(selected.species_occ$genus, selected.species_occ$species)
+  #   } 
+  #   # Update species selection menu       
+  #   selected.names_occ <- sort(as.character(selected.names_occ))
+  #   
+  #   updateSelectInput(session, "species", "Select Species (Multiple Possible)",
+  #                     choices=sort(as.character(present.species.names_occ())), selected=selected.names_occ)
+  #   
+  # })
+
   
   # Subset dataframe for plotting based on map click
   # This is subsetted on camera and speecies. Possibly species could be removed from filter.
