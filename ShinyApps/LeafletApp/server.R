@@ -998,14 +998,18 @@ output$map_occ <- renderLeaflet({
   # Prepare data
   if (!values.2$starting) {
     if (nrow(species_dataset_occ())>0) {
-      species_sites <-  unique(select(species_dataset_occ(), Deployment.Location.ID, Latitude, Longitude))
+      species_sites <-  unique(select(site_selection_occ(), Deployment.Location.ID, Latitude, Longitude))
+      species_sites$present <- ifelse(species_sites$Deployment.Location.ID %in% 
+                                        species_dataset_occ()$Deployment.Location.ID, "Y", "N")
+      #species_sites <- left_join(species_sites, select(species_dataset_occ, Deployment.Location.ID, n), by = Deployment.Location.ID)
+      pal <- colorFactor(c("black", "red"), domain = c("N", "Y"))
       tmap_occ <- leaflet(species_sites) %>%
         addTiles(
           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
         )  %>% 
         setView(mean(species_dataset_occ()$Longitude),mean(species_dataset_occ()$Latitude),zoom=10) %>%
-        addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1,
+        addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1, color = ~pal(present)
                          #popup = ~paste("Deployment ID:", Deployment.Location,
                          #"<br>Species out of boundaries:", Species)
                          )
@@ -1035,7 +1039,7 @@ observe({
   # Update species selection menu       
   selected.names_occ <- sort(as.character(selected.names_occ))
   
-  updateSelectInput(session, "species_occ", "Select Species (Multiple Possible)",
+  updateSelectInput(session, "species_occ", "Select Species (Remove all but one)",
                     choices=sort(as.character(site_selection_occ()$Genus.Species)), 
                     selected=selected.names_occ)
   
