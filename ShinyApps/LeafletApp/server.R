@@ -958,11 +958,6 @@ site_selection_occ <- reactive({
 
 })
 
-# # Reactive function to select site
-# site_selection_occ <- reactive({
-#   subset(dataset_input_occ(), as.character(Project.ID) %in% input$site_selection_occ)
-# })
-
 # Create reactive data.frame containing only species present in selected sites
 # in selected project area
 present.species_occ <- reactive({
