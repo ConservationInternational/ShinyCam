@@ -986,8 +986,8 @@ output$guild.control_occ <- renderUI({
 
 # Render species selection
 output$species.list_occ <- renderUI({
-  selectInput("species_occ", "Select Species (Multiple Possible)",
-              choices=sort(as.character(site_selection_occ()$Genus.Species)), selected=NULL, multiple=TRUE)
+  selectInput("species_occ", "Select Species (Remove all but one)",
+              choices=sort(as.character(site_selection_occ()$Genus.Species)), selected=NULL, multiple=FALSE)
 })
 
 
@@ -1014,12 +1014,24 @@ output$map_occ <- renderLeaflet({
                          #"<br>Species out of boundaries:", Species)
                          )
     } else{
-      tmap_occ <- leaflet() %>%
+      species_sites <-  unique(select(site_selection_occ(), Deployment.Location.ID, Latitude, Longitude))
+      tmap_occ <- leaflet(species_sites) %>%
         addTiles(
           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, 
                         NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
-        )  %>% setView(-122.6,37.9,zoom=10) 
+        )  %>% 
+        setView(-122.6,37.9,zoom=10) %>%
+        addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1, color = 'black')
+    }
+    # Park Boundary Checkbox - Showing Shapefile names needs to be dynamic
+    if (input$boundary_checkbox_occ == TRUE) {
+      tmap_occ <- tmap_occ %>% 
+        # UPDATE HERE for SPATIAL
+        #addPolygons(data = GP, weight = 2, fill=FALSE)# %>%
+        addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
+        addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
+        addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
     }
   }
   tmap_occ
