@@ -362,7 +362,7 @@ tabPanel(
       
       h2("Species Spotter"),
       
-      selectInput("dataset_occ", "Camera Trap Project", c("TEAM", "MWPIP")),
+      #selectInput("dataset_occ", "Camera Trap Project", c("MWPIP")),
       uiOutput("site_checkbox_occ"),
       
       checkboxInput("boundary_checkbox_occ", label = "Display Park Boundaries", value = FALSE),
