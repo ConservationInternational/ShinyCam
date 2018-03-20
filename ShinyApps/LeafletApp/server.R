@@ -934,12 +934,6 @@ dataset_input_occ <- reactive({
   occ
 })
 
-# Render Site Checkbox to select region
-output$site_checkbox_occ <- renderUI({
-  labels <- as.character(unique(dataset_input_occ()$Project.ID))
-  labels <- c(labels, "All Sites")
-  selectInput("site_selection_occ", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
-})
 
 ## Check if "All Sites" is the selected site
 check_allsites_occ <- reactive({
@@ -973,6 +967,46 @@ present.species_occ <- reactive({
                                                 as.character(present.species_occ$guild)))
   
   present.species_occ
+})
+
+
+# Update species selection based on guild
+observe({
+  #Modify selection based on nulls
+  if (is.null(input$guild_occ)) {
+    selected.names_occ <- NULL
+  } else {
+    trows <- as.character(present.species_occ()$guild) %in% input$guild_occ
+    selected.names_occ <- present.species_occ()[trows,]
+    selected.names_occ <- paste(selected.names_occ$genus, selected.names_occ$species)
+  } 
+  # Update species selection menu       
+  selected.names_occ <- sort(as.character(selected.names_occ))
+  
+  updateSelectInput(session, "species_occ", "Select Species (Remove all but one)",
+                    choices=sort(as.character(site_selection_occ()$Genus.Species)), 
+                    selected=selected.names_occ)
+  
+})
+
+# Subset dataframe for plotting (no time subset)
+# Subset by project, site, selected species
+species_dataset_occ <- reactive({
+  if (!is.null(input$species_occ)) {
+    subset(site_selection_occ(), (paste(Genus, Species) %in% input$species_occ))
+  } else {
+    data.frame()
+  }
+})
+
+
+###UI Rendering###
+
+# Render Site Checkbox to select region
+output$site_checkbox_occ <- renderUI({
+  labels <- as.character(unique(dataset_input_occ()$Project.ID))
+  labels <- c(labels, "All Sites")
+  selectInput("site_selection_occ", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
 })
 
 # Render guild selector
@@ -1039,54 +1073,6 @@ output$map_occ <- renderLeaflet({
     }
   }
   tmap_occ
-})
-
-# Update species selection based on RED and guild
-# TODO: The if/else logic here could be cleaned up
-observe({
-  #Modify selection based on nulls
-  if (is.null(input$guild_occ)) {
-    selected.names_occ <- NULL
-  } else {
-    trows <- as.character(present.species_occ()$guild) %in% input$guild_occ
-    selected.names_occ <- present.species_occ()[trows,]
-    selected.names_occ <- paste(selected.names_occ$genus, selected.names_occ$species)
-  } 
-  # Update species selection menu       
-  selected.names_occ <- sort(as.character(selected.names_occ))
-  
-  updateSelectInput(session, "species_occ", "Select Species (Remove all but one)",
-                    choices=sort(as.character(site_selection_occ()$Genus.Species)), 
-                    selected=selected.names_occ)
-  
-})
-
-# Subset dataframe for plotting (no time subset)
-# Subset by project, site, selected species
-species_dataset_occ <- reactive({
-  if (!is.null(input$species_occ)) {
-    subset(site_selection_occ(), (paste(Genus, Species) %in% input$species_occ))
-  } else {
-    data.frame()
-  }
-})
-
-# Subset dataframe for plotting based on map click
-# This is subsetted on camera and speecies. Possibly species could be removed from filter.
-camera_dataset_occ <- reactive ({
-  subset(site_selection_occ(), Deployment.Location.ID==values.2$clickedMarker$id & (paste(Genus, Species) %in% input$species_occ))
-})
-
-# observe the marker click info and change the value depending on click location
-observeEvent(input$map_marker_click_occ,{
-  values.2$clickedMarker <- input$map_marker_click_occ
-}
-)
-observeEvent(input$map_click_occ,{
-  values.2$clickedMarker$id <- NULL
-})
-observeEvent(input$species_occ, {
-  values.2$clickedMarker$id <- NULL
 })
 
 })
