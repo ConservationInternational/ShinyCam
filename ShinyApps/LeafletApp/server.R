@@ -2,6 +2,7 @@ library(dplyr)
 detach("package:dplyr", unload=TRUE) # This is an unfortunate hack necessitated 
 # by multiple packages with a "select" function
 # Better solutions very much welcomed
+library(stringr)
 library(raster)
 library(shiny)
 library(leaflet)
@@ -926,7 +927,10 @@ shinyServer(function(input, output, session) {
 ###########################################
 # Read Data into reactive for flexiblity in using other datasets
 dataset_input_occ <- reactive({
-  occ <- rename_cols(as.data.frame(fread("./data/marin_species_occurence.csv")))
+  occ <- rename_cols(as.data.frame(fread("./data/raw_dataprep/marin_species_occurence.csv")))
+  genus_species <- as.data.frame(str_split_fixed(occ$Genus.Species, " ", 2))
+  colnames(genus_species) <- c("Genus", "Species")
+  occ <- cbind(occ, genus_species)
   occ
 })
 
@@ -996,7 +1000,11 @@ output$map_occ <- renderLeaflet({
       species_sites <-  unique(select(site_selection_occ(), Deployment.Location.ID, Latitude, Longitude))
       species_sites$present <- ifelse(species_sites$Deployment.Location.ID %in% 
                                         species_dataset_occ()$Deployment.Location.ID, "Y", "N")
-      #species_sites <- left_join(species_sites, select(species_dataset_occ, Deployment.Location.ID, n), by = Deployment.Location.ID)
+      species_sites <- left_join(species_sites, select(species_dataset_occ(), Deployment.Location.ID, 
+                                                       event_total, individual_total), by = 'Deployment.Location.ID')
+      
+      # wierd_deploy <- c("WW63", "XX65", "YY66", "XX66", "XX67")
+      # print(subset(species_sites, species_sites$Deployment.Location.ID %in% wierd_deploy))
       pal <- colorFactor(c("black", "red"), domain = c("N", "Y"))
       tmap_occ <- leaflet(species_sites) %>%
         addTiles(
@@ -1004,9 +1012,10 @@ output$map_occ <- renderLeaflet({
           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
         )  %>% 
         setView(mean(species_dataset_occ()$Longitude),mean(species_dataset_occ()$Latitude),zoom=10) %>%
-        addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1, color = ~pal(present)
-                         #popup = ~paste("Deployment ID:", Deployment.Location,
-                         #"<br>Species out of boundaries:", Species)
+        addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1, color = ~pal(present),
+                         popup = ~paste("Deployment ID:", Deployment.Location.ID,
+                         "<br>Number of Events:", event_total,
+                         "<br>Individuals Sighted:", individual_total)
                          )
     } else{
       species_sites <-  unique(select(site_selection_occ(), Deployment.Location.ID, Latitude, Longitude))

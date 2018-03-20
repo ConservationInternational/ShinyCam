@@ -8,20 +8,17 @@ library(lubridate)
 library(dplyr)
 library(plyr)
 
-read_csv("~/Documents/Projects/ShinyCam/ShinyApps/LeafletApp/data/raw_dataprep/marin_data.csv") %>%
-  select(Project.ID,Camera.Deployment.Begin.Date,Camera.Deployment.End.Date,
-         Latitude.Resolution, Longitude.Resolution,Photo.Type,Image.ID,Genus.Species,
-         Count,Deployment.Location.ID,Event,Date_Time.Captured) %>%
-  filter(Photo.Type == "Animal") -> data_marin
-
-data_marin %>%
-  select(Project.ID, Latitude.Resolution, Longitude.Resolution, Genus.Species, Deployment.Location.ID) %>%
-  add_count(Project.ID, Latitude.Resolution, Longitude.Resolution, Genus.Species, Deployment.Location.ID) %>%
+data <- read_csv("~/Documents/Projects/ShinyCam/ShinyApps/LeafletApp/data/raw_dataprep/final_count_120secs.csv") 
+data %>%
+  select(Project.ID, Genus.Species, Deployment.Location.ID, total) %>%
+  group_by(Project.ID, Genus.Species, Deployment.Location.ID) %>%
+  summarise(event_total = n(), individual_total = sum(total)) %>%
+  inner_join(., select(data, Deployment.Location.ID, Latitude.Resolution, Longitude.Resolution), by = "Deployment.Location.ID") %>%
   unique() -> data_new
 
-genus_species <- as.data.frame(str_split_fixed(data_new$Genus.Species, " ", 2))
-colnames(genus_species) <- c("Genus", "Species")
-data_names <- cbind(data_new, genus_species)
+# genus_species <- cbind(data_new, as.data.frame(str_split_fixed(data_new$Genus.Species, " ", 2)))
+# colnames(genus_species) <- c("Genus", "Species")
+# data_names <- cbind(data_new, as.tibble(genus_species))
 
 output_path <-"ShinyApps/LeafletApp/data/"
-write.csv(data_names, paste(output_path, "marin_species_occurence.csv"))
+write.csv(data_new, paste(output_path, "marin_species_occurence.csv"))
