@@ -338,44 +338,44 @@ tabPanel("Camera stats",
 ##    NOTE: This code is based on Interactive Map Tab
 tabPanel(
   "Species Spotter",
-  div(
-    class = "outer",
-    tags$head(# Include our custom CSS
-      includeCSS("styles.css"),
-      includeScript("gomap.js")),
-    leafletOutput("map_occ", width = "100%", height =
-                    "100%"),
-    # Portion of side panel menu always present.
-    # Shiny versions prior to 0.11 should use class="modal" instead.
-    absolutePanel(
-      id = "controls_occ",
-      class = "panel panel-default",
-      fixed = TRUE,
-      draggable = FALSE,
-      top = 60,
-      left = "auto",
-      right = 20,
-      bottom = 10,
-      width = 330,
-      height = "auto",
-      style = "overflow-y:scroll",
-      
-      h2("Species Spotter"),
-      
-      uiOutput("site_checkbox_occ"),
-      
-      checkboxInput("boundary_checkbox_occ", label = "Display Park Boundaries", value = FALSE),
-      
-      uiOutput("guild.control_occ"),
-      uiOutput("species.list_occ"),
-      hr()
-    ),
-    
-    # Left# Portion of side panel always present.
-    tags$div(id = "cite2",
-             #'Data compiled for ', vars['Data source']
-             'Powered by ShinyCam')
-  )
-),
-conditionalPanel("false", icon("crosshair"))
+  sidebarPanel(
+    h2("Species Spotter"),
+    uiOutput("site_checkbox_occ"),
+    checkboxInput("boundary_checkbox_occ", label = "Display Park Boundaries", value = FALSE),
+    uiOutput("guild.control_occ"),
+    uiOutput("species.list_occ"),
+    width = 3),
+  #the mainpanel is the detection rate map
+  mainPanel(
+    tabsetPanel(##   Tab for Interactive Map
+      tabPanel("Map", div(class = "inner",
+              #This style is intended to control the leaflet app dimensions
+              tags$style(type = "text/css", "
+                              .inner {
+                              float: left;
+                              position: fixed;
+                              margin-left:-10px;
+                              width: 500px;
+                              height:650px;
+                              margin-top:10px;
+                              }"),
+            tags$head(
+              # Include our custom CSS
+              includeCSS("styles.css"),
+              includeScript("gomap.js")),
+            
+            leafletOutput("map_occ", width = "120%", height = "110%"),
+            # Left# Portion of side panel always present.
+            tags$div(id = "cite",'Powered by ShinyCam' # , vars['Data source']
+            )
+                    )
+            
+      ),
+      #this subtab displays the data event table and allows it to be downloaded
+      tabPanel("Species Data",
+               DT::dataTableOutput('speciestable')
+               )
+              )
+            )
+)
 ))# Close shiny

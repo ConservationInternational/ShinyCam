@@ -1075,5 +1075,15 @@ output$map_occ <- renderLeaflet({
   tmap_occ
 })
 
+output$speciestable <- DT::renderDataTable({
+  
+  species_dataset_occ() %>%
+    select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude, Longitude, event_total, individual_total) -> df
+  
+  action <- DT::dataTableAjax(session, df)
+  
+  DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
+})
+
 })
 
