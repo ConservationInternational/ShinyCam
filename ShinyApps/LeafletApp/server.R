@@ -983,9 +983,8 @@ observe({
   # Update species selection menu       
   selected.names_occ <- sort(as.character(selected.names_occ))
   
-  updateSelectInput(session, "species_occ", "Select Species (Remove all but one)",
-                    choices=sort(as.character(site_selection_occ()$Genus.Species)), 
-                    selected=selected.names_occ)
+  updateSelectInput(session, "species_occ", "Select Species",
+                    choices=selected.names_occ)
   
 })
 
@@ -1019,7 +1018,7 @@ output$guild.control_occ <- renderUI({
 
 # Render species selection
 output$species.list_occ <- renderUI({
-  selectInput("species_occ", "Select Species (Remove all but one)",
+  selectInput("species_occ", "Select Species",
               choices=sort(as.character(site_selection_occ()$Genus.Species)), selected=NULL, multiple=FALSE)
 })
 
