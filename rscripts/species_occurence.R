@@ -12,7 +12,7 @@ data <- read_csv("~/Documents/Projects/ShinyCam/ShinyApps/LeafletApp/data/raw_da
 data %>%
   select(Project.ID, Genus.Species, Deployment.Location.ID, total) %>%
   group_by(Project.ID, Genus.Species, Deployment.Location.ID) %>%
-  summarise(event_total = n(), individual_total = sum(total), max_sighted = max(total)) %>%
+  dplyr::summarise(event_total = n(), individual_total = sum(total), max_sighted = max(total)) %>%
   inner_join(., select(data, Deployment.Location.ID, Latitude.Resolution, Longitude.Resolution), by = "Deployment.Location.ID") %>%
   unique() -> data_new
 
