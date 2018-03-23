@@ -12,7 +12,7 @@ data <- read_csv("~/Documents/Projects/ShinyCam/ShinyApps/LeafletApp/data/raw_da
 data %>%
   select(Project.ID, Genus.Species, Deployment.Location.ID, total) %>%
   group_by(Project.ID, Genus.Species, Deployment.Location.ID) %>%
-  summarise(event_total = n(), individual_total = sum(total)) %>%
+  summarise(event_total = n(), individual_total = sum(total), max_sighted = max(total)) %>%
   inner_join(., select(data, Deployment.Location.ID, Latitude.Resolution, Longitude.Resolution), by = "Deployment.Location.ID") %>%
   unique() -> data_new
 
@@ -20,5 +20,5 @@ data %>%
 # colnames(genus_species) <- c("Genus", "Species")
 # data_names <- cbind(data_new, as.tibble(genus_species))
 
-output_path <-"ShinyApps/LeafletApp/data/"
+output_path <-"ShinyApps/LeafletApp/data/raw_dataprep"
 write.csv(data_new, paste(output_path, "marin_species_occurence.csv"))

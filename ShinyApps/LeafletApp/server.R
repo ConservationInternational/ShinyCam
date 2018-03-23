@@ -1034,7 +1034,7 @@ output$map_occ <- renderLeaflet({
       species_sites$present <- ifelse(species_sites$Deployment.Location.ID %in% 
                                         species_dataset_occ()$Deployment.Location.ID, "Y", "N")
       species_sites <- left_join(species_sites, select(species_dataset_occ(), Deployment.Location.ID, 
-                                                       event_total, individual_total), by = 'Deployment.Location.ID')
+                                                       event_total, individual_total, max_sighted), by = 'Deployment.Location.ID')
       
       # wierd_deploy <- c("WW63", "XX65", "YY66", "XX66", "XX67")
       # print(subset(species_sites, species_sites$Deployment.Location.ID %in% wierd_deploy))
@@ -1048,7 +1048,8 @@ output$map_occ <- renderLeaflet({
         addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1, color = ~pal(present),
                          popup = ~paste("Deployment ID:", Deployment.Location.ID,
                          "<br>Number of Events:", event_total,
-                         "<br>Individuals Sighted:", individual_total)
+                         "<br>Total Individuals Sighted:", individual_total,
+                         "<br>Max Sighted in Single Event:", max_sighted)
                          )
     } else{
       species_sites <-  unique(select(site_selection_occ(), Deployment.Location.ID, Latitude, Longitude))
