@@ -1044,7 +1044,7 @@ output$map_occ <- renderLeaflet({
           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
         )  %>% 
-        setView(mean(species_dataset_occ()$Longitude),mean(species_dataset_occ()$Latitude),zoom=10) %>%
+        setView(-122.6,37.9,zoom=10) %>%
         addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1, color = ~pal(present),
                          popup = ~paste("Deployment ID:", Deployment.Location.ID,
                          "<br>Number of Events:", event_total,
