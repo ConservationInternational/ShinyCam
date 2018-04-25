@@ -377,5 +377,40 @@ tabPanel(
                )
               )
             )
-)
+),
+###########################
+##    Tab for Temp Activity 
+tabPanel("Temporal Activity",
+         #the sidebar includes all the subsetting rules
+         sidebarLayout(sidebarPanel(uiOutput("site_checkbox_temp"),
+                                    uiOutput("guild.control_temp"),
+                                    uiOutput("red.control_temp"),
+                                    uiOutput("ta.species1"),
+                                    uiOutput("ta.species2"),
+                                    uiOutput("temporal_activity_time"),
+                                    width=3),
+                       
+                       mainPanel(tabsetPanel(tabPanel("Species Kernel Density Plot(s)",
+                                                      HTML("Select two species to fit a circular kernel density and 
+                                                           evaluate temporal actvity via the methods of Ridout and 
+                                                           Linkie (2009). If a species does not have a minimum of 
+                                                           five data events, there will be no kernel analysis; 
+                                                           there will be a rose plot. The temporal activity analysis 
+                                                           uses the data event table. One can subset these data by 
+                                                           sampling month or year. The default is to us all data 
+                                                           from all months and years. In the next sub-tab, one can 
+                                                           plot both species together; the title will display three 
+                                                           estimates of overlap."),
+                                                      br(),
+                                                      fluidRow(column(1,plotOutput("tempact1", height = 400, width=800)))),
+                                             
+                                             tabPanel("Species Kernel Overlap Plot",
+                                                      fluidRow(column(1,plotOutput("tempact2", height = 400, width=800)))),
+                                             
+                                             tabPanel("Rose Plots",
+                                                      fluidRow(column(1,plotOutput("tempact3", height = 400, width=800))))),
+                                 
+                                 conditionalPanel("false", icon("crosshair"))	
+                       )))
+
 ))# Close shiny
