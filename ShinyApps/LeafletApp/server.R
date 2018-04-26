@@ -2,6 +2,7 @@ library(dplyr)
 detach("package:dplyr", unload=TRUE) # This is an unfortunate hack necessitated 
 # by multiple packages with a "select" function
 # Better solutions very much welcomed
+library(tidyverse)
 library(R2jags)
 library(overlap)
 library(chron)
@@ -953,153 +954,6 @@ check_allsites_occ <- reactive({
 })
 
 
-# Reactive function to select site
-site_selection_occ <- reactive({
-  print(check_allsites_occ())
-
-
-  if(req(input$site_selection_occ) == "All Sites"){
-    dataset_input_occ()
-  } else{
-
-    subset(dataset_input_occ(), as.character(Project.ID) %in% input$site_selection_occ)
-  }
-
-})
-
-# Create reactive data.frame containing only species present in selected sites
-# in selected project area
-present.species_occ <- reactive({
-  species <- unique(site_selection_occ()[c("Genus", "Species")])
-  present.species_occ <- species.table[species.table$genus %in% species$Genus &
-                                     species.table$species %in% species$Species,]
-  # Switch out "" with "Unknown"
-  present.species_occ$guild <- as.factor(ifelse(as.character(present.species_occ$guild) == "", "Unknown", 
-                                                as.character(present.species_occ$guild)))
-  
-  present.species_occ
-})
-
-
-# Update species selection based on guild
-observe({
-  #Modify selection based on nulls
-  if (is.null(input$guild_occ)) {
-    selected.names_occ <- NULL
-  } else {
-    trows <- as.character(present.species_occ()$guild) %in% input$guild_occ
-    selected.names_occ <- present.species_occ()[trows,]
-    selected.names_occ <- paste(selected.names_occ$genus, selected.names_occ$species)
-  } 
-  # Update species selection menu       
-  selected.names_occ <- sort(as.character(selected.names_occ))
-  
-  updateSelectInput(session, "species_occ", "Select Species",
-                    choices=selected.names_occ)
-  
-})
-
-# Subset dataframe for plotting (no time subset)
-# Subset by project, site, selected species
-species_dataset_occ <- reactive({
-  if (!is.null(input$species_occ)) {
-    subset(site_selection_occ(), (paste(Genus, Species) %in% input$species_occ))
-  } else {
-    data.frame()
-  }
-})
-
-
-###UI Rendering###
-
-# Render Site Checkbox to select region
-output$site_checkbox_occ <- renderUI({
-  labels <- as.character(unique(dataset_input_occ()$Project.ID))
-  labels <- c(labels, "All Sites")
-  selectInput("site_selection_occ", "Select Sites/Subregions", choices = labels, selected = labels[[1]])
-})
-
-# Render guild selector
-output$guild.control_occ <- renderUI({
-  guild.list <- sort(unique(as.character(present.species_occ()$guild)))
-  checkboxGroupInput("guild_occ", "Select Guilds", choices=guild.list,
-                     selected=NULL)
-})
-
-
-# Render species selection
-output$species.list_occ <- renderUI({
-  selectInput("species_occ", "Select Species",
-              choices=sort(as.character(site_selection_occ()$Genus.Species)), selected=NULL, multiple=FALSE)
-})
-
-
-## Interactive Map for Species Spotter Tab ####
-
-#Create the map
-output$map_occ <- renderLeaflet({
-  # Prepare data
-  if (!values.2$starting) {
-    if (nrow(species_dataset_occ())>0) {
-      species_sites <-  unique(select(site_selection_occ(), Deployment.Location.ID, Latitude, Longitude))
-      species_sites$present <- ifelse(species_sites$Deployment.Location.ID %in% 
-                                        species_dataset_occ()$Deployment.Location.ID, "Y", "N")
-      species_sites <- left_join(species_sites, select(species_dataset_occ(), Deployment.Location.ID, 
-                                                       event_total, individual_total, max_sighted), by = 'Deployment.Location.ID')
-      
-      # wierd_deploy <- c("WW63", "XX65", "YY66", "XX66", "XX67")
-      # print(subset(species_sites, species_sites$Deployment.Location.ID %in% wierd_deploy))
-      pal <- colorFactor(c("black", "red"), domain = c("N", "Y"))
-      tmap_occ <- leaflet(species_sites) %>%
-        addTiles(
-          urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
-          attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
-        )  %>% 
-        setView(-122.6,37.9,zoom=10) %>%
-        addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1, color = ~pal(present),
-                         popup = ~paste("Deployment ID:", Deployment.Location.ID,
-                         "<br>Number of Events:", event_total,
-                         "<br>Total Individuals Sighted:", individual_total,
-                         "<br>Max Sighted in Single Event:", max_sighted)
-                         )
-    } else{
-      species_sites <-  unique(select(site_selection_occ(), Deployment.Location.ID, Latitude, Longitude))
-      tmap_occ <- leaflet(species_sites) %>%
-        addTiles(
-          urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
-          attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, 
-                        NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
-        )  %>% 
-        setView(-122.6,37.9,zoom=10) %>%
-        addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1, color = 'black')
-    }
-    # Park Boundary Checkbox - Showing Shapefile names needs to be dynamic
-    if (input$boundary_checkbox_occ == TRUE) {
-      tmap_occ <- tmap_occ %>% 
-        # UPDATE HERE for SPATIAL
-        #addPolygons(data = GP, weight = 2, fill=FALSE)# %>%
-        addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
-        addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
-        addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
-    }
-  }
-  tmap_occ
-})
-
-output$speciestable <- DT::renderDataTable({
-  
-  species_dataset_occ() %>%
-    select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude, Longitude, event_total, individual_total) -> df
-  
-  action <- DT::dataTableAjax(session, df)
-  
-  DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
-})
-
-###########################################
-############## Temp Activity Tab ##########
-###########################################
-
 # Reactive function to select site- subset data
 site_selection_temp <- reactive({
   
@@ -1193,55 +1047,57 @@ output$ta.species2 <- renderUI({
   
   labels <- sort(as.character(present.species.names_temp()))
   
-  selectInput("ta.species.two.name", "Select Species 2", 
-              choices = labels[which(labels!=as.character(input$ta.species.one.name))], 
-              selected = labels[which(labels!=as.character(input$ta.species.one.name))][2]) 
+  selectInput("ta.species.two.name", "Select Species 2",
+              choices = labels)
+  #choices = labels[which(labels!=as.character(input$ta.species.one.name))], 
+  #selected = labels[which(labels!=as.character(input$ta.species.one.name))][2]) 
 })  
 
 # Update species selection based on RED and guild
 observe({
   #Modify selection based on nulls
   if (is.null(input$red_temp) & is.null(input$guild_temp)) {
-    selected.names <- NULL
+    selected.names_temp <- NULL
   } else if (is.null(input$red_temp)) {
     trows <- as.character(present.species_temp()$guild) %in% input$guild_temp
-    selected.species <- present.species_temp()[trows,]
-    selected.names <- paste(selected.species$genus, selected.species$species)
+    selected.species_temp <- present.species_temp()[trows,]
+    selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
   } else if (is.null(input$guild_temp)) {
     trows <- as.character(present.species_temp()$red_list_status_id) %in%
       red.list.table$id[red.list.table$description %in% input$red_temp]
-    selected.species <- present.species_temp()[trows,]
-    selected.names <- paste(selected.species$genus, selected.species$species)
+    selected.species_temp <- present.species_temp()[trows,]
+    selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
   } else {
     guilds <- (as.character(present.species_temp()$guild) %in% input$guild_temp)
     
     reds <- as.character(present.species_temp()$red_list_status_id) %in%
       red.list.table$id[red.list.table$description %in% input$red_temp]
     if (is.null(guilds) & is.null(reds)) {
-      selected.names <- NULL
+      selected.names_temp <- NULL
     } else if (is.null(guilds)) {
-      selected.species <- present.species_temp()[reds,]
-      selected.names <- paste(selected.species$genus, selected.species$species)
+      selected.species_temp <- present.species_temp()[reds,]
+      selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
     } else if (is.null(reds)) {
-      selected.species <- present.species_temp()[guilds,]
-      selected.names <- paste(selected.species$genus, selected.species$species)
+      selected.species_temp <- present.species_temp()[guilds,]
+      selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
     } else {
-      selected.species <- present.species_temp()[guilds & reds,]
-      selected.names <- paste(selected.species$genus, selected.species$species)
+      selected.species_temp <- present.species_temp()[guilds & reds,]
+      selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
     }
     
   }
   
   # Update species selection drop downs       
   
-  selected.names <- sort(as.character(selected.names))
+  selected.names_temp <- sort(as.character(selected.names_temp))
   
   updateSelectInput(session, "ta.species.one.name", "Select Species 1",
-                    choices = selected.names, selected = selected.names[1])
+                    choices = selected.names_temp)#, selected = selected.names_temp[1])
   
   updateSelectInput(session, "ta.species.two.name", "Select Species 2",
-                    choices = selected.names[which(selected.names!=as.character(input$ta.species.one.name))], 
-                    selected = selected.names[which(selected.names!=as.character(input$ta.species.one.name))][2])
+                    choices = selected.names_temp)
+  #choices = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))])#, 
+  #selected = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))][2])
   
 })
 
@@ -1485,10 +1341,5 @@ output$tempact3 = renderPlot({
       scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
   }
 })
-
-
-
-
-
 })
 
