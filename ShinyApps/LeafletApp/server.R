@@ -1057,7 +1057,7 @@ output$map_occ <- renderLeaflet({
           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
         )  %>% 
         setView(-122.6,37.9,zoom=10) %>%
-        addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1, color = ~pal(present),
+        addCircleMarkers(~Longitude, ~Latitude, layerId = ~Deployment.Location.ID, weight=2, radius=4, fillOpacity=1, color = ~pal(present),
                          popup = ~paste("Deployment ID:", Deployment.Location.ID,
                          "<br>Number of Events:", event_total,
                          "<br>Total Individuals Sighted:", individual_total,
@@ -1072,7 +1072,7 @@ output$map_occ <- renderLeaflet({
                         NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
         )  %>% 
         setView(-122.6,37.9,zoom=10) %>%
-        addCircleMarkers(~Longitude, ~Latitude, layerId=NULL, weight=2, radius=4, fillOpacity=1, color = 'black')
+        addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=4, fillOpacity=1, color = 'black')
     }
     # Park Boundary Checkbox - Showing Shapefile names needs to be dynamic
     if (input$boundary_checkbox_occ == TRUE) {
@@ -1095,6 +1095,41 @@ output$speciestable <- DT::renderDataTable({
   action <- DT::dataTableAjax(session, df)
   
   DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
+})
+
+#### Create data table with camera-specific events w/time stamps
+marker_id <- reactiveValues(id = NULL)
+
+observeEvent(input$map_occ_marker_click, {
+  marker_id$id <- input$map_occ_marker_click$id
+  print(marker_id)
+})
+
+#import data with times and events
+event_time_data <- read.csv("~/Documents/Projects/ShinyCam/ShinyApps/LeafletApp/data/raw_dataprep/final_count_120secs.csv")
+
+camera_time_data <- reactive({
+  if (!is.null(input$species_occ)) {
+    print(marker_id)
+    print('yes')
+    event_time_data %>%
+      subset((Genus.Species %in% input$species_occ)) %>%
+      subset(Deployment.Location.ID == marker_id$id) %>%
+      print()
+  } else {
+    data.frame()
+  }
+})
+
+#create output table subsetted by
+output$camera_time_table <- DT::renderDataTable({
+  camera_time_data() %>%
+    select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude.Resolution, Longitude.Resolution, Month, Year, total) -> df_cam
+  
+  action <- DT::dataTableAjax(session, df_cam)
+  
+  DT::datatable(df_cam, options = list(ajax = list(url = action)), escape = FALSE)
+
 })
 
 ###########################################

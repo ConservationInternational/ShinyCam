@@ -375,7 +375,10 @@ tabPanel(
       #this subtab displays the data event table and allows it to be downloaded
       tabPanel("Species Spotter Data",
                DT::dataTableOutput('speciestable')
-               )
+               ),
+      tabPanel("Selected Camera Data",
+               DT::dataTableOutput('camera_time_table')
+      )
               )
             )
 ),
