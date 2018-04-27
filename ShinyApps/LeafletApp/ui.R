@@ -345,7 +345,8 @@ tabPanel(
     checkboxInput("boundary_checkbox_occ", label = "Display Park Boundaries", value = FALSE),
     uiOutput("guild.control_occ"),
     uiOutput("species.list_occ"),
-    width = 3),
+    width = 3, 
+    textOutput("timetext")),
   #the mainpanel is the detection rate map
   mainPanel(
     tabsetPanel(##   Tab for Interactive Map

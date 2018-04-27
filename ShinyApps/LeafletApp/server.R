@@ -318,7 +318,7 @@ shinyServer(function(input, output, session) {
         tmap %>%
           addCircleMarkers(~Longitude, ~Latitude, weight=2, data= in.dat.tab, radius=~sqrt(Rate.Of.Detection), color="red", 
                            fillOpacity=1, layerId=in.dat.tab$Deployment.Location.ID, 
-                           popup = ~paste("Deployment ID:", in.dat.tab$Deployment.Location.ID, "<br>Mean Rate of Detection:",in.dat.tab$Rate.Of.Detection)) %>%
+                           popup = ~paste("Camera ID:", in.dat.tab$Deployment.Location.ID, "<br>Mean Rate of Detection:",in.dat.tab$Rate.Of.Detection)) %>%
           addRasterImage(idw.raster, opacity=0.4, colors=pal) %>%
           # Using leaflet built in legend function, which provides limited 
           # customizability. Consider updating to make custom legend in sidebar.
@@ -955,7 +955,6 @@ check_allsites_occ <- reactive({
 })
 
 
-<<<<<<< HEAD
 # Reactive function to select site
 site_selection_occ <- reactive({
   print(check_allsites_occ())
@@ -1092,7 +1091,9 @@ output$map_occ <- renderLeaflet({
 output$speciestable <- DT::renderDataTable({
   
   species_dataset_occ() %>%
-    select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude, Longitude, event_total, individual_total) -> df
+    select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude, Longitude, event_total, individual_total) %>%
+    rename(Subregion = Project.ID, Species = Genus.Species, Camera.ID = Deployment.Location.ID, Event.Total = event_total, 
+           Individual.Total = individual_total) -> df
   
   action <- DT::dataTableAjax(session, df)
   
@@ -1104,7 +1105,6 @@ marker_id <- reactiveValues(id = NULL)
 
 observeEvent(input$map_occ_marker_click, {
   marker_id$id <- input$map_occ_marker_click$id
-  print(marker_id)
 })
 
 #import data with times and events
@@ -1112,12 +1112,9 @@ event_time_data <- read.csv("~/Documents/Projects/ShinyCam/ShinyApps/LeafletApp/
 
 camera_time_data <- reactive({
   if (!is.null(input$species_occ)) {
-    print(marker_id)
-    print('yes')
     event_time_data %>%
       subset((Genus.Species %in% input$species_occ)) %>%
-      subset(Deployment.Location.ID == marker_id$id) %>%
-      print()
+      subset(Deployment.Location.ID == marker_id$id)
   } else {
     data.frame()
   }
@@ -1126,12 +1123,19 @@ camera_time_data <- reactive({
 #create output table subsetted by
 output$camera_time_table <- DT::renderDataTable({
   camera_time_data() %>%
-    select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude.Resolution, Longitude.Resolution, Month, Year, total) -> df_cam
+    select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude.Resolution, Longitude.Resolution, Month, Year, total) %>%
+    rename(Subregion = Project.ID, Species = Genus.Species, Camera.ID = Deployment.Location.ID, 
+           Latitude = Latitude.Resolution, Longitude = Longitude.Resolution) -> df_cam
   
   action <- DT::dataTableAjax(session, df_cam)
   
   DT::datatable(df_cam, options = list(ajax = list(url = action)), escape = FALSE)
 
+})
+
+##create text giving the date range of occurence data, this range assumes input data for this tab was derived from the same raw data as the rates of detection data##
+output$timetext <- renderText({
+  paste0("Observations start on ", min(indat$timestamp), " and end on ", max(indat$timestamp), ".")
 })
 
 ###########################################
