@@ -2,6 +2,7 @@ library(dplyr)
 detach("package:dplyr", unload=TRUE) # This is an unfortunate hack necessitated 
 # by multiple packages with a "select" function
 # Better solutions very much welcomed
+library(tidyverse)
 library(R2jags)
 library(overlap)
 library(chron)
@@ -954,6 +955,7 @@ check_allsites_occ <- reactive({
 })
 
 
+<<<<<<< HEAD
 # Reactive function to select site
 site_selection_occ <- reactive({
   print(check_allsites_occ())
@@ -1229,55 +1231,57 @@ output$ta.species2 <- renderUI({
   
   labels <- sort(as.character(present.species.names_temp()))
   
-  selectInput("ta.species.two.name", "Select Species 2", 
-              choices = labels[which(labels!=as.character(input$ta.species.one.name))], 
-              selected = labels[which(labels!=as.character(input$ta.species.one.name))][2]) 
+  selectInput("ta.species.two.name", "Select Species 2",
+              choices = labels)
+  #choices = labels[which(labels!=as.character(input$ta.species.one.name))], 
+  #selected = labels[which(labels!=as.character(input$ta.species.one.name))][2]) 
 })  
 
 # Update species selection based on RED and guild
 observe({
   #Modify selection based on nulls
   if (is.null(input$red_temp) & is.null(input$guild_temp)) {
-    selected.names <- NULL
+    selected.names_temp <- NULL
   } else if (is.null(input$red_temp)) {
     trows <- as.character(present.species_temp()$guild) %in% input$guild_temp
-    selected.species <- present.species_temp()[trows,]
-    selected.names <- paste(selected.species$genus, selected.species$species)
+    selected.species_temp <- present.species_temp()[trows,]
+    selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
   } else if (is.null(input$guild_temp)) {
     trows <- as.character(present.species_temp()$red_list_status_id) %in%
       red.list.table$id[red.list.table$description %in% input$red_temp]
-    selected.species <- present.species_temp()[trows,]
-    selected.names <- paste(selected.species$genus, selected.species$species)
+    selected.species_temp <- present.species_temp()[trows,]
+    selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
   } else {
     guilds <- (as.character(present.species_temp()$guild) %in% input$guild_temp)
     
     reds <- as.character(present.species_temp()$red_list_status_id) %in%
       red.list.table$id[red.list.table$description %in% input$red_temp]
     if (is.null(guilds) & is.null(reds)) {
-      selected.names <- NULL
+      selected.names_temp <- NULL
     } else if (is.null(guilds)) {
-      selected.species <- present.species_temp()[reds,]
-      selected.names <- paste(selected.species$genus, selected.species$species)
+      selected.species_temp <- present.species_temp()[reds,]
+      selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
     } else if (is.null(reds)) {
-      selected.species <- present.species_temp()[guilds,]
-      selected.names <- paste(selected.species$genus, selected.species$species)
+      selected.species_temp <- present.species_temp()[guilds,]
+      selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
     } else {
-      selected.species <- present.species_temp()[guilds & reds,]
-      selected.names <- paste(selected.species$genus, selected.species$species)
+      selected.species_temp <- present.species_temp()[guilds & reds,]
+      selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
     }
     
   }
   
   # Update species selection drop downs       
   
-  selected.names <- sort(as.character(selected.names))
+  selected.names_temp <- sort(as.character(selected.names_temp))
   
   updateSelectInput(session, "ta.species.one.name", "Select Species 1",
-                    choices = selected.names, selected = selected.names[1])
+                    choices = selected.names_temp)#, selected = selected.names_temp[1])
   
   updateSelectInput(session, "ta.species.two.name", "Select Species 2",
-                    choices = selected.names[which(selected.names!=as.character(input$ta.species.one.name))], 
-                    selected = selected.names[which(selected.names!=as.character(input$ta.species.one.name))][2])
+                    choices = selected.names_temp)
+  #choices = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))])#, 
+  #selected = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))][2])
   
 })
 
@@ -1521,10 +1525,5 @@ output$tempact3 = renderPlot({
       scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
   }
 })
-
-
-
-
-
 })
 
