@@ -50,7 +50,7 @@ red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   
 
 # Read data for temp activity tab
 marin.data.complete.sac <- data.table::setDT(read_feather(path="data/raw_dataprep/marin.data_1hour",columns = NULL)) 
-marin.data.complete.sac <- marin.data.complete.sac[which(marin.data.complete.sac$Genus.Species!=""), ]
+instmarin.data.complete.sac <- marin.data.complete.sac[which(marin.data.complete.sac$Genus.Species!=""), ]
 
 # Read Camera Stats
 dm_01_count_images <- read.csv('data/processed/dm_01_count_images.csv', stringsAsFactors = FALSE) 
@@ -1137,7 +1137,7 @@ output$camera_time_table <- DT::renderDataTable({
 
 ##create text giving the date range of occurence data, this range assumes input data for this tab was derived from the same raw data as the rates of detection data##
 output$timetext <- renderText({
-  paste0("Observations start on ", min(indat$timestamp), " and end on ", max(indat$timestamp), ".")
+  paste0("Observations start on ", min(dataset_input()$timestamp), " and end on ", max(dataset_input()$timestamp), ".")
 })
 
 ###########################################
@@ -1146,67 +1146,51 @@ output$timetext <- renderText({
 
   # Reactive function to select site- subset data
   site_selection_temp <- reactive({
-    
     if(is.null(input$site_selection_temp)) {site_select="GaryGiacomini"} else { site_select = input$site_selection_temp}
-    
+  
     if(site_select=="All"){
-      
       site_selection_temp <- marin.data.complete.sac
-      
     } else {
-      site_selection_temp <-  base::subset(marin.data.complete.sac, as.character(marin.data.complete.sac$Project.ID) %in% site_select)
+      site_selection_temp <-  base::subset(marin.data.complete.sac, as.character(marin.data.complete.sac$Project.ID) %in% 
+                                             site_select)
     }
-    
     return(site_selection_temp)
-    
   })
   
   # This is adaptive labels based on marin.data.complete (depends on site_selection_temp)
   output$site_checkbox_temp <- renderUI({
-    
     labels <- c(as.character(unique(marin.data.complete.sac$Project.ID)),"All")
-    
     selectInput("site_selection_temp", "Select Sites/Subregions", choices = labels, selected = labels[[1]]) 
-    
   })
+  
   
   # Create reactive data.frame containing only species present in selected sites
   # in selected project area
-  
   present.species_temp <- reactive({
-    
     species <- base::as.data.frame(unique(cbind(site_selection_temp()$Genus, site_selection_temp()$Species))) 
-    
     colnames(species)<-c("Genus","Species")
-    
     present.species_temp <- species.table[species.table$genus %in% species$Genus &
                                             species.table$species %in% species$Species, ]
     # Switch out "" with "Unknown"
     present.species_temp$guild <- as.factor(ifelse(as.character(present.species_temp$guild) == "", 
                                                    "Unknown", as.character(present.species_temp$guild)))
     return(present.species_temp)
-    
   })
+  
   
   # Create reactive vector containing the genus and species (concatenated) that
   # are present in the selected sites in the project area (depends on site_selection_temp())
   present.species.names_temp <- reactive({
-    
     species <- as.data.frame(unique(cbind(site_selection_temp()$Genus,site_selection_temp()$Species)))
-    
     colnames(species)<-c("Genus","Species")
-    
     as.character(paste(species$Genus, species$Species))
-    
   })
   
   # Render guild selector (depends on present.species())
   output$guild.control_temp <- renderUI({
-    
     guild.list <- sort(unique(as.character(present.species_temp()$guild)))
     checkboxGroupInput("guild_temp", "Select Guilds", choices=guild.list,
                        selected=guild.list[1]) 
-    
   })
   
   # Render RED selector
@@ -1225,22 +1209,18 @@ output$timetext <- renderText({
   # })
   
   output$ta.species1 <- renderUI({  
-    
     labels <- sort(as.character(present.species.names_temp()))
-    
     selectInput("ta.species.one.name", "Select Species 1", 
                 choices = labels, 
                 selected = labels[1]) 
   })  
   
   output$ta.species2 <- renderUI({
-    
     labels <- sort(as.character(present.species.names_temp()))
-    
     selectInput("ta.species.two.name", "Select Species 2",
-                choices = labels)
-    #choices = labels[which(labels!=as.character(input$ta.species.one.name))], 
-    #selected = labels[which(labels!=as.character(input$ta.species.one.name))][2]) 
+                #choices = labels,
+    choices = labels[which(labels!=as.character(input$ta.species.one.name))], 
+    selected = labels[which(labels!=as.character(input$ta.species.one.name))][2]) 
   })  
   
   # Update species selection based on RED and guild
@@ -1285,9 +1265,9 @@ output$timetext <- renderText({
                       choices = selected.names_temp)#, selected = selected.names_temp[1])
     
     updateSelectInput(session, "ta.species.two.name", "Select Species 2",
-                      choices = selected.names_temp)
-    #choices = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))])#, 
-    #selected = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))][2])
+                     # choices = selected.names_temp)
+    choices = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))], 
+    selected = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))][2])
     
   })
   
