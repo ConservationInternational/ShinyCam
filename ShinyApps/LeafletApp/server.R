@@ -1173,15 +1173,17 @@ output$site_checkbox_temp <- renderUI({
 
 present.species_temp <- reactive({
   
-  species <- base::as.data.frame(unique(cbind(site_selection_temp()$Genus, site_selection_temp()$Species))) 
+  species_temp <- base::as.data.frame(unique(cbind(site_selection_temp()$Genus, site_selection_temp()$Species))) 
   
-  colnames(species)<-c("Genus","Species")
+  colnames(species_temp)<-c("Genus","Species")
   
-  present.species_temp <- species.table[species.table$genus %in% species$Genus &
-                                          species.table$species %in% species$Species, ]
+  present.species_temp <- species.table[species.table$genus %in% species_temp$Genus &
+                                          species.table$species %in% species_temp$Species, ]
   # Switch out "" with "Unknown"
   present.species_temp$guild <- as.factor(ifelse(as.character(present.species_temp$guild) == "", 
                                                  "Unknown", as.character(present.species_temp$guild)))
+  
+  
   return(present.species_temp)
   
 })
@@ -1190,45 +1192,41 @@ present.species_temp <- reactive({
 # are present in the selected sites in the project area (depends on site_selection_temp())
 present.species.names_temp <- reactive({
   
-  species <- as.data.frame(unique(cbind(site_selection_temp()$Genus,site_selection_temp()$Species)))
+  species_temp <- as.data.frame(unique(cbind(site_selection_temp()$Genus,site_selection_temp()$Species)))
   
-  colnames(species)<-c("Genus","Species")
+  colnames(species_temp)<-c("Genus","Species")
   
-  as.character(paste(species$Genus, species$Species))
+  present.species.names_temp <- as.character(paste(species_temp$Genus, species_temp$Species))
   
+  return(present.species.names_temp)
 })
 
 # Render guild selector (depends on present.species())
 output$guild.control_temp <- renderUI({
   
-  guild.list <- sort(unique(as.character(present.species_temp()$guild)))
-  checkboxGroupInput("guild_temp", "Select Guilds", choices=guild.list,
-                     selected=guild.list[1]) 
+  guild.list_temp <- sort(unique(as.character(present.species_temp()$guild)))
+  
+  checkboxGroupInput("guild_temp", "Select Guilds", choices=guild.list_temp,
+                     selected=guild.list_temp[1]) 
   
 })
 
 # Render RED selector
 output$red.control_temp <- renderUI({
-  red.list <- sort(unique(as.character(red.list.table$description[red.list.table$id %in% 
+  red.list_temp <- sort(unique(as.character(red.list.table$description[red.list.table$id %in% 
                                                                     present.species_temp()$red_list_status_id])))
   
-  checkboxGroupInput("red_temp", "Select Red List Categories", choices = red.list, selected=red.list)
+  checkboxGroupInput("red_temp", "Select Red List Categories", choices = red.list_temp, selected=red.list_temp)
   
 })
-
-# # Render species selection 
-# output$species.list <- renderUI({
-#   selectInput("species", "Select Species (Multiple Possible)",
-#               choices=sort(as.character(present.species.names_temp())), selected=NULL, multiple=TRUE)
-# })
 
 output$ta.species1 <- renderUI({  
   
   labels <- sort(as.character(present.species.names_temp()))
   
   selectInput("ta.species.one.name", "Select Species 1", 
-              choices = labels, 
-              selected = labels[1]) 
+              choices = labels)#, 
+             # selected = labels[1]) 
 })  
 
 output$ta.species2 <- renderUI({
@@ -1246,30 +1244,36 @@ observe({
   #Modify selection based on nulls
   if (is.null(input$red_temp) & is.null(input$guild_temp)) {
     selected.names_temp <- NULL
+    
   } else if (is.null(input$red_temp)) {
     trows <- as.character(present.species_temp()$guild) %in% input$guild_temp
     selected.species_temp <- present.species_temp()[trows,]
     selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
+    
   } else if (is.null(input$guild_temp)) {
     trows <- as.character(present.species_temp()$red_list_status_id) %in%
       red.list.table$id[red.list.table$description %in% input$red_temp]
     selected.species_temp <- present.species_temp()[trows,]
     selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
-  } else {
-    guilds <- (as.character(present.species_temp()$guild) %in% input$guild_temp)
     
-    reds <- as.character(present.species_temp()$red_list_status_id) %in%
+  } else {
+    guilds_temp <- (as.character(present.species_temp()$guild) %in% input$guild_temp)
+    reds_temp <- as.character(present.species_temp()$red_list_status_id) %in%
       red.list.table$id[red.list.table$description %in% input$red_temp]
-    if (is.null(guilds) & is.null(reds)) {
+    
+    if (is.null(guilds_temp) & is.null(reds_temp)) {
       selected.names_temp <- NULL
-    } else if (is.null(guilds)) {
-      selected.species_temp <- present.species_temp()[reds,]
+      
+    } else if (is.null(guilds_temp)) {
+      selected.species_temp <- present.species_temp()[reds_temp,]
       selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
-    } else if (is.null(reds)) {
-      selected.species_temp <- present.species_temp()[guilds,]
+      
+    } else if (is.null(reds_temp)) {
+      selected.species_temp <- present.species_temp()[guilds_temp,]
       selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
+      
     } else {
-      selected.species_temp <- present.species_temp()[guilds & reds,]
+      selected.species_temp <- present.species_temp()[guilds_temp & reds_temp,]
       selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
     }
     
@@ -1321,17 +1325,17 @@ tempactivityprocessing<-reactive({
   
   marin.data6 <- marin.data.complete.sac
   
-  lab.species=unique(marin.data6$Genus.Species)
-  num.species=length(unique(marin.data6$Genus.Species))
+  lab.species_temp = unique(marin.data6$Genus.Species)
+  num.species_temp = length(unique(marin.data6$Genus.Species))
   
   #Need to subset by ta.species.one.name and ta.species.two.name
   
-  if (num.species > 2){
+  if (num.species_temp > 2){
     
-    lab.species <- c(as.character(input$ta.species.one.name), 
-                     as.character(input$ta.species.two.name)) ; num.species=2
+    lab.species_temp <- c(as.character(input$ta.species.one.name), 
+                     as.character(input$ta.species.two.name)) ; num.species_temp=2
                      
-                     newdata.marin.data6 <- marin.data6[marin.data6$Genus.Species %in% lab.species, ]
+                     newdata.marin.data6 <- marin.data6[marin.data6$Genus.Species %in% lab.species_temp, ]
   }
   else { newdata.marin.data6 <- marin.data6 }
   
@@ -1359,7 +1363,7 @@ tempactivityprocessing<-reactive({
   
   timedata3 <- lapply(timedata,timeformatfunc2)
   
-  outlist <- list(lab.species,num.species,timedata2,timedata3)
+  outlist <- list(lab.species_temp,num.species_temp,timedata2,timedata3)
   
   return(outlist)
   
@@ -1378,7 +1382,7 @@ tempactivityprocessing<-reactive({
 # the plots 
 #######################
 
-# First plot!! 
+## First plot!! 
 output$tempact1 = renderPlot({
   
   if(is.null(input$ta.species.one.name) | 
@@ -1387,17 +1391,17 @@ output$tempact1 = renderPlot({
   
   outlist <- tempactivityprocessing()
   
-  lab.species <- outlist[[1]]
-  num.species <- outlist[[2]]
+  lab.species_temp <- outlist[[1]]
+  num.species_temp <- outlist[[2]]
   timedata2 <- outlist[[3]]
   
-  if (num.species == 1){
+  if (num.species_temp == 1){
     
     par(mfrow=c(1,1))
     
     if (length(timedata2[[1]]) < 5) { return() }
     
-    densityPlot(A = unlist(timedata2), main = lab.species,
+    densityPlot(A = unlist(timedata2), main = lab.species_temp,
                 xscale = 24, xcenter = c("noon", "midnight"),
                 add = FALSE, rug = TRUE, extend = 'lightgrey',
                 n.grid = 128, kmax = 3, adjust = 1,lwd=2)
@@ -1410,7 +1414,7 @@ output$tempact1 = renderPlot({
     if(length(timedata2[[1]]) >= 5 & length(timedata2[[2]]) >= 5){
       lapply(
         seq(1,2), 
-        function(i) densityPlot(A=timedata2[[i]], main=lab.species[[i]],
+        function(i) densityPlot(A=timedata2[[i]], main=lab.species_temp[[i]],
                                 xscale = 24, xcenter = c("noon", "midnight"),
                                 add = FALSE, rug = TRUE, extend = 'lightgrey',
                                 n.grid = 128, kmax = 3, adjust = 1, lwd=2))
@@ -1418,7 +1422,7 @@ output$tempact1 = renderPlot({
     
     if(length(timedata2[[1]]) >= 5 & length(timedata2[[2]]) < 5){
       
-      densityPlot(A = unlist(timedata2[[1]]), main=lab.species[1],
+      densityPlot(A = unlist(timedata2[[1]]), main=lab.species_temp[1],
                   xscale = 24, xcenter = c("noon", "midnight"),
                   add = FALSE, rug = TRUE, extend = 'lightgrey',
                   n.grid = 128, kmax = 3, adjust = 1, lwd = 2)
@@ -1426,7 +1430,7 @@ output$tempact1 = renderPlot({
     
     if(length(timedata2[[1]]) < 5 & length(timedata2[[2]]) >= 5){
       
-      densityPlot(A = unlist(timedata2[[2]]), main = lab.species[2],
+      densityPlot(A = unlist(timedata2[[2]]), main = lab.species_temp[2],
                   xscale = 24, xcenter = c("noon", "midnight"),
                   add = FALSE, rug = TRUE, extend = 'lightgrey',
                   n.grid = 128, kmax = 3, adjust = 1, lwd = 2)
@@ -1434,7 +1438,7 @@ output$tempact1 = renderPlot({
   }
 })
 
-# second plot!
+## second plot!
 
 output$tempact2 = renderPlot({
   
@@ -1444,11 +1448,11 @@ output$tempact2 = renderPlot({
   
   out <- tempactivityprocessing()
   
-  lab.species <- out[[1]]
-  num.species <- out[[2]]
+  lab.species_temp <- out[[1]]
+  num.species_temp <- out[[2]]
   timedata2 <- out[[3]]
   
-  if(num.species == 2) {
+  if(num.species_temp == 2) {
     
     if(length(timedata2[[1]]) < 5 |
        length(timedata2[[2]]) < 5) { return() }
@@ -1463,14 +1467,14 @@ output$tempact2 = renderPlot({
                 linetype = c(1, 2), linecol = c("black", "blue"), linewidth = c(2, 2),
                 olapcol = "lightgrey", rug = FALSE, extend = NULL,
                 n.grid = 128, kmax = 3, adjust = 1,
-                main = paste(lab.species[[1]]," - ",
-                             lab.species[[2]],"\n",
+                main = paste(lab.species_temp[[1]]," - ",
+                             lab.species_temp[[2]],"\n",
                              paste("Dhat1 = ",overlap.estimates[1],
                                    "Dhat3 = ",overlap.estimates[2],
                                    "Dhat5 = ",overlap.estimates[3])))
     
-    legend("topleft", legend = c(lab.species[[1]],
-                                 lab.species[[2]]),
+    legend("topleft", legend = c(lab.species_temp[[1]],
+                                 lab.species_temp[[2]]),
            lwd=2,col=c(1,4),lty=c(1,2))
   }
 })
@@ -1485,12 +1489,12 @@ output$tempact3 = renderPlot({
   
   outlist <- tempactivityprocessing()
   
-  lab.species <- outlist[[1]]
-  num.species <- outlist[[2]]
+  lab.species_temp <- outlist[[1]]
+  num.species_temp <- outlist[[2]]
   timedata2 <- outlist[[3]]
   timedata3 <- outlist[[4]]
   
-  if (num.species == 2){
+  if (num.species_temp == 2){
     
     x <- as.data.frame(as.integer(timedata3[[1]]))
     
@@ -1504,14 +1508,14 @@ output$tempact3 = renderPlot({
       geom_histogram(breaks = seq(0, 24), colour = "grey") +
       coord_polar(start = 0) +
       theme_minimal() +
-      ggtitle(lab.species[1]) +
+      ggtitle(lab.species_temp[1]) +
       scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
     
     plot2<-	  ggplot(x2, aes(x = eventhour)) +
       geom_histogram(breaks = seq(0, 24), colour = "grey") +
       coord_polar(start = 0) +
       theme_minimal() +
-      ggtitle(lab.species[2]) +
+      ggtitle(lab.species_temp[2]) +
       scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
     
     gridExtra::grid.arrange(plot1, plot2, ncol=2)
@@ -1525,7 +1529,7 @@ output$tempact3 = renderPlot({
       geom_histogram(breaks = seq(0, 24), colour = "grey") +
       coord_polar(start = 0) +
       theme_minimal() +
-      ggtitle(lab.species[1]) +
+      ggtitle(lab.species_temp[1]) +
       scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
   }
 })
