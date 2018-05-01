@@ -345,7 +345,7 @@ tabPanel(
     checkboxInput("boundary_checkbox_occ", label = "Display Park Boundaries", value = FALSE),
     uiOutput("guild.control_occ"),
     uiOutput("species.list_occ"),
-    width = 3, 
+    width = 3,
     textOutput("timetext")),
   #the mainpanel is the detection rate map
   mainPanel(
@@ -365,13 +365,13 @@ tabPanel(
               # Include our custom CSS
               includeCSS("styles.css"),
               includeScript("gomap.js")),
-            
+
             leafletOutput("map_occ", width = "120%", height = "110%"),
             # Left# Portion of side panel always present.
             tags$div(id = "cite",'Powered by ShinyCam' # , vars['Data source']
             )
                     )
-            
+
       ),
       #this subtab displays the data event table and allows it to be downloaded
       tabPanel("Species Spotter Data",

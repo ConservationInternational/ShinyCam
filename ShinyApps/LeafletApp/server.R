@@ -22,6 +22,7 @@ library(viridis)
 library(rgdal)
 library(rgeos)
 library(tidyr)
+library(feather)
 source("scripts/kernel_density_estimate.R")
 source("scripts/extra_plot.R")
 
@@ -48,7 +49,8 @@ red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   
 ##   when evaluating redlist categories.
 
 # Read data for temp activity tab
-marin.data.complete.sac <- read.csv("data/raw_dataprep/marin_data_1_hour.csv")
+marin.data.complete.sac <- data.table::setDT(read_feather(path="data/raw_dataprep/marin.data_1hour",columns = NULL)) 
+marin.data.complete.sac <- marin.data.complete.sac[which(marin.data.complete.sac$Genus.Species!=""), ]
 
 # Read Camera Stats
 dm_01_count_images <- read.csv('data/processed/dm_01_count_images.csv', stringsAsFactors = FALSE) 
@@ -620,10 +622,10 @@ shinyServer(function(input, output, session) {
     } else {NULL}
   })
   
-  # ############# Species Alert Tab ##############################
-  # Copy/pasted the previous functions and added ".2" to them to avoid repetition of previous input/output
-  #T his should be same as inital load..no need to reload
-  # Function to read in input data based on project (TEAM or Marin)
+  # # ############# Species Alert Tab ##############################
+  # # Copy/pasted the previous functions and added ".2" to them to avoid repetition of previous input/output
+  # #T his should be same as inital load..no need to reload
+  # # Function to read in input data based on project (TEAM or Marin)
   dataset_input.2 <- reactive({
     #if (input$dataset.2=="TEAM") {
     # indat <- as.data.frame(fread("./data/team_rate_of_detection.csv"))
@@ -937,9 +939,9 @@ shinyServer(function(input, output, session) {
 ###########################################
 ############ Species Spotter Tab ##########
 ###########################################
-# Read Data into reactive for flexiblity in using other datasets
+# # Read Data into reactive for flexiblity in using other datasets
 dataset_input_occ <- reactive({
-  occ <- rename_cols(as.data.frame(fread("./data/raw_dataprep/marin_species_occurence.csv"))) #file from processing steps: 
+  occ <- rename_cols(as.data.frame(fread("./data/raw_dataprep/marin_species_occurence.csv"))) #file from processing steps:
                                                                                               #raw_data -> animal_count.R -> species_occurence.R
   genus_species <- as.data.frame(str_split_fixed(occ$Genus.Species, " ", 2)) #split binomial into two columns
   colnames(genus_species) <- c("Genus", "Species") #label columns
@@ -976,9 +978,9 @@ present.species_occ <- reactive({
   present.species_occ <- species.table[species.table$genus %in% species$Genus &
                                      species.table$species %in% species$Species,]
   # Switch out "" with "Unknown"
-  present.species_occ$guild <- as.factor(ifelse(as.character(present.species_occ$guild) == "", "Unknown", 
+  present.species_occ$guild <- as.factor(ifelse(as.character(present.species_occ$guild) == "", "Unknown",
                                                 as.character(present.species_occ$guild)))
-  
+
   present.species_occ
 })
 
@@ -992,13 +994,13 @@ observe({
     trows <- as.character(present.species_occ()$guild) %in% input$guild_occ
     selected.names_occ <- present.species_occ()[trows,]
     selected.names_occ <- paste(selected.names_occ$genus, selected.names_occ$species)
-  } 
-  # Update species selection menu       
+  }
+  # Update species selection menu
   selected.names_occ <- sort(as.character(selected.names_occ))
-  
+
   updateSelectInput(session, "species_occ", "Select Species",
                     choices=selected.names_occ)
-  
+
 })
 
 # Subset dataframe for plotting (no time subset)
@@ -1044,11 +1046,11 @@ output$map_occ <- renderLeaflet({
   if (!values.2$starting) {
     if (nrow(species_dataset_occ())>0) {
       species_sites <-  unique(select(site_selection_occ(), Deployment.Location.ID, Latitude, Longitude))
-      species_sites$present <- ifelse(species_sites$Deployment.Location.ID %in% 
+      species_sites$present <- ifelse(species_sites$Deployment.Location.ID %in%
                                         species_dataset_occ()$Deployment.Location.ID, "Y", "N")
-      species_sites <- left_join(species_sites, select(species_dataset_occ(), Deployment.Location.ID, 
+      species_sites <- left_join(species_sites, select(species_dataset_occ(), Deployment.Location.ID,
                                                        event_total, individual_total, max_sighted), by = 'Deployment.Location.ID')
-      
+
       # wierd_deploy <- c("WW63", "XX65", "YY66", "XX66", "XX67")
       # print(subset(species_sites, species_sites$Deployment.Location.ID %in% wierd_deploy))
       pal <- colorFactor(c("black", "red"), domain = c("N", "Y"))
@@ -1056,7 +1058,7 @@ output$map_occ <- renderLeaflet({
         addTiles(
           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
-        )  %>% 
+        )  %>%
         setView(-122.6,37.9,zoom=10) %>%
         addCircleMarkers(~Longitude, ~Latitude, layerId = ~Deployment.Location.ID, weight=2, radius=4, fillOpacity=1, color = ~pal(present),
                          popup = ~paste("Deployment ID:", Deployment.Location.ID,
@@ -1069,15 +1071,15 @@ output$map_occ <- renderLeaflet({
       tmap_occ <- leaflet(species_sites) %>%
         addTiles(
           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
-          attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, 
+          attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme,
                         NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
-        )  %>% 
+        )  %>%
         setView(-122.6,37.9,zoom=10) %>%
         addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=4, fillOpacity=1, color = 'black')
     }
     # Park Boundary Checkbox - Showing Shapefile names needs to be dynamic
     if (input$boundary_checkbox_occ == TRUE) {
-      tmap_occ <- tmap_occ %>% 
+      tmap_occ <- tmap_occ %>%
         # UPDATE HERE for SPATIAL
         #addPolygons(data = GP, weight = 2, fill=FALSE)# %>%
         addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
@@ -1089,14 +1091,14 @@ output$map_occ <- renderLeaflet({
 })
 
 output$speciestable <- DT::renderDataTable({
-  
+
   species_dataset_occ() %>%
     select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude, Longitude, event_total, individual_total) %>%
-    rename(Subregion = Project.ID, Species = Genus.Species, Camera.ID = Deployment.Location.ID, Event.Total = event_total, 
+    rename(Subregion = Project.ID, Species = Genus.Species, Camera.ID = Deployment.Location.ID, Event.Total = event_total,
            Individual.Total = individual_total) -> df
-  
+
   action <- DT::dataTableAjax(session, df)
-  
+
   DT::datatable(df, options = list(ajax = list(url = action)), escape = FALSE)
 })
 
@@ -1124,11 +1126,11 @@ camera_time_data <- reactive({
 output$camera_time_table <- DT::renderDataTable({
   camera_time_data() %>%
     select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude.Resolution, Longitude.Resolution, Month, Year, total) %>%
-    rename(Subregion = Project.ID, Species = Genus.Species, Camera.ID = Deployment.Location.ID, 
+    rename(Subregion = Project.ID, Species = Genus.Species, Camera.ID = Deployment.Location.ID,
            Latitude = Latitude.Resolution, Longitude = Longitude.Resolution) -> df_cam
-  
+
   action <- DT::dataTableAjax(session, df_cam)
-  
+
   DT::datatable(df_cam, options = list(ajax = list(url = action)), escape = FALSE)
 
 })
@@ -1142,396 +1144,393 @@ output$timetext <- renderText({
 ############## Temp Activity Tab ##########
 ###########################################
 
-# Reactive function to select site- subset data
-site_selection_temp <- reactive({
-  
-  if(is.null(input$site_selection_temp)) {site_select="GaryGiacomini"} else { site_select = input$site_selection_temp}
-  
-  if(site_select=="All"){
+  # Reactive function to select site- subset data
+  site_selection_temp <- reactive({
     
-    site_selection_temp <- marin.data.complete.sac
+    if(is.null(input$site_selection_temp)) {site_select="GaryGiacomini"} else { site_select = input$site_selection_temp}
     
-  } else {
-    site_selection_temp <-  base::subset(marin.data.complete.sac, as.character(marin.data.complete.sac$Project.ID) %in% site_select)
-  }
-  
-  return(site_selection_temp)
-  
-})
-
-# This is adaptive labels based on marin.data.complete (depends on site_selection_temp)
-output$site_checkbox_temp <- renderUI({
-  
-  labels <- c(as.character(unique(marin.data.complete.sac$Project.ID)),"All")
-  
-  selectInput("site_selection_temp", "Select Sites/Subregions", choices = labels, selected = labels[[1]]) 
-  
-})
-
-# Create reactive data.frame containing only species present in selected sites
-# in selected project area
-
-present.species_temp <- reactive({
-  
-  species_temp <- base::as.data.frame(unique(cbind(site_selection_temp()$Genus, site_selection_temp()$Species))) 
-  
-  colnames(species_temp)<-c("Genus","Species")
-  
-  present.species_temp <- species.table[species.table$genus %in% species_temp$Genus &
-                                          species.table$species %in% species_temp$Species, ]
-  # Switch out "" with "Unknown"
-  present.species_temp$guild <- as.factor(ifelse(as.character(present.species_temp$guild) == "", 
-                                                 "Unknown", as.character(present.species_temp$guild)))
-  
-  
-  return(present.species_temp)
-  
-})
-
-# Create reactive vector containing the genus and species (concatenated) that
-# are present in the selected sites in the project area (depends on site_selection_temp())
-present.species.names_temp <- reactive({
-  
-  species_temp <- as.data.frame(unique(cbind(site_selection_temp()$Genus,site_selection_temp()$Species)))
-  
-  colnames(species_temp)<-c("Genus","Species")
-  
-  present.species.names_temp <- as.character(paste(species_temp$Genus, species_temp$Species))
-  
-  return(present.species.names_temp)
-})
-
-# Render guild selector (depends on present.species())
-output$guild.control_temp <- renderUI({
-  
-  guild.list_temp <- sort(unique(as.character(present.species_temp()$guild)))
-  
-  checkboxGroupInput("guild_temp", "Select Guilds", choices=guild.list_temp,
-                     selected=guild.list_temp[1]) 
-  
-})
-
-# Render RED selector
-output$red.control_temp <- renderUI({
-  red.list_temp <- sort(unique(as.character(red.list.table$description[red.list.table$id %in% 
-                                                                    present.species_temp()$red_list_status_id])))
-  
-  checkboxGroupInput("red_temp", "Select Red List Categories", choices = red.list_temp, selected=red.list_temp)
-  
-})
-
-output$ta.species1 <- renderUI({  
-  
-  labels <- sort(as.character(present.species.names_temp()))
-  
-  selectInput("ta.species.one.name", "Select Species 1", 
-              choices = labels)#, 
-             # selected = labels[1]) 
-})  
-
-output$ta.species2 <- renderUI({
-  
-  labels <- sort(as.character(present.species.names_temp()))
-  
-  selectInput("ta.species.two.name", "Select Species 2",
-              choices = labels)
-  #choices = labels[which(labels!=as.character(input$ta.species.one.name))], 
-  #selected = labels[which(labels!=as.character(input$ta.species.one.name))][2]) 
-})  
-
-# Update species selection based on RED and guild
-observe({
-  #Modify selection based on nulls
-  if (is.null(input$red_temp) & is.null(input$guild_temp)) {
-    selected.names_temp <- NULL
+    if(site_select=="All"){
+      
+      site_selection_temp <- marin.data.complete.sac
+      
+    } else {
+      site_selection_temp <-  base::subset(marin.data.complete.sac, as.character(marin.data.complete.sac$Project.ID) %in% site_select)
+    }
     
-  } else if (is.null(input$red_temp)) {
-    trows <- as.character(present.species_temp()$guild) %in% input$guild_temp
-    selected.species_temp <- present.species_temp()[trows,]
-    selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
+    return(site_selection_temp)
     
-  } else if (is.null(input$guild_temp)) {
-    trows <- as.character(present.species_temp()$red_list_status_id) %in%
-      red.list.table$id[red.list.table$description %in% input$red_temp]
-    selected.species_temp <- present.species_temp()[trows,]
-    selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
+  })
+  
+  # This is adaptive labels based on marin.data.complete (depends on site_selection_temp)
+  output$site_checkbox_temp <- renderUI({
     
-  } else {
-    guilds_temp <- (as.character(present.species_temp()$guild) %in% input$guild_temp)
-    reds_temp <- as.character(present.species_temp()$red_list_status_id) %in%
-      red.list.table$id[red.list.table$description %in% input$red_temp]
+    labels <- c(as.character(unique(marin.data.complete.sac$Project.ID)),"All")
     
-    if (is.null(guilds_temp) & is.null(reds_temp)) {
+    selectInput("site_selection_temp", "Select Sites/Subregions", choices = labels, selected = labels[[1]]) 
+    
+  })
+  
+  # Create reactive data.frame containing only species present in selected sites
+  # in selected project area
+  
+  present.species_temp <- reactive({
+    
+    species <- base::as.data.frame(unique(cbind(site_selection_temp()$Genus, site_selection_temp()$Species))) 
+    
+    colnames(species)<-c("Genus","Species")
+    
+    present.species_temp <- species.table[species.table$genus %in% species$Genus &
+                                            species.table$species %in% species$Species, ]
+    # Switch out "" with "Unknown"
+    present.species_temp$guild <- as.factor(ifelse(as.character(present.species_temp$guild) == "", 
+                                                   "Unknown", as.character(present.species_temp$guild)))
+    return(present.species_temp)
+    
+  })
+  
+  # Create reactive vector containing the genus and species (concatenated) that
+  # are present in the selected sites in the project area (depends on site_selection_temp())
+  present.species.names_temp <- reactive({
+    
+    species <- as.data.frame(unique(cbind(site_selection_temp()$Genus,site_selection_temp()$Species)))
+    
+    colnames(species)<-c("Genus","Species")
+    
+    as.character(paste(species$Genus, species$Species))
+    
+  })
+  
+  # Render guild selector (depends on present.species())
+  output$guild.control_temp <- renderUI({
+    
+    guild.list <- sort(unique(as.character(present.species_temp()$guild)))
+    checkboxGroupInput("guild_temp", "Select Guilds", choices=guild.list,
+                       selected=guild.list[1]) 
+    
+  })
+  
+  # Render RED selector
+  output$red.control_temp <- renderUI({
+    red.list <- sort(unique(as.character(red.list.table$description[red.list.table$id %in% 
+                                                                      present.species_temp()$red_list_status_id])))
+    
+    checkboxGroupInput("red_temp", "Select Red List Categories", choices = red.list, selected=red.list)
+    
+  })
+  
+  # # Render species selection 
+  # output$species.list <- renderUI({
+  #   selectInput("species", "Select Species (Multiple Possible)",
+  #               choices=sort(as.character(present.species.names_temp())), selected=NULL, multiple=TRUE)
+  # })
+  
+  output$ta.species1 <- renderUI({  
+    
+    labels <- sort(as.character(present.species.names_temp()))
+    
+    selectInput("ta.species.one.name", "Select Species 1", 
+                choices = labels, 
+                selected = labels[1]) 
+  })  
+  
+  output$ta.species2 <- renderUI({
+    
+    labels <- sort(as.character(present.species.names_temp()))
+    
+    selectInput("ta.species.two.name", "Select Species 2",
+                choices = labels)
+    #choices = labels[which(labels!=as.character(input$ta.species.one.name))], 
+    #selected = labels[which(labels!=as.character(input$ta.species.one.name))][2]) 
+  })  
+  
+  # Update species selection based on RED and guild
+  observe({
+    #Modify selection based on nulls
+    if (is.null(input$red_temp) & is.null(input$guild_temp)) {
       selected.names_temp <- NULL
-      
-    } else if (is.null(guilds_temp)) {
-      selected.species_temp <- present.species_temp()[reds_temp,]
+    } else if (is.null(input$red_temp)) {
+      trows <- as.character(present.species_temp()$guild) %in% input$guild_temp
+      selected.species_temp <- present.species_temp()[trows,]
       selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
-      
-    } else if (is.null(reds_temp)) {
-      selected.species_temp <- present.species_temp()[guilds_temp,]
+    } else if (is.null(input$guild_temp)) {
+      trows <- as.character(present.species_temp()$red_list_status_id) %in%
+        red.list.table$id[red.list.table$description %in% input$red_temp]
+      selected.species_temp <- present.species_temp()[trows,]
       selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
-      
     } else {
-      selected.species_temp <- present.species_temp()[guilds_temp & reds_temp,]
-      selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
+      guilds <- (as.character(present.species_temp()$guild) %in% input$guild_temp)
+      
+      reds <- as.character(present.species_temp()$red_list_status_id) %in%
+        red.list.table$id[red.list.table$description %in% input$red_temp]
+      if (is.null(guilds) & is.null(reds)) {
+        selected.names_temp <- NULL
+      } else if (is.null(guilds)) {
+        selected.species_temp <- present.species_temp()[reds,]
+        selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
+      } else if (is.null(reds)) {
+        selected.species_temp <- present.species_temp()[guilds,]
+        selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
+      } else {
+        selected.species_temp <- present.species_temp()[guilds & reds,]
+        selected.names_temp <- paste(selected.species_temp$genus, selected.species_temp$species)
+      }
+      
     }
     
-  }
-  
-  # Update species selection drop downs       
-  
-  selected.names_temp <- sort(as.character(selected.names_temp))
-  
-  updateSelectInput(session, "ta.species.one.name", "Select Species 1",
-                    choices = selected.names_temp)#, selected = selected.names_temp[1])
-  
-  updateSelectInput(session, "ta.species.two.name", "Select Species 2",
-                    choices = selected.names_temp)
-  #choices = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))])#, 
-  #selected = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))][2])
-  
-})
-
-# subsetting by time (month or year)
-output$temporal_activity_time <- renderUI({
-  
-  marin.data6 <- marin.data.complete.sac
-  
-  time.choice<-c("All-Data",paste("Year-",unique(as.character((marin.data6$Year))),sep=""),
-                 paste("Month-",unique(as.character((marin.data6$Month))),sep=""))
-  
-  selectInput("temporal_activity_time_input", label = "Subset Temporal Activity by Year or Month",
-              choices=time.choice, selected=1)
-})
-
-#for selecting species in temporal activity analysis- these species are a subset of the species first selected 
-
-
-# processing
-
-tempactivityprocessing<-reactive({
-  if(is.null(input$ta.species.one.name) | 
-     is.null(input$ta.species.two.name) | 
-     is.null(input$temporal_activity_time_input)){ 
-    return()
-  }
-  
-  timeformatfunc <- function(timedata){(((chron::hours(timedata$date.time.capture.format))*60*60+
-                                           (chron::minutes(timedata$date.time.capture.format))*60+
-                                           chron::seconds(timedata$date.time.capture.format))/86400*2*pi)}	
-  
-  timeformatfunc2 <- function(timedata){chron::hours(timedata$date.time.capture.format)}	
-  
-  marin.data6 <- marin.data.complete.sac
-  
-  lab.species_temp = unique(marin.data6$Genus.Species)
-  num.species_temp = length(unique(marin.data6$Genus.Species))
-  
-  #Need to subset by ta.species.one.name and ta.species.two.name
-  
-  if (num.species_temp > 2){
+    # Update species selection drop downs       
     
-    lab.species_temp <- c(as.character(input$ta.species.one.name), 
-                     as.character(input$ta.species.two.name)) ; num.species_temp=2
-                     
-                     newdata.marin.data6 <- marin.data6[marin.data6$Genus.Species %in% lab.species_temp, ]
-  }
-  else { newdata.marin.data6 <- marin.data6 }
-  
-  this.time.subset <- unlist(strsplit(input$temporal_activity_time_input,"-"))
-  
-  if(this.time.subset[1]!= "All"){	
+    selected.names_temp <- sort(as.character(selected.names_temp))
     
-    if(this.time.subset[1] == "Year"){
-      
-      newdata.marin.data6<-newdata.marin.data6[newdata.marin.data6$Year %in% this.time.subset[2],]
-      
-    } else {
-      
-      newdata.marin.data6 <- newdata.marin.data6[newdata.marin.data6$Month %in% this.time.subset[2],]	
-      
-    }	
+    updateSelectInput(session, "ta.species.one.name", "Select Species 1",
+                      choices = selected.names_temp)#, selected = selected.names_temp[1])
     
-  } else { newdata.marin.data6=newdata.marin.data6 }
-  
-  timedata <- split(newdata.marin.data6,newdata.marin.data6$Genus.Species)
-  
-  as.Date(marin.data.complete.sac$yearmonthday)
-  
-  timedata2 <- lapply(timedata,timeformatfunc)
-  
-  timedata3 <- lapply(timedata,timeformatfunc2)
-  
-  outlist <- list(lab.species_temp,num.species_temp,timedata2,timedata3)
-  
-  return(outlist)
-  
-})
-
-
-
-
-
-
-
-
-
-
-#######################
-# the plots 
-#######################
-
-## First plot!! 
-output$tempact1 = renderPlot({
-  
-  if(is.null(input$ta.species.one.name) | 
-     is.null(input$ta.species.two.name) |
-     is.null(marin.data.complete.sac)) { return () }
-  
-  outlist <- tempactivityprocessing()
-  
-  lab.species_temp <- outlist[[1]]
-  num.species_temp <- outlist[[2]]
-  timedata2 <- outlist[[3]]
-  
-  if (num.species_temp == 1){
+    updateSelectInput(session, "ta.species.two.name", "Select Species 2",
+                      choices = selected.names_temp)
+    #choices = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))])#, 
+    #selected = selected.names_temp[which(selected.names_temp!=as.character(input$ta.species.one.name))][2])
     
-    par(mfrow=c(1,1))
+  })
+  
+  # subsetting by time (month or year)
+  output$temporal_activity_time <- renderUI({
     
-    if (length(timedata2[[1]]) < 5) { return() }
+    marin.data6 <- marin.data.complete.sac
     
-    densityPlot(A = unlist(timedata2), main = lab.species_temp,
-                xscale = 24, xcenter = c("noon", "midnight"),
-                add = FALSE, rug = TRUE, extend = 'lightgrey',
-                n.grid = 128, kmax = 3, adjust = 1,lwd=2)
-  } else {
+    time.choice<-c("All-Data",paste("Year-",unique(as.character((marin.data6$Year))),sep=""),
+                   paste("Month-",unique(as.character((marin.data6$Month))),sep=""))
     
-    par(mfrow=c(1,2))
-    
-    if(length(timedata2[[1]]) < 5 & length(timedata2[[2]]) < 5) { return() }
-    
-    if(length(timedata2[[1]]) >= 5 & length(timedata2[[2]]) >= 5){
-      lapply(
-        seq(1,2), 
-        function(i) densityPlot(A=timedata2[[i]], main=lab.species_temp[[i]],
-                                xscale = 24, xcenter = c("noon", "midnight"),
-                                add = FALSE, rug = TRUE, extend = 'lightgrey',
-                                n.grid = 128, kmax = 3, adjust = 1, lwd=2))
+    selectInput("temporal_activity_time_input", label = "Subset Temporal Activity by Year or Month",
+                choices=time.choice, selected=1)
+  })
+  
+  #for selecting species in temporal activity analysis- these species are a subset of the species first selected 
+  
+  
+  # processing
+  
+  tempactivityprocessing<-reactive({
+    if(is.null(input$ta.species.one.name) | 
+       is.null(input$ta.species.two.name) | 
+       is.null(input$temporal_activity_time_input)){ 
+      return()
     }
     
-    if(length(timedata2[[1]]) >= 5 & length(timedata2[[2]]) < 5){
+    timeformatfunc <- function(timedata){(((chron::hours(timedata$date.time.capture.format))*60*60+
+                                             (chron::minutes(timedata$date.time.capture.format))*60+
+                                             chron::seconds(timedata$date.time.capture.format))/86400*2*pi)}	
+    
+    timeformatfunc2 <- function(timedata){chron::hours(timedata$date.time.capture.format)}	
+    
+    marin.data6 <- marin.data.complete.sac
+    
+    lab.species=unique(marin.data6$Genus.Species)
+    num.species=length(unique(marin.data6$Genus.Species))
+    
+    #Need to subset by ta.species.one.name and ta.species.two.name
+    
+    if (num.species > 2){
       
-      densityPlot(A = unlist(timedata2[[1]]), main=lab.species_temp[1],
+      lab.species <- c(as.character(input$ta.species.one.name), 
+                       as.character(input$ta.species.two.name)) ; num.species=2
+                       
+                       newdata.marin.data6 <- marin.data6[marin.data6$Genus.Species %in% lab.species, ]
+    }
+    else { newdata.marin.data6 <- marin.data6 }
+    
+    this.time.subset <- unlist(strsplit(input$temporal_activity_time_input,"-"))
+    
+    if(this.time.subset[1]!= "All"){	
+      
+      if(this.time.subset[1] == "Year"){
+        
+        newdata.marin.data6<-newdata.marin.data6[newdata.marin.data6$Year %in% this.time.subset[2],]
+        
+      } else {
+        
+        newdata.marin.data6 <- newdata.marin.data6[newdata.marin.data6$Month %in% this.time.subset[2],]	
+        
+      }	
+      
+    } else { newdata.marin.data6=newdata.marin.data6 }
+    
+    timedata <- split(newdata.marin.data6,newdata.marin.data6$Genus.Species)
+    
+    as.Date(marin.data.complete.sac$yearmonthday)
+    
+    timedata2 <- lapply(timedata,timeformatfunc)
+    
+    timedata3 <- lapply(timedata,timeformatfunc2)
+    
+    outlist <- list(lab.species,num.species,timedata2,timedata3)
+    
+    return(outlist)
+    
+  })
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  #######################
+  # the plots 
+  #######################
+  
+  # First plot!! 
+  output$tempact1 = renderPlot({
+    
+    if(is.null(input$ta.species.one.name) | 
+       is.null(input$ta.species.two.name) |
+       is.null(marin.data.complete.sac)) { return () }
+    
+    outlist <- tempactivityprocessing()
+    
+    lab.species <- outlist[[1]]
+    num.species <- outlist[[2]]
+    timedata2 <- outlist[[3]]
+    
+    if (num.species == 1){
+      
+      par(mfrow=c(1,1))
+      
+      if (length(timedata2[[1]]) < 5) { return() }
+      
+      densityPlot(A = unlist(timedata2), main = lab.species,
                   xscale = 24, xcenter = c("noon", "midnight"),
                   add = FALSE, rug = TRUE, extend = 'lightgrey',
-                  n.grid = 128, kmax = 3, adjust = 1, lwd = 2)
-    }
-    
-    if(length(timedata2[[1]]) < 5 & length(timedata2[[2]]) >= 5){
+                  n.grid = 128, kmax = 3, adjust = 1,lwd=2)
+    } else {
       
-      densityPlot(A = unlist(timedata2[[2]]), main = lab.species_temp[2],
-                  xscale = 24, xcenter = c("noon", "midnight"),
-                  add = FALSE, rug = TRUE, extend = 'lightgrey',
-                  n.grid = 128, kmax = 3, adjust = 1, lwd = 2)
+      par(mfrow=c(1,2))
+      
+      if(length(timedata2[[1]]) < 5 & length(timedata2[[2]]) < 5) { return() }
+      
+      if(length(timedata2[[1]]) >= 5 & length(timedata2[[2]]) >= 5){
+        lapply(
+          seq(1,2), 
+          function(i) densityPlot(A=timedata2[[i]], main=lab.species[[i]],
+                                  xscale = 24, xcenter = c("noon", "midnight"),
+                                  add = FALSE, rug = TRUE, extend = 'lightgrey',
+                                  n.grid = 128, kmax = 3, adjust = 1, lwd=2))
+      }
+      
+      if(length(timedata2[[1]]) >= 5 & length(timedata2[[2]]) < 5){
+        
+        densityPlot(A = unlist(timedata2[[1]]), main=lab.species[1],
+                    xscale = 24, xcenter = c("noon", "midnight"),
+                    add = FALSE, rug = TRUE, extend = 'lightgrey',
+                    n.grid = 128, kmax = 3, adjust = 1, lwd = 2)
+      }
+      
+      if(length(timedata2[[1]]) < 5 & length(timedata2[[2]]) >= 5){
+        
+        densityPlot(A = unlist(timedata2[[2]]), main = lab.species[2],
+                    xscale = 24, xcenter = c("noon", "midnight"),
+                    add = FALSE, rug = TRUE, extend = 'lightgrey',
+                    n.grid = 128, kmax = 3, adjust = 1, lwd = 2)
+      }
     }
-  }
-})
+  })
+  
+  # second plot!
+  
+  output$tempact2 = renderPlot({
+    
+    if(is.null(input$ta.species.one.name) | 
+       is.null(input$ta.species.two.name) |
+       is.null(marin.data.complete.sac)) { return () }
+    
+    out <- tempactivityprocessing()
+    
+    lab.species <- out[[1]]
+    num.species <- out[[2]]
+    timedata2 <- out[[3]]
+    
+    if(num.species == 2) {
+      
+      if(length(timedata2[[1]]) < 5 |
+         length(timedata2[[2]]) < 5) { return() }
+      
+      overlap.estimates <- round(overlapEst(timedata2[[1]],
+                                            timedata2[[2]],
+                                            kmax = 3, adjust=c(0.8, 1, 4),
+                                            n.grid = 128),digits=4)
+      
+      overlapPlot(timedata2[[1]], timedata2[[2]],
+                  xscale = 24, xcenter = c("noon", "midnight"),
+                  linetype = c(1, 2), linecol = c("black", "blue"), linewidth = c(2, 2),
+                  olapcol = "lightgrey", rug = FALSE, extend = NULL,
+                  n.grid = 128, kmax = 3, adjust = 1,
+                  main = paste(lab.species[[1]]," - ",
+                               lab.species[[2]],"\n",
+                               paste("Dhat1 = ",overlap.estimates[1],
+                                     "Dhat3 = ",overlap.estimates[2],
+                                     "Dhat5 = ",overlap.estimates[3])))
+      
+      legend("topleft", legend = c(lab.species[[1]],
+                                   lab.species[[2]]),
+             lwd=2,col=c(1,4),lty=c(1,2))
+    }
+  })
+  
+  ## third plot!! 
+  
+  output$tempact3 = renderPlot({
+    
+    if(is.null(input$ta.species.one.name) | 
+       is.null(input$ta.species.two.name) |
+       is.null(marin.data.complete.sac)) { return () }
+    
+    outlist <- tempactivityprocessing()
+    
+    lab.species <- outlist[[1]]
+    num.species <- outlist[[2]]
+    timedata2 <- outlist[[3]]
+    timedata3 <- outlist[[4]]
+    
+    if (num.species == 2){
+      
+      x <- as.data.frame(as.integer(timedata3[[1]]))
+      
+      colnames(x) <- "eventhour"
+      
+      x2 <- as.data.frame(as.integer(timedata3[[2]]))
+      
+      colnames(x2) <- "eventhour"
+      
+      plot1 <- ggplot(x, aes(x = eventhour)) +
+        geom_histogram(breaks = seq(0, 24), colour = "grey") +
+        coord_polar(start = 0) +
+        theme_minimal() +
+        ggtitle(lab.species[1]) +
+        scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
+      
+      plot2<-	  ggplot(x2, aes(x = eventhour)) +
+        geom_histogram(breaks = seq(0, 24), colour = "grey") +
+        coord_polar(start = 0) +
+        theme_minimal() +
+        ggtitle(lab.species[2]) +
+        scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
+      
+      gridExtra::grid.arrange(plot1, plot2, ncol=2)
+      
+    } else {
+      x <- as.data.frame(as.integer(timedata3[[1]]))
+      
+      colnames(x) <- "eventhour"
+      
+      ggplot(x, aes(x = eventhour)) +
+        geom_histogram(breaks = seq(0, 24), colour = "grey") +
+        coord_polar(start = 0) +
+        theme_minimal() +
+        ggtitle(lab.species[1]) +
+        scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
+    }
+  })
 
-## second plot!
-
-output$tempact2 = renderPlot({
-  
-  if(is.null(input$ta.species.one.name) | 
-     is.null(input$ta.species.two.name) |
-     is.null(marin.data.complete.sac)) { return () }
-  
-  out <- tempactivityprocessing()
-  
-  lab.species_temp <- out[[1]]
-  num.species_temp <- out[[2]]
-  timedata2 <- out[[3]]
-  
-  if(num.species_temp == 2) {
-    
-    if(length(timedata2[[1]]) < 5 |
-       length(timedata2[[2]]) < 5) { return() }
-    
-    overlap.estimates <- round(overlapEst(timedata2[[1]],
-                                          timedata2[[2]],
-                                          kmax = 3, adjust=c(0.8, 1, 4),
-                                          n.grid = 128),digits=4)
-    
-    overlapPlot(timedata2[[1]], timedata2[[2]],
-                xscale = 24, xcenter = c("noon", "midnight"),
-                linetype = c(1, 2), linecol = c("black", "blue"), linewidth = c(2, 2),
-                olapcol = "lightgrey", rug = FALSE, extend = NULL,
-                n.grid = 128, kmax = 3, adjust = 1,
-                main = paste(lab.species_temp[[1]]," - ",
-                             lab.species_temp[[2]],"\n",
-                             paste("Dhat1 = ",overlap.estimates[1],
-                                   "Dhat3 = ",overlap.estimates[2],
-                                   "Dhat5 = ",overlap.estimates[3])))
-    
-    legend("topleft", legend = c(lab.species_temp[[1]],
-                                 lab.species_temp[[2]]),
-           lwd=2,col=c(1,4),lty=c(1,2))
-  }
-})
-
-## third plot!! 
-
-output$tempact3 = renderPlot({
-  
-  if(is.null(input$ta.species.one.name) | 
-     is.null(input$ta.species.two.name) |
-     is.null(marin.data.complete.sac)) { return () }
-  
-  outlist <- tempactivityprocessing()
-  
-  lab.species_temp <- outlist[[1]]
-  num.species_temp <- outlist[[2]]
-  timedata2 <- outlist[[3]]
-  timedata3 <- outlist[[4]]
-  
-  if (num.species_temp == 2){
-    
-    x <- as.data.frame(as.integer(timedata3[[1]]))
-    
-    colnames(x) <- "eventhour"
-    
-    x2 <- as.data.frame(as.integer(timedata3[[2]]))
-    
-    colnames(x2) <- "eventhour"
-    
-    plot1 <- ggplot(x, aes(x = eventhour)) +
-      geom_histogram(breaks = seq(0, 24), colour = "grey") +
-      coord_polar(start = 0) +
-      theme_minimal() +
-      ggtitle(lab.species_temp[1]) +
-      scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
-    
-    plot2<-	  ggplot(x2, aes(x = eventhour)) +
-      geom_histogram(breaks = seq(0, 24), colour = "grey") +
-      coord_polar(start = 0) +
-      theme_minimal() +
-      ggtitle(lab.species_temp[2]) +
-      scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
-    
-    gridExtra::grid.arrange(plot1, plot2, ncol=2)
-    
-  } else {
-    x <- as.data.frame(as.integer(timedata3[[1]]))
-    
-    colnames(x) <- "eventhour"
-    
-    ggplot(x, aes(x = eventhour)) +
-      geom_histogram(breaks = seq(0, 24), colour = "grey") +
-      coord_polar(start = 0) +
-      theme_minimal() +
-      ggtitle(lab.species_temp[1]) +
-      scale_x_continuous("", limits = c(0, 24), breaks = seq(0, 24), labels = seq(0, 24))
-  }
-})
 })
 
