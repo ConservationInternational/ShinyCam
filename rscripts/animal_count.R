@@ -15,23 +15,27 @@ library(plyr)
 
 # Set the path and workspace to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
 shinycam_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam"
-prj_name<- "KPHK_Guntur_Papandayan" # No spaces in names
+prj_name<- "marin_smpt" # No spaces in names
 setwd(shinycam_path)
 source("rscripts/RShiny_functions.R")
 old <- Sys.time()
 ###############################
 #Load Data
-df_name <- "indonesia_joined_data.csv" # This should be a file name that is in the correct format. See README process for explanation
-ct_data <-read.csv(paste("ShinyApps/LeafletApp/data/raw_dataprep/",df_name, sep=""))
+df_name <- "marin_data.csv" # This should be a file name that is in the correct format. See README process for explanation
+ct_data <-read.csv(paste("/Users/efegraus/work/DataKind/MarinDownload/",df_name, sep=""))
 # Remove all images that we know don't have an animal
 data_animals <- ct_data[which(ct_data$Photo.Type == "Animal"),]# | marin_data$Photo.Type == "Unknown" 
+data_animals_2 <- filter(data_animals,Project.ID == "GaryGiacomini")
 
 # Shrink data frame
+# delete data_animals_2
+data_new <- select(data_animals_2,Project.ID,Camera.Deployment.Begin.Date,Camera.Deployment.End.Date,Latitude.Resolution,Longitude.Resolution,Photo.Type,Image.ID,Genus.Species,Count,Deployment.Location.ID,Event,Date_Time.Captured)
+
 data_new <- select(data_animals,Project.ID,Camera.Deployment.Begin.Date,Camera.Deployment.End.Date,Latitude.Resolution,Longitude.Resolution,Photo.Type,Image.ID,Genus.Species,Count,Deployment.Location.ID,Event,Date_Time.Captured)
 # Create the groups 
 data_order <-f.order.data(data_new)
 data_order$Date_Time.Captured <-ymd_hms(data_order$Date_Time.Captured)
-event_runs<- c(120,3600,86400) # 3 million record dataset run times are: 120 ~4hrs, 3600 (30mins) ~47 mins, 1 day 86400 ~42 mins
+event_runs<- c(120)#,3600,86400) # 3 million record dataset run times are: 120 ~4hrs, 3600 (30mins) ~47 mins, 1 day 86400 ~42 mins
 for (m in 1:length(event_runs)) {
   events <- f.separate.events(data_order,event_runs[m]) 
   # EHF: Think next 4 lines below can be deleted. Test with Marin
@@ -80,7 +84,7 @@ for (m in 1:length(event_runs)) {
   output_df$Month <- month(output_df$Date_Time.Captured)
   # Calculate  summary information
   final_count <- ddply(output_df,.(prj_name,Project.ID,Latitude.Resolution,Longitude.Resolution,
-                                   Event,Deployment.Location.ID,Month,Year,Genus.Species),summarize,total=sum(Count))
+                                   Event,Deployment.Location.ID,Month,Year,Genus.Species),summarize,total=max(Count))
   write.csv(final_count,file=paste(output_path,"final_count_",event_runs[m],"secs_",prj_name,".csv", sep=""))
   
 }  
