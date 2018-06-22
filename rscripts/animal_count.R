@@ -14,15 +14,25 @@ library(dplyr)
 library(plyr)
 
 # Set the path and workspace to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
+<<<<<<< HEAD
 shinycam_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam"
 prj_name<- "marin_smpt" # No spaces in names
 setwd(shinycam_path)
+=======
+#shinycam_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam"
+prj_name<- "Marin" # No spaces in names
+#setwd(shinycam_path)
+>>>>>>> 302b106ec59fb01e4921fda5be19e38ae3d0c569
 source("rscripts/RShiny_functions.R")
 old <- Sys.time()
 ###############################
 #Load Data
 df_name <- "marin_data.csv" # This should be a file name that is in the correct format. See README process for explanation
+<<<<<<< HEAD
 ct_data <-read.csv(paste("/Users/efegraus/work/DataKind/MarinDownload/",df_name, sep=""))
+=======
+ct_data <-read.csv(paste("ShinyApps/LeafletApp/data/raw_dataprep/",df_name, sep=""))
+>>>>>>> 302b106ec59fb01e4921fda5be19e38ae3d0c569
 # Remove all images that we know don't have an animal
 data_animals <- ct_data[which(ct_data$Photo.Type == "Animal"),]# | marin_data$Photo.Type == "Unknown" 
 data_animals_2 <- filter(data_animals,Project.ID == "GaryGiacomini")
@@ -60,7 +70,7 @@ for (m in 1:length(event_runs)) {
     } else if (length(unique(paste(temp$Genus.Species,temp$Count))) == 1) {
       output_df <- rbind(output_df,temp[1,]) # just get the first one as they are the same
       # More than 1 record but with same species and different count
-    } else if (length(unique(paste(temp$Genus.Species,temp$Count))) > 1) {
+    } else if (length(unique(paste(temp$Genus.Species,temp$Count))) > 1) { ## take largest count from 
       # Could have more than one species
       num_recs_want <- length(unique(paste(temp$Genus.Species,temp$Count)))
       temp2 <- distinct(temp,Genus.Species,Count,.keep_all = TRUE)
@@ -84,7 +94,12 @@ for (m in 1:length(event_runs)) {
   output_df$Month <- month(output_df$Date_Time.Captured)
   # Calculate  summary information
   final_count <- ddply(output_df,.(prj_name,Project.ID,Latitude.Resolution,Longitude.Resolution,
+<<<<<<< HEAD
                                    Event,Deployment.Location.ID,Month,Year,Genus.Species),summarize,total=max(Count))
   write.csv(final_count,file=paste(output_path,"final_count_",event_runs[m],"secs_",prj_name,".csv", sep=""))
+=======
+                                   Event,Deployment.Location.ID,Month,Year,Genus.Species),summarize,total=sum(Count))
+  write.csv(final_count,file=paste(output_path,"final_count_",event_runs[m],"secs_",marin,".csv", sep=""))
+>>>>>>> 302b106ec59fb01e4921fda5be19e38ae3d0c569
   
 }  
