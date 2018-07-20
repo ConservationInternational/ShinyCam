@@ -1,4 +1,4 @@
-# Conservation International ShinyCam Project
+# ShinyCam Project
 
 #####  See the [project wiki](https://github.com/ConservationInternational/ShinyCam/wiki) for additional information regarding project background and how to contribute. We will post a live example on server shortly. <!--Please look [here](http://analytics.teamnetwork.org/efegraus/ShinyCam/ShinyApps/LeafletApp/) for version of the ShinyCam app currently in production.-->
 
