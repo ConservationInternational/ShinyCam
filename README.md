@@ -3,16 +3,15 @@
 ##### Please look [here](http://analytics.teamnetwork.org/efegraus/ShinyCam/ShinyApps/LeafletApp/) for version of the ShinyCam app currently in production. See the [project wiki](https://github.com/ConservationInternational/ShinyCam/wiki) for additional information regarding project background and how to contribute.
 
 ## Goals
+The goal of ShinyCam is to have a basic analytics package that enables users with camera trap data to easily see both operational and scientificly based analytics. We are using the Rshiny framework for a number of reasons because it is written in R which is beocoming more utilized in the ecological and conservation communities. We want this to be user driven and answer the problems most pressing to folks doing camera trapping. We will also use this as an exploratory tool as we build cloud-based analytics that will be available Wildlife Insights. 
 
-### Burning Question:
+### Scope
+We are building this applicaiton to work at the level of a camera trap project. A project may be 5 cameras run over a summer for a master thesis or it could be hundreds of cameras put out in a particular season over many years in a protected area.  Because Rshiny will run locally there are machine limitiations to what is possible.
+
+### Server-side
+Rshiny and ShinyCam can run on a server. If you are interested in doing this please let us know. We generally feel at this tmie (summer 2018) we need to build out the software some more, fix some bugs and make things more effiicent. 
 
 How can Conservation International better respond to and implement solutions for new data analytic requests from our partners in the wildlife monitoring community?
-
-### Background:
-
-The Tropical Ecology Assessment and Monitoring (TEAM) Network is the first and largest global-scale conservation observation network on the planet —essentially an early warning system for life on earth. Conservation International launched TEAM in 2002 as part of an innovative partnership with the Smithsonian Institution, Wildlife Conservation Society, and more than 80 local, academic and government partners. It is now one of the most robust datasets on the health of tropical forests in the world, with more than 1,000 camera traps capturing almost 3 million images, ~8 million weather observations and 70,000 forest trees measurements. These measurements come from 17 protected areas (TEAM Sites) that serve as our data collection and monitoring hubs. Please look [here](https://vimeo.com/93627505) for a video introduction to TEAM.
-
-We have developed standard wildlife monitoring protocols and flexible data management systems that enable our growing network of global partners to organize and share camera trap images (metadata). To process the data, including assigning species names, we have also developed software to expedite the work for our scientists. This includes data management, data processing and analysis. Our flagship analytical product, the Wildlife Picture Index, uses TEAM data to monitor the health and status of over 500 species populations around the world (using the +2.6 million camera trap images plus 8 million climate measurements). The Wildlife Picture Index is our only analytical tool right now. It addresses a critical conservation question by calculating “occupancy” (i.e. how many animals of a given species are in a given area) and trends over time (i.e. is the population decreasing, increasing or stable).
 
 ![alt tag](https://github.com/ConservationInternational/ShinyCam/blob/master/shinycam.gif)
 
@@ -21,22 +20,25 @@ We have developed standard wildlife monitoring protocols and flexible data manag
 Here is the structure for our repo. Note that the `data` folder will not exist on Github - please match this directory structure on your machine and populate `data/original` with the raw data:
 
 ```.
-├── team_ci
-|   ├── data
-|   | ├── processed
-|   | ├── intermediate
-|   | └── original
+├── ShinCam
+|   |-- Archive
+|   |--rscripts
+|   |  |- DataSourceTransformScripts
 |   ├── ShinyApps
 |   | ├── LeafletApp
 |   |   ├── data - either the folder containing data, or symlink /path/to/data
+|   |    |- data
+|   |    |- processed
+|   |    |- raw_dataprep
+|   |    |- Shapefiles
 |   |   ├── server.R
 |   |   └── ui.R
-|   ├── rscripts
+|   ├── scripts
 |   
 └──
 ```
 
-**Application Backend:** Data processing and calculation of relevant metrics is carried out using scripts found in the `rscripts` folder. Such calculations were previously performed using Python scripts in the `pyscripts` folder, but these scripts will soon be deprecated. 
+**Installation and Data File Processing:** Data processing and calculation of relevant metrics is carried out using scripts found in the `rscripts` folder. Such calculations were previously performed using Python scripts in the `pyscripts` folder, but these scripts will soon be deprecated. 
 
 **Application Frontend:** The user interface of the app is created using R and the Shiny web framework - corresponding scripts for which are found in `LeafletApp` folder. See [README](https://github.com/ConservationInternational/ShinyCam/tree/master/ShinyApps/LeafletApp) file in `LeafletApp` folder for more information.
 
@@ -62,3 +64,7 @@ install.packages("data.table")
 install.packages("KernSmooth")
 install.packages("rgdal")
 ```
+
+To run this app from RStudio, open server.R or ui.R and click 'Run App'.
+
+To run from the command line, do R -e "shiny::runApp('~/path/to/this/directory')"
