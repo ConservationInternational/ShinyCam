@@ -15,17 +15,17 @@ We are building this applicaiton to work at the level of a camera trap project. 
 Here is the structure for our repo. Note that the `data` folder will not exist on Github - please match this directory structure on your machine and populate `data/original` with the raw data:
 
 ```.
-├── ShinCam
+├── ShinyCam
 |   |-- Archive
 |   |--rscripts
 |   |  |- DataSourceTransformScripts
 |   ├── ShinyApps
-|   | ├── LeafletApp
-|   |   ├── data - either the folder containing data, or symlink /path/to/data
-|   |    |- data
-|   |    |- processed
-|   |    |- raw_dataprep
-|   |    |- Shapefiles
+|   |  ├── LeafletApp
+|   |   |  ├── data 
+|   |   |     |- data
+|   |   |     |- processed
+|   |   |     |- raw_dataprep
+|   |   |     |- Shapefiles
 |   |   ├── server.R
 |   |   └── ui.R
 |   ├── scripts
@@ -64,7 +64,7 @@ To run this app from RStudio, open server.R or ui.R and click 'Run App'.
 
 To run from the command line, do R -e "shiny::runApp('~/path/to/this/directory')"
 
-### NEED TO ADD MORE INFORMATION ON THE PROCESSING STEPS NEEDED TO HAPPEN BEFORE RUNNING ShinyCam
+### NEED TO ADD MORE INFORMATION ON THE PROCESSING STEPS NEEDED TO HAPPEN BEFORE RUNNING ShinyCam... LINK TO WIKI!
 
 ### Server-side
 Rshiny and ShinyCam can run on a server. If you are interested in doing this please let us know. We generally feel at this time (summer 2018) we need to build out the software some more, fix some bugs and make things more effiicent. 
