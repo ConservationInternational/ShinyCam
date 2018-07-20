@@ -1,6 +1,6 @@
 # ShinyCam Project
 
-#####  See the [project wiki](https://github.com/ConservationInternational/ShinyCam/wiki) for additional information regarding project background and how to contribute. We will post a live example on server shortly. <!--Please look [here](http://analytics.teamnetwork.org/efegraus/ShinyCam/ShinyApps/LeafletApp/) for version of the ShinyCam app currently in production.-->
+#####  See the [project wiki](https://github.com/ConservationInternational/ShinyCam/wiki) for additional information regarding project background and how to contribute. We will post a live example on a server shortly. <!--Please look [here](http://analytics.teamnetwork.org/efegraus/ShinyCam/ShinyApps/LeafletApp/) for version of the ShinyCam app currently in production.-->
 
 ## Goals
 The goal of ShinyCam is to have a basic analytics package that enables users with camera trap data to easily see both operational and scientificly based analytics. We are using the Rshiny framework for a number of reasons because it is written in R which is beocoming more utilized in the ecological and conservation communities. We want this to be user driven and answer the problems most pressing to folks doing camera trapping. We will also use this as an exploratory tool as we build cloud-based analytics that will be available Wildlife Insights. 
