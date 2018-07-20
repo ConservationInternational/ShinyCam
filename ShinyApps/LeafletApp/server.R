@@ -1,5 +1,5 @@
 library(dplyr)
-detach("package:dplyr", unload=TRUE) # This is an unfortunate hack necessitated 
+#detach("package:dplyr", unload=TRUE) # This is an unfortunate hack necessitated 
 # by multiple packages with a "select" function
 # Better solutions very much welcomed
 library(tidyverse)
@@ -23,54 +23,52 @@ library(rgdal)
 library(rgeos)
 library(tidyr)
 library(feather)
-source("scripts/kernel_density_estimate.R")
-source("scripts/extra_plot.R")
-
-source("scripts/f.order.data.R") # for temp tab
-source("scripts/pick.obs.R") # for temp tab
+# Set the path and workspace  to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
+shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam/"
+setwd(shinycam_path)
+source("ShinyApps/LeafletApp/scripts/kernel_density_estimate.R")
+source("ShinyApps/LeafletApp/scripts/extra_plot.R")
+source("ShinyApps/LeafletApp/scripts/f.order.data.R") # for temp tab
+source("ShinyApps/LeafletApp/scripts/pick.obs.R") # for temp tab
 
 
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 #set.seed(100)
-#zipdata <- allzips[sample.int(nrow(allzips), 10000),]
-# By ordering by centile, we ensure that the (comparatively rare) SuperZIPs
-# will be drawn last and thus be easier to see
-#zipdata <- zipdata[order(zipdata$centile),]
 
 # Set parameters
 raster_col <- "Reds" # IDW raster pallette 
 
 # Read species information
 OVERLAY_OPACITY <- 0.5
-species.table <- read.csv("data/taxonomy_scientific_name_20160813.csv")
+species.table <- read.csv("ShinyApps/LeafletApp/data/Taxonomy/taxonomy_scientific_name_20160813.csv")
 
-red.list.table <- read.csv("data/taxonomy_red_list_status_20160813.csv")
+red.list.table <- read.csv("ShinyApps/LeafletApp/data/Taxonomy/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   Id numbers help filter rows with conservation statuses we care about
 ##   when evaluating redlist categories.
 
 # Read data for temp activity tab
-marin.data.complete.sac <- data.table::setDT(read_feather(path="data/raw_dataprep/marin.data_1hour",columns = NULL)) 
+marin.data.complete.sac <- data.table::setDT(read_feather(path="ShinyApps/LeafletApp/data/processed/marin.data_1hour",columns = NULL)) 
 instmarin.data.complete.sac <- marin.data.complete.sac[which(marin.data.complete.sac$Genus.Species!=""), ]
 
 # Read Camera Stats
-dm_01_count_images <- read.csv('data/processed/dm_01_count_images.csv', stringsAsFactors = FALSE) 
-dm_02_count_blanks <- read.csv('data/processed/dm_02_count_blanks.csv', stringsAsFactors = FALSE)
-dm_03_count_unknowns <- read.csv('data/processed/dm_03_count_unknowns.csv', stringsAsFactors = FALSE)
-dm_04_count_uncatalogued <- read.csv('data/processed/dm_04_count_uncatalogued.csv', stringsAsFactors = FALSE)
-dm_05_count_wildlife <- read.csv('data/processed/dm_05_count_wildlife.csv', stringsAsFactors = FALSE)
-dm_06_count_human_related <- read.csv('data/processed/dm_06_count_human_related.csv', stringsAsFactors = FALSE)
-dm_07_avg_photos_per_deployment <- read.csv('data/processed/dm_07_avg_photos_per_deployment.csv', stringsAsFactors = FALSE)
+dm_01_count_images <- read.csv('ShinyApps/LeafletApp/data/processed/dm_01_count_images.csv', stringsAsFactors = FALSE) 
+dm_02_count_blanks <- read.csv('ShinyApps/LeafletApp/data/processed/dm_02_count_blanks.csv', stringsAsFactors = FALSE)
+dm_03_count_unknowns <- read.csv('ShinyApps/LeafletApp/data/processed/dm_03_count_unknowns.csv', stringsAsFactors = FALSE)
+dm_04_count_uncatalogued <- read.csv('ShinyApps/LeafletApp/data/processed/dm_04_count_uncatalogued.csv', stringsAsFactors = FALSE)
+dm_05_count_wildlife <- read.csv('ShinyApps/LeafletApp/data/processed/dm_05_count_wildlife.csv', stringsAsFactors = FALSE)
+dm_06_count_human_related <- read.csv('ShinyApps/LeafletApp/data/processed/dm_06_count_human_related.csv', stringsAsFactors = FALSE)
+dm_07_avg_photos_per_deployment <- read.csv('ShinyApps/LeafletApp/data/processed/dm_07_avg_photos_per_deployment.csv', stringsAsFactors = FALSE)
 
 # Read shapefiles for park boundaries
 ## Need to modify 
 #shapefile_path <- "data/Shapefiles"
 # Read shapefiles for park boundaries
+# EHF: Modify to read a directory of shapefiles (batch load)
 
-shapefile_path <- "data/Shapefiles/Marin/"
+shapefile_path <- "ShinyApps/LeafletApp/data/Shapefiles/Marin/"
 
 #GunturPapandayan
-#GP <- readOGR(shapefile_path, "KPHK GUNTUR-PAPANDAYAN", verbose = FALSE) %>%
-#   spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+
 MCPparks <- readOGR(shapefile_path, "MCPparks", verbose = FALSE) %>%
   spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
 # 
@@ -116,7 +114,7 @@ shinyServer(function(input, output, session) {
     #  if (input$dataset=="TEAM") {
     #  indat <- as.data.frame(fread("./data/team_rate_of_detection.csv"))   
     # } else if (input$dataset == "MWPIP") {
-    indat <- rename_cols(as.data.frame(fread("./data/marin_rate_of_detection_120secs.csv")))
+    indat <- rename_cols(as.data.frame(fread("ShinyApps/LeafletApp/data/processed/marin_rate_of_detection_120secs.csv")))
     #}
     # Why subset
     # indat <- subset(indat, Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
@@ -630,7 +628,7 @@ shinyServer(function(input, output, session) {
     #if (input$dataset.2=="TEAM") {
     # indat <- as.data.frame(fread("./data/team_rate_of_detection.csv"))
     #} else if (input$dataset.2 == "MWPIP") {
-    indat <- rename_cols(as.data.frame(fread("./data/marin_rate_of_detection_120secs.csv"))) ## This should be same as inital load..no need to reload
+    indat <- rename_cols(as.data.frame(fread("ShinyApps/LeafletApp/data/processed/marin_rate_of_detection_120secs.csv"))) ## This should be same as inital load..no need to reload
     #}
     indat <- subset(indat, Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
     indat$timestamp <- createTimeStamp(indat$Sampling.Period, indat$Year)
@@ -1110,7 +1108,7 @@ observeEvent(input$map_occ_marker_click, {
 })
 
 #import data with times and events
-event_time_data <- read.csv("~/Documents/Projects/ShinyCam/ShinyApps/LeafletApp/data/raw_dataprep/final_count_120secs.csv")
+event_time_data <- read.csv("ShinyApps/LeafletApp/data/processed/final_count_120secs.csv")
 
 camera_time_data <- reactive({
   if (!is.null(input$species_occ)) {
