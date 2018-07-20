@@ -14,7 +14,7 @@ library(dplyr)
 library(plyr)
 ###############################
 # Set the path and workspace  to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
-shinycam_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam"
+shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam/"
 prj_name<- "Marin" # No spaces in names
 setwd(shinycam_path)
 source("rscripts/RShiny_functions.R")
@@ -23,11 +23,11 @@ old <- Sys.time()
 #Load Data
 #df_name <- "YOUR FILENAME HERE"
 #Exmample
-df_name <- "marin_data.csv" # 
-# Set the path to your local camera trap data file
+df_name <- "marin_data_animals.csv" # 
+# Set the path to your local camera trap data file in the raw_dataprep ditectory
 # ct_data <- read.csv(paste("YOUR LOCALPATH TO THE REAW DATA FILE",df_name,sep=""))
 # Example
-ct_data <-read.csv(paste("/Users/efegraus/work/DataKind/MarinDownload/",df_name, sep=""))
+ct_data <-read.csv(paste("ShinyApps/LeafletApp/data/raw_dataprep/",df_name, sep=""))
 ###############################
 
 # Remove all images that we know don't have an animal
@@ -42,6 +42,7 @@ data_new <- select(data_animals,Project.ID,Camera.Deployment.Begin.Date,Camera.D
 # Create the groups 
 data_order <-f.order.data(data_new)
 data_order$Date_Time.Captured <-ymd_hms(data_order$Date_Time.Captured)
+# Run through the events
 event_runs<- c(120)#,3600,86400) # 3 million record dataset run times are: 120 ~4hrs, 3600 (30mins) ~47 mins, 1 day 86400 ~42 mins
 for (m in 1:length(event_runs)) {
   events <- f.separate.events(data_order,event_runs[m]) 
@@ -84,7 +85,7 @@ for (m in 1:length(event_runs)) {
   new <- Sys.time() - old 
   print(paste("Time event group",event_runs[m],"secs took",new,"to run and is complete"))
   # Print out the events file and then the final_counts
-  output_path <-"ShinyApps/LeafletApp/data/raw_dataprep/"
+  output_path <-paste(shinycam_path,"LeafletApp/data/processed/",sep="")
   write.csv(output_df,file=paste(output_path,"data_event_",event_runs[m],"secs_",prj_name,".csv", sep=""))
   #Final Count
   output_df$Year <-year(output_df$Date_Time.Captured)
