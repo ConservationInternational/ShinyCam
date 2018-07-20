@@ -41,7 +41,6 @@ R Setup
 -----
 - Make sure you have `R` installed.  
 - Clone this repo: `git clone https://github.com/ConservationInternational/ShinyCam.git`
-- Populate the data folder as in [Google drive](https://drive.google.com/folderview?id=0BzoemeOsgjRIb2R1ZWo5YjBCRHc&usp=sharing).
 - Enter and run the following in your R console to install packages neccessary to run app:
 
 ```
@@ -64,7 +63,7 @@ To run this app from RStudio, open server.R or ui.R and click 'Run App'.
 
 To run from the command line, do R -e "shiny::runApp('~/path/to/this/directory')"
 
-### NEED TO ADD MORE INFORMATION ON THE PROCESSING STEPS NEEDED TO HAPPEN BEFORE RUNNING ShinyCam... LINK TO WIKI!
+_### NEED TO ADD MORE INFORMATION ON THE PROCESSING STEPS NEEDED TO HAPPEN BEFORE RUNNING ShinyCam... LINK TO WIKI!_
 
 ### Server-side
 Rshiny and ShinyCam can run on a server. If you are interested in doing this please let us know. We generally feel at this time (summer 2018) we need to build out the software some more, fix some bugs and make things more effiicent. 
