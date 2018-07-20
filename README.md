@@ -64,5 +64,7 @@ To run this app from RStudio, open server.R or ui.R and click 'Run App'.
 
 To run from the command line, do R -e "shiny::runApp('~/path/to/this/directory')"
 
+### NEED TO ADD MORE INFORMATION ON THE PROCESSING STEPS NEEDED TO HAPPEN BEFORE RUNNING ShinyCam
+
 ### Server-side
 Rshiny and ShinyCam can run on a server. If you are interested in doing this please let us know. We generally feel at this time (summer 2018) we need to build out the software some more, fix some bugs and make things more effiicent. 
