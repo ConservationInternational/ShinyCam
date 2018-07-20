@@ -8,11 +8,6 @@ The goal of ShinyCam is to have a basic analytics package that enables users wit
 ### Scope
 We are building this applicaiton to work at the level of a camera trap project. A project may be 5 cameras run over a summer for a master thesis or it could be hundreds of cameras put out in a particular season over many years in a protected area.  Because Rshiny will run locally there are machine limitiations to what is possible. ShinyCam is build so that each tab and their respective sub-tabs map, graph or show data in tables in a coordinated and systematic manner. We are currently only show a few tabs but have made progress on many others. Examples include tabs that show diversity indicies, occupancy, detecting when species observations fall outside of known geographic ranges and many more.  We need help bringing these and potentialy many other exciting features you are thinking about to life!!
 
-### Server-side
-Rshiny and ShinyCam can run on a server. If you are interested in doing this please let us know. We generally feel at this tmie (summer 2018) we need to build out the software some more, fix some bugs and make things more effiicent. 
-
-How can Conservation International better respond to and implement solutions for new data analytic requests from our partners in the wildlife monitoring community?
-
 ![alt tag](https://github.com/ConservationInternational/ShinyCam/blob/master/shinycam.gif)
 
 ## Code
@@ -68,3 +63,6 @@ install.packages("rgdal")
 To run this app from RStudio, open server.R or ui.R and click 'Run App'.
 
 To run from the command line, do R -e "shiny::runApp('~/path/to/this/directory')"
+
+### Server-side
+Rshiny and ShinyCam can run on a server. If you are interested in doing this please let us know. We generally feel at this time (summer 2018) we need to build out the software some more, fix some bugs and make things more effiicent. 
