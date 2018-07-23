@@ -9,6 +9,11 @@ library(leaflet)
 vars <- c(
   "Data source" = "ShinyCam"
 )
+#########################
+# This needs to be customized by user
+# Have this be part of a config file
+prj_name <- "MWPIP"
+#########################
 
 samplingFrequency <- c("Annual" = "annual",
                        "Seasonal" = "season",
@@ -20,7 +25,9 @@ shinyUI(navbarPage("ShinyCam",id = "nav",
     tabPanel("Rates of Detection",
       #the sidebar includes all the subsetting rules
       sidebarPanel(
-        selectInput("dataset", "Camera Trap Project", c("MWPIP")),
+       # selectInput("dataset", "Camera Trap Project", c("MWPIP")),
+        selectInput("dataset", "Camera Trap Project", prj_name),
+        
         ## THIS NEEDS TO BE CUSTOMIZED
         uiOutput('subsettingradio'),
         uiOutput("frequency.control"),
@@ -73,46 +80,45 @@ shinyUI(navbarPage("ShinyCam",id = "nav",
             )
           ),
       #this subtab displays the data event table and allows it to be downloaded
-      tabPanel("Data Event Table",
+      tabPanel("Rates of Detection Table",
         fluidRow(
           column(1, br(),
             downloadButton('downloadData1', 'Download')
           )
         ),
         br(),
-        fluidRow(HTML("The data event table shows all photograph events
-            (after subsetting by the time interval) for each species.")),
+        fluidRow(HTML("The detection rate table shows the number of data events per 100 trap nights for each species and for all camera sites within the selected Site/Subregion.")),
         hr(),
-        DT::dataTableOutput('dataeventtable')
-      ),
+        DT::dataTableOutput('data_event')
+      )
       
-      tabPanel("Detection Rate Table",
-        fluidRow(column(1, br(),
-          downloadButton('downloadData2', 'Download')
-        )),
-        br(),
-        fluidRow(HTML("The detection rate table shows the number of data events per 100 trap nights for each species and for all camera sites within the selected Site/Subregion."
-          )
-        ),
-        hr(),
-        DT::dataTableOutput('datacapturerates')
-      ),
+    #  tabPanel("Detection Rate Table",
+    #    fluidRow(column(1, br(),
+    #      downloadButton('downloadData2', 'Download')
+    #    )),
+     #   br(),
+    #    fluidRow(HTML("The detection rate table shows the number of data events per 100 trap nights for each species and for all camera sites within the selected Site/Subregion."
+    #      )
+    #    ),
+    #    hr(),
+    #    DT::dataTableOutput('datacapturerates')
+    #  ),
       
       #this tab shows the detection rates plus all the sites without detections. NOt a useful visualization but is needed for mapping
-      tabPanel("Detection Rate Table with Zeros",
-        fluidRow(column(1, br(),
-          downloadButton('downloadData3', 'Download')
-        )),
-        br(),
-        fluidRow(
-          HTML("The detection rate table includes the detection rates from the previous table and adds the sites that were deployed but did not detect the selected species at the camera site."
-          )
-        ),
-        hr(),
-        DT::dataTableOutput('datacaptureratesZeros')
-        )
-      )
-    )
+      #tabPanel("Detection Rate Table with Zeros",
+    #    fluidRow(column(1, br(),
+    #      downloadButton('downloadData3', 'Download')
+    #    )),
+    #    br(),
+    #    fluidRow(
+    #      HTML("The detection rate table includes the detection rates from the previous table and adds the sites that were deployed but did not detect the selected species at the camera site."
+    #      )
+    #    ),
+    #    hr(),
+    #    DT::dataTableOutput('datacaptureratesZeros')
+    #    ) # Tabset panel
+      ) # Main panel
+    ) # Tab panel
   ), #End main tab
 
 # 
