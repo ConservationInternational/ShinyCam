@@ -29,8 +29,10 @@ df_name <- "marin_data_animals.csv" #
 # ct_data <- read.csv(paste("YOUR LOCALPATH TO THE REAW DATA FILE",df_name,sep=""))
 # Example
 ct_data <-fread(paste("ShinyApps/LeafletApp/data/raw_dataprep/",df_name, sep=""))
+###############################
+# No user edits from here down.
 old <- Sys.time()
-
+#seting the output path
 output_path <-paste(shinycam_path,"ShinyApps/LeafletApp/data/processed/",sep="")
 ###############################
 # 01: Count of images [Number of images per camera in each location]
