@@ -2,13 +2,20 @@
 # species_occurence.R
 # Aggregate occurences across time for each camera/location
 # Takes output count csv from animal_count.R
-
+# Clear the environment and load libraries
+rm(list = ls())
 library(tidyverse)
 library(lubridate)
 library(dplyr)
 library(plyr)
+# Set the path and workspace to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
+shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam/"
+setwd(shinycam_path)
+# load the final_count 120sec data file
+species_occ_filename <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "final_count_120secs.csv")
+data <- as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",species_occ_filename,sep="")))
 
-data <- read_csv("~/Documents/Projects/ShinyCam/ShinyApps/LeafletApp/data/raw_dataprep/final_count_120secs.csv") 
+#data <- read_csv("ShinyApps/LeafletApp/data/processed/final_count_120secs_marin_smpt.csv") 
 
 #get unique camera ID's and lat longs
 data_camera <- select(data, Deployment.Location.ID, Latitude.Resolution, Longitude.Resolution)
@@ -26,7 +33,7 @@ data %>%
 # colnames(genus_species) <- c("Genus", "Species")
 # data_names <- cbind(data_new, as.tibble(genus_species))
 
-output_path <-"ShinyApps/LeafletApp/data/raw_dataprep/"
-write.csv(data_new, paste(output_path, "marin_species_occurence.csv"))
+output_path <-"ShinyApps/LeafletApp/data/processed/"
+write.csv(data_new, paste(output_path, "species_occurence.csv",sep=""))
 
 
