@@ -1,5 +1,5 @@
 library(dplyr)
-#detach("package:dplyr", unload=TRUE) # This is an unfortunate hack necessitated 
+detach("package:dplyr", unload=TRUE) # This is an unfortunate hack necessitated 
 # by multiple packages with a "select" function
 # Better solutions very much welcomed
 library(tidyverse)
@@ -961,7 +961,7 @@ output$subsettingradio <- renderUI({
 ###########################################
 # # Read Data into reactive for flexiblity in using other datasets
 dataset_input_occ <- reactive({
-  occ <- rename_cols(as.data.frame(fread("./data/raw_dataprep/marin_species_occurence.csv"))) #file from processing steps:
+  occ <- rename_cols(as.data.frame(fread("ShinyApps/LeafletApp/data/processed/species_occurence.csv"))) #file from processing steps:
                                                                                               #raw_data -> animal_count.R -> species_occurence.R
   genus_species <- as.data.frame(str_split_fixed(occ$Genus.Species, " ", 2)) #split binomial into two columns
   colnames(genus_species) <- c("Genus", "Species") #label columns
@@ -1113,7 +1113,7 @@ output$map_occ <- renderLeaflet({
 output$speciestable <- DT::renderDataTable({
 
   species_dataset_occ() %>%
-    select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude, Longitude, event_total, individual_total) %>%
+    dplyr::select(Project.ID, Genus.Species, Deployment.Location.ID, Latitude, Longitude, event_total, individual_total) %>%
     rename(Subregion = Project.ID, Species = Genus.Species, Camera.ID = Deployment.Location.ID, Event.Total = event_total,
            Individual.Total = individual_total) -> df
 
