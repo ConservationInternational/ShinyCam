@@ -1,7 +1,8 @@
 ####
 # cam_trap_nights.R
-# Calculate the number of camera trap nights per camera per deployment
-# Needs more description
+# Calculate the number of camera trap nights (or days) per camera per deployment
+# Utilizes the raw dataset
+# --more script documentation needed
 
 rm(list = ls())
 # Load libraries
@@ -10,15 +11,23 @@ library(lubridate)
 library(plyr)
 library(zoo)
 
-# Set the path and workspace to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
-shinycam_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam"
-prj_name<- "KPHK_Guntur_Papandayan" # No spaces in names
+###############################
+# Set the path and workspace  to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
+shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam/"
+prj_name<- "Marin" # No spaces in names
 setwd(shinycam_path)
 source("rscripts/RShiny_functions.R")
-###############################
+# Set the file name and path to your raw data files. This should be a file name that is in the correct format. See README process for explanation
 #Load Data
-df_name <- "indonesia_joined_data.csv" # This should be a file name that is in the correct format. See README process for explanation
+#df_name <- "YOUR FILENAME HERE"
+#Exmample
+df_name <- "marin_data_animals.csv" # 
+# Set the path to your local camera trap data file in the raw_dataprep ditectory
+# ct_data <- read.csv(paste("YOUR LOCALPATH TO THE REAW DATA FILE",df_name,sep=""))
+# Example
 ct_data <-read.csv(paste("ShinyApps/LeafletApp/data/raw_dataprep/",df_name, sep=""))
+###############################
+# Start processing, filtering and calculating trap nights.
 ct_data_new <- select(ct_data,Project.ID,Deployment.Location.ID,Camera.Deployment.Begin.Date,Camera.Deployment.End.Date,Date_Time.Captured)
 old <- Sys.time() 
 
@@ -128,12 +137,11 @@ for (i in 1:length(unique_deployments)) {
 }  
 new <- Sys.time() - old 
 # Print out the events file and then the final_counts
-output_path <-"ShinyApps/LeafletApp/data/raw_dataprep/"
+output_path <-"ShinyApps/LeafletApp/data/processed/"
 write.csv(output_df,file=paste(output_path,"trap_days_",prj_name,".csv", sep=""))
 if (length(prob_deployments) > 1) {
   print("There are some problems with the deployments that snuck past the filters check out the file PRJNAME_problem_deployments.csv")
-  prob_file_name <- paste("data/raw_dataprep/",prj_name,"_problem_deployments.csv",sep="")
-  write.csv(prob_deployments,prob_file_name)
+  write.csv(prob_deployments,file=paste(output_path,"problem_deployments_",prj_name,".csv",sep=""))
 }
 
 ######################
