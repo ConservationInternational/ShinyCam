@@ -31,7 +31,6 @@ source("ShinyApps/LeafletApp/scripts/extra_plot.R")
 source("ShinyApps/LeafletApp/scripts/f.order.data.R") # for temp tab
 source("ShinyApps/LeafletApp/scripts/pick.obs.R") # for temp tab
 
-
 # Leaflet bindings are a bit slow; for now we'll just sample to compensate
 #set.seed(100)
 
@@ -107,14 +106,29 @@ shinyServer(function(input, output, session) {
     values$starting <- FALSE
     values.2$starting <- FALSE
   })
+# Load datasets for three independent event options
+dataset_load_120 <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "rate_of_detection_120")
+dataset_load_30 <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "rate_of_detection_3600")
+dataset_load_1day <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "rate_of_detection_86400")
+
+#Choose the data event subsetting. All data is now preprocessed and matches these subsets
+output$subsettingradio <- renderUI({
+  radioButtons("radiosubsetting", label = HTML("<b>Time Duration Subsetting</b>"),
+               choices = list(" 2 Minutes" = 1, "30 Minutes" = 2,"1 Day" = 3), selected = 1)
+})
 
 
-  # Function to read in input data based on project (TEAM or Marin)
+  # Function to read in input data based on project and independe events selected
   dataset_input <- reactive({
-    #  if (input$dataset=="TEAM") {
-    #  indat <- as.data.frame(fread("./data/team_rate_of_detection.csv"))   
-    # } else if (input$dataset == "MWPIP") {
-    indat <- rename_cols(as.data.frame(fread("ShinyApps/LeafletApp/data/processed/marin_rate_of_detection_120secs.csv")))
+    if(input$radiosubsetting == 2) {
+      indat <- rename_cols(as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_30,sep=""))))
+    }
+    if(input$radiosubsetting == 3) {
+      indat <- rename_cols(as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_1day,sep=""))))
+    }
+    if(input$radiosubsetting == 1) {
+    indat <- rename_cols(as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_120,sep=""))))
+    }
     #}
     # Why subset
     # indat <- subset(indat, Rate.Of.Detection >= 0 & Rate.Of.Detection < Inf)
@@ -124,11 +138,15 @@ shinyServer(function(input, output, session) {
     indat
   })
   
+ 
+  
+  
   # Render Site Checkbox to select region
   output$site_checkbox <- renderUI({
     labels <- as.character(unique(dataset_input()$Project.ID))
     
     ##    Add "All Sites" option to labels vector if dataset is "MWPIP"
+    # Get rid of this and generalize
     if(input$dataset == "MWPIP"){
       labels <- c(labels, "All Sites")
     }
@@ -344,25 +362,29 @@ shinyServer(function(input, output, session) {
   
   # Data-export functionality for "Download Data" button
   # TODO Update downloads...
-  #data_event <- as.data.frame(fread("./data/_trap_days.csv"))
+  trap_day_filename <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "trap_days")
+  
+  data_event <- as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",trap_day_filename,sep="")))
   
   output$downloadData1 <- downloadHandler(
-    filename = function() { paste('data', '.csv', sep='') },
+    filename = function() { 
+      trap_day_filename
+      },
     content = function(file) {
       write.csv(data_event, file)
     }
   )
   # Code to download a file
-  output$downloadData2 <- downloadHandler(
-    filename <- function() {
-      paste("combined", ".csv", sep=".")
-    },
-    
-    content <- function(file) {
-      file.copy("data/combined.csv", file)
-    },
-    contentType = "application/zip"
-  )
+ # output$downloadData2 <- downloadHandler(
+  #  filename <- function() {
+  #    paste("combined", ".csv", sep=".")
+  #  },
+  #  
+  #  content <- function(file) {
+  #    file.copy("data/combined.csv", file)
+  #  },
+  #  contentType = "application/zip"
+  #)
   
   #  Render JavaScript table widget for "Data Explorer" tab
   output$table <- DT::renderDataTable({
@@ -700,10 +722,10 @@ shinyServer(function(input, output, session) {
   })
 
   #Choose the data event subsetting. All data is now preprocessed and matches these subsets
-  output$subsettingradio <- renderUI({
-    radioButtons("radiosubsetting", label = HTML("<b>Time Duration Subsetting</b>"),
-                 choices = list(" 2 Minutes" = 1, "30 Minutes" = 2,"1 Day" = 3), selected = 1)
-  })
+ # output$subsettingradio <- renderUI({
+ #    radioButtons("radiosubsetting", label = HTML("<b>Time Duration Subsetting</b>"),
+#               choices = list(" 2 Minutes" = 1, "30 tMinutes" = 2,"1 Day" = 3), selected = 1)
+  #})
 
 
   ## Interactive Map for Species Alert Tab ####
