@@ -2,7 +2,7 @@ library(dplyr)
 detach("package:dplyr", unload=TRUE) # This is an unfortunate hack necessitated 
 # by multiple packages with a "select" function
 # Better solutions very much welcomed
-library(tidyverse)
+#library(tidyverse)
 #library(R2jags)
 library(overlap)
 library(chron)
@@ -21,8 +21,8 @@ library(KernSmooth)
 library(viridis)
 library(rgdal)
 library(rgeos)
-library(tidyr)
-library(feather)
+#library(tidyr)
+#library(feather)
 # Set the path and workspace  to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
 shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam/"
 setwd(shinycam_path)
