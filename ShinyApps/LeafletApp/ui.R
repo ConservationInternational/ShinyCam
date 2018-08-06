@@ -290,55 +290,56 @@ tabPanel("Camera stats",
                   DT::dataTableOutput("camtable"))
          )),
 
+#' #############################
+#' ##    Tab for Species Alert
+#' ##    NOTE: This code is based on Interactive Map Tab
+#' tabPanel(
+#'   "Species alert",
+#'   div(
+#'     class = "outer",
+#'     tags$head(# Include our custom CSS
+#'       includeCSS("styles.css"),
+#'       includeScript("gomap.js")),
+#'     leafletOutput("map.2", width = "100%", height =
+#'                     "100%"),
+#'     # Portion of side panel menu always present.
+#'     # Shiny versions prior to 0.11 should use class="modal" instead.
+#'     absolutePanel(
+#'       id = "controls.2",
+#'       class = "panel panel-default",
+#'       fixed = TRUE,
+#'       draggable = FALSE,
+#'       top = 60,
+#'       left = "auto",
+#'       right = 20,
+#'       bottom = 10,
+#'       width = 330,
+#'       height = "auto",
+#'       style = "overflow-y:scroll",
+#' 
+#'       h2("Species alert"),
+#' 
+#'       selectInput("dataset.2", "Camera Trap Project", c("TEAM", "MWPIP")),
+#'       uiOutput("site_checkbox.2"),
+#' 
+#'       checkboxInput("boundary_checkbox.2", label = "Display Park Boundaries", value = FALSE),
+#' 
+#'       uiOutput("guild.control.2"),
+#'       uiOutput("red.control.2"),
+#'       uiOutput("species.list.2"),
+#'       uiOutput("frequency.control.2"),
+#'       uiOutput("time.control.2"),
+#'       hr()
+#'     ),
+#' 
+#'     # Left# Portion of side panel always present.
+#'     tags$div(id = "cite2",
+#'              #'Data compiled for ', vars['Data source']
+#'              'Powered by ShinyCam')
+#'   )
+#' ),
+#' conditionalPanel("false", icon("crosshair")),
 #############################
-##    Tab for Species Alert
-##    NOTE: This code is based on Interactive Map Tab
-tabPanel(
-  "Species alert",
-  div(
-    class = "outer",
-    tags$head(# Include our custom CSS
-      includeCSS("styles.css"),
-      includeScript("gomap.js")),
-    leafletOutput("map.2", width = "100%", height =
-                    "100%"),
-    # Portion of side panel menu always present.
-    # Shiny versions prior to 0.11 should use class="modal" instead.
-    absolutePanel(
-      id = "controls.2",
-      class = "panel panel-default",
-      fixed = TRUE,
-      draggable = FALSE,
-      top = 60,
-      left = "auto",
-      right = 20,
-      bottom = 10,
-      width = 330,
-      height = "auto",
-      style = "overflow-y:scroll",
-
-      h2("Species alert"),
-
-      selectInput("dataset.2", "Camera Trap Project", c("TEAM", "MWPIP")),
-      uiOutput("site_checkbox.2"),
-
-      checkboxInput("boundary_checkbox.2", label = "Display Park Boundaries", value = FALSE),
-
-      uiOutput("guild.control.2"),
-      uiOutput("red.control.2"),
-      uiOutput("species.list.2"),
-      uiOutput("frequency.control.2"),
-      uiOutput("time.control.2"),
-      hr()
-    ),
-
-    # Left# Portion of side panel always present.
-    tags$div(id = "cite2",
-             #'Data compiled for ', vars['Data source']
-             'Powered by ShinyCam')
-  )
-),
-conditionalPanel("false", icon("crosshair")),
 
 #############################
 ##    Tab for Species Spotter
