@@ -16,7 +16,7 @@ library(scales)
 library(lattice)
 library(gstat)
 library(sp)
-library(data.table)
+#library(data.table)
 library(KernSmooth)
 library(viridis)
 library(rgdal)
@@ -48,7 +48,7 @@ red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   
 # Read data for temp activity tab 
 # Load in the dataset with animals only
 d_animals<- list.files(path="ShinyApps/LeafletApp/data/raw_dataprep/", pattern = "animals")
-temporal_data <- fread(paste("ShinyApps/LeafletApp/data/raw_dataprep/",d_animals,sep=""))
+temporal_data <- read.csv(paste("ShinyApps/LeafletApp/data/raw_dataprep/",d_animals,sep=""))
 # old code
 #marin.data.complete.sac <- data.table::setDT(read_feather(path="ShinyApps/LeafletApp/data/processed/marin.data_1hour",columns = NULL)) 
 #instmarin.data.complete.sac <- marin.data.complete.sac[which(marin.data.complete.sac$Genus.Species!=""), ]
@@ -126,13 +126,12 @@ output$subsettingradio <- renderUI({
   # Function to read in input data based on project and independe events selected
   dataset_input <- reactive({
     if(input$radiosubsetting == 2) {
-      indat <- rename_cols(as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_30,sep=""))))
+      indat <- rename_cols(as.data.frame(read.csv(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_30,sep=""))))
     }
     if(input$radiosubsetting == 3) {
-      indat <- rename_cols(as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_1day,sep=""))))
+      indat <- rename_cols(as.data.frame(read.csv(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_1day,sep=""))))
     }
     if(input$radiosubsetting == 1) {
-    indat <- rename_cols(as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_120,sep=""))))
     }
     #}
     # Why subset
@@ -369,7 +368,7 @@ output$subsettingradio <- renderUI({
   # TODO Update downloads...
   trap_day_filename <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "trap_days")
   
-  data_event <- as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",trap_day_filename,sep="")))
+  data_event <- as.data.frame(read.csv(paste("ShinyApps/LeafletApp/data/processed/",trap_day_filename,sep="")))
   
   output$downloadData1 <- downloadHandler(
     filename = function() { 
@@ -966,7 +965,7 @@ output$subsettingradio <- renderUI({
 ###########################################
 # # Read Data into reactive for flexiblity in using other datasets
 dataset_input_occ <- reactive({
-  occ <- rename_cols(as.data.frame(fread("ShinyApps/LeafletApp/data/processed/species_occurence.csv"))) #file from processing steps:
+  occ <- rename_cols(as.data.frame(read.csv("ShinyApps/LeafletApp/data/processed/species_occurence.csv"))) #file from processing steps:
                                                                                               #raw_data -> animal_count.R -> species_occurence.R
   genus_species <- as.data.frame(str_split_fixed(occ$Genus.Species, " ", 2)) #split binomial into two columns
   colnames(genus_species) <- c("Genus", "Species") #label columns
