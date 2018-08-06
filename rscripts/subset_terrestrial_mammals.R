@@ -13,12 +13,15 @@ library(dplyr)
 library(rgeos)
 library(rgdal)
 library(tidyr)
-
-shapefile_path <- "shapefiles"
+# Set the path and workspace to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
+shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam"
+setwd(shinycam_path)
+shapefile_path <- paste(shinycam_path,"/ShinyApps/LeafletApp/data/Shapefiles/TERRESTRIAL_MAMMALS/",sep="")
 terrestrial_mammals <- readOGR(shapefile_path, "TERRESTRIAL_MAMMALS", verbose = T) %>%
   spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
 # read the TEAM data
-Primary <- read.csv("team_rate_of_detection.csv", header = TRUE)
+data_path <- "ShinyApps/LeafletApp/data/"
+Primary <- read.csv(paste(data_path,"marin_rate_of_detection_120secs.csv",sep=""), header = TRUE)
 Primary <- unite(Primary, "newBinomial", Genus, Species, sep =" ",remove = FALSE)
 
 indices<-c()
@@ -27,5 +30,5 @@ for(i in 1:nrow(terrestrial_mammals)){
       indices <- c(indices,i)
 }
 new_terrestrial_mammals <- terrestrial_mammals[indices,]
-
+###EHF - MAKE IT WRITE TOE THE PROCESSED DATA OR SHAPEILFE DIR
 writeOGR(layer_options = "RESIZE=YES" , obj=new_terrestrial_mammals, dsn="shrinked_data", layer="new_terrestrial_mammals", driver="ESRI Shapefile" )
