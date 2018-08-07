@@ -10,12 +10,12 @@ library(lubridate)
 library(plyr)
 library(tidyr)
 # Set the path and workspace to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
-shinycam_path <- "/Users/efegraus/work/DataKind/ShinyCam_new/ShinyCam"
-prj_name<- "KPHK_Guntur_Papandayan" # No spaces in names and needs to be same as used in other files2419
+shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam"
+prj_name<- "marin" # No spaces in names and needs to be same as used in other files2419
 
 ###############################
 # Load the final_count data files
-output_path <-"ShinyApps/LeafletApp/data/raw_dataprep/"
+output_path <-"ShinyApps/LeafletApp/data/processed/"
 setwd(paste(shinycam_path,"/",output_path,sep=""))
 event_runs<- c(120,3600,86400) 
 trap_name <- paste("trap_days_",prj_name,".csv",sep="")
@@ -85,7 +85,7 @@ for (i in 1:length(event_runs)) {
   rates_of_detection <- separate(final_rates_files,Genus.Species,into=c("Genus","Species"),sep="\\s", fill="right",extra="merge")
   rates_of_detection$Rate.Of.Detection <- round(rates_of_detection$Rate.Of.Detection,digits=2)
   
-  write.csv(rates_of_detection,file=paste("../",prj_name,"_rate_of_detection_",event_runs[i],".csv",sep=""))
+  write.csv(rates_of_detection,file=paste(prj_name,"_rate_of_detection_",event_runs[i],".csv",sep=""))
 }
 ##
 # Load them all together
