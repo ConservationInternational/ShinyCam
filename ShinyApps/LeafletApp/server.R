@@ -39,29 +39,30 @@ raster_col <- "Reds" # IDW raster pallette
 
 # Read species information
 OVERLAY_OPACITY <- 0.5
-species.table <- read.csv("ShinyApps/LeafletApp/data/Taxonomy/taxonomy_scientific_name_20160813.csv")
+species.table <- fread("ShinyApps/LeafletApp/data/Taxonomy/taxonomy_scientific_name_20160813.csv")
 
-red.list.table <- read.csv("ShinyApps/LeafletApp/data/Taxonomy/taxonomy_red_list_status_20160813.csv")
+red.list.table <- fread("ShinyApps/LeafletApp/data/Taxonomy/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   Id numbers help filter rows with conservation statuses we care about
 ##   when evaluating redlist categories.
 
 # Read data for temp activity tab 
 # Load in the dataset with animals only
 d_animals<- list.files(path="ShinyApps/LeafletApp/data/raw_dataprep/", pattern = "animals")
-temporal_data <- read.csv(paste("ShinyApps/LeafletApp/data/raw_dataprep/",d_animals,sep=""))
+temporal_data <- fread(paste("ShinyApps/LeafletApp/data/raw_dataprep/",d_animals,sep=""))
+marin.data.complete.sac <- temporal_data
 # old code
 #marin.data.complete.sac <- data.table::setDT(read_feather(path="ShinyApps/LeafletApp/data/processed/marin.data_1hour",columns = NULL)) 
 #instmarin.data.complete.sac <- marin.data.complete.sac[which(marin.data.complete.sac$Genus.Species!=""), ]
 # end old code
 
 # Read Camera Stats
-dm_01_count_images <- read.csv('ShinyApps/LeafletApp/data/processed/dm_01_count_images.csv', stringsAsFactors = FALSE) 
-dm_02_count_blanks <- read.csv('ShinyApps/LeafletApp/data/processed/dm_02_count_blanks.csv', stringsAsFactors = FALSE)
-dm_03_count_unknowns <- read.csv('ShinyApps/LeafletApp/data/processed/dm_03_count_unknowns.csv', stringsAsFactors = FALSE)
-dm_04_count_uncatalogued <- read.csv('ShinyApps/LeafletApp/data/processed/dm_04_count_uncatalogued.csv', stringsAsFactors = FALSE)
-dm_05_count_wildlife <- read.csv('ShinyApps/LeafletApp/data/processed/dm_05_count_wildlife.csv', stringsAsFactors = FALSE)
-dm_06_count_human_related <- read.csv('ShinyApps/LeafletApp/data/processed/dm_06_count_human_related.csv', stringsAsFactors = FALSE)
-dm_07_avg_photos_per_deployment <- read.csv('ShinyApps/LeafletApp/data/processed/dm_07_avg_photos_per_deployment.csv', stringsAsFactors = FALSE)
+dm_01_count_images <- freadv('ShinyApps/LeafletApp/data/processed/dm_01_count_images.csv', stringsAsFactors = FALSE) 
+dm_02_count_blanks <- fread('ShinyApps/LeafletApp/data/processed/dm_02_count_blanks.csv', stringsAsFactors = FALSE)
+dm_03_count_unknowns <- fread('ShinyApps/LeafletApp/data/processed/dm_03_count_unknowns.csv', stringsAsFactors = FALSE)
+dm_04_count_uncatalogued <- fread('ShinyApps/LeafletApp/data/processed/dm_04_count_uncatalogued.csv', stringsAsFactors = FALSE)
+dm_05_count_wildlife <- fread('ShinyApps/LeafletApp/data/processed/dm_05_count_wildlife.csv', stringsAsFactors = FALSE)
+dm_06_count_human_related <- fread('ShinyApps/LeafletApp/data/processed/dm_06_count_human_related.csv', stringsAsFactors = FALSE)
+dm_07_avg_photos_per_deployment <- fread('ShinyApps/LeafletApp/data/processed/dm_07_avg_photos_per_deployment.csv', stringsAsFactors = FALSE)
 
 # Read shapefiles for park boundaries
 ## Need to modify 
@@ -126,10 +127,10 @@ output$subsettingradio <- renderUI({
   # Function to read in input data based on project and independe events selected
   dataset_input <- reactive({
     if(input$radiosubsetting == 2) {
-      indat <- rename_cols(as.data.frame(read.csv(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_30,sep=""))))
+      indat <- rename_cols(as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_30,sep=""))))
     }
     if(input$radiosubsetting == 3) {
-      indat <- rename_cols(as.data.frame(read.csv(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_1day,sep=""))))
+      indat <- rename_cols(as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_1day,sep=""))))
     }
     if(input$radiosubsetting == 1) {
     }
@@ -368,7 +369,7 @@ output$subsettingradio <- renderUI({
   # TODO Update downloads...
   trap_day_filename <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "trap_days")
   
-  data_event <- as.data.frame(read.csv(paste("ShinyApps/LeafletApp/data/processed/",trap_day_filename,sep="")))
+  data_event <- as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",trap_day_filename,sep="")))
   
   output$downloadData1 <- downloadHandler(
     filename = function() { 
@@ -965,7 +966,7 @@ output$subsettingradio <- renderUI({
 ###########################################
 # # Read Data into reactive for flexiblity in using other datasets
 dataset_input_occ <- reactive({
-  occ <- rename_cols(as.data.frame(read.csv("ShinyApps/LeafletApp/data/processed/species_occurence.csv"))) #file from processing steps:
+  occ <- rename_cols(as.data.frame(fread("ShinyApps/LeafletApp/data/processed/species_occurence.csv"))) #file from processing steps:
                                                                                               #raw_data -> animal_count.R -> species_occurence.R
   genus_species <- as.data.frame(str_split_fixed(occ$Genus.Species, " ", 2)) #split binomial into two columns
   colnames(genus_species) <- c("Genus", "Species") #label columns
@@ -1134,7 +1135,7 @@ observeEvent(input$map_occ_marker_click, {
 })
 
 #import data with times and events
-event_time_data <- read.csv("ShinyApps/LeafletApp/data/processed/final_count_120secs.csv")
+event_time_data <- fread("ShinyApps/LeafletApp/data/processed/final_count_120secs.csv")
 
 camera_time_data <- reactive({
   if (!is.null(input$species_occ)) {
