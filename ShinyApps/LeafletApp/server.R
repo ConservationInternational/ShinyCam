@@ -16,13 +16,13 @@ library(scales)
 library(lattice)
 library(gstat)
 library(sp)
-#library(data.table)
+library(data.table)
 library(KernSmooth)
 library(viridis)
 library(rgdal)
 library(rgeos)
 #library(tidyr)
-#library(feather)
+library(feather)
 # Set the path and workspace  to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
 shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam/"
 setwd(shinycam_path)
@@ -39,24 +39,24 @@ raster_col <- "Reds" # IDW raster pallette
 
 # Read species information
 OVERLAY_OPACITY <- 0.5
-species.table <- fread("ShinyApps/LeafletApp/data/Taxonomy/taxonomy_scientific_name_20160813.csv")
+species.table <- read.csv("ShinyApps/LeafletApp/data/Taxonomy/taxonomy_scientific_name_20160813.csv")
 
-red.list.table <- fread("ShinyApps/LeafletApp/data/Taxonomy/taxonomy_red_list_status_20160813.csv")
+red.list.table <- read.csv("ShinyApps/LeafletApp/data/Taxonomy/taxonomy_red_list_status_20160813.csv")
 red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   Id numbers help filter rows with conservation statuses we care about
 ##   when evaluating redlist categories.
 
 # Read data for temp activity tab 
 # Load in the dataset with animals only
-d_animals<- list.files(path="ShinyApps/LeafletApp/data/raw_dataprep/", pattern = "animals")
-temporal_data <- fread(paste("ShinyApps/LeafletApp/data/raw_dataprep/",d_animals,sep=""))
-marin.data.complete.sac <- temporal_data
+#d_animals<- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "animals")
+#temporal_data <- fread(paste("ShinyApps/LeafletApp/data/processed/",d_animals,sep=""))
+#marin.data.complete.sac <- temporal_data
 # old code
-#marin.data.complete.sac <- data.table::setDT(read_feather(path="ShinyApps/LeafletApp/data/processed/marin.data_1hour",columns = NULL)) 
-#instmarin.data.complete.sac <- marin.data.complete.sac[which(marin.data.complete.sac$Genus.Species!=""), ]
+marin.data.complete.sac <- data.table::setDT(read_feather(path="ShinyApps/LeafletApp/data/processed/marin.data_1hour",columns = NULL)) 
+instmarin.data.complete.sac <- marin.data.complete.sac[which(marin.data.complete.sac$Genus.Species!=""), ]
 # end old code
 
 # Read Camera Stats
-dm_01_count_images <- freadv('ShinyApps/LeafletApp/data/processed/dm_01_count_images.csv', stringsAsFactors = FALSE) 
+dm_01_count_images <- fread('ShinyApps/LeafletApp/data/processed/dm_01_count_images.csv', stringsAsFactors = FALSE) 
 dm_02_count_blanks <- fread('ShinyApps/LeafletApp/data/processed/dm_02_count_blanks.csv', stringsAsFactors = FALSE)
 dm_03_count_unknowns <- fread('ShinyApps/LeafletApp/data/processed/dm_03_count_unknowns.csv', stringsAsFactors = FALSE)
 dm_04_count_uncatalogued <- fread('ShinyApps/LeafletApp/data/processed/dm_04_count_uncatalogued.csv', stringsAsFactors = FALSE)
@@ -133,6 +133,7 @@ output$subsettingradio <- renderUI({
       indat <- rename_cols(as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_1day,sep=""))))
     }
     if(input$radiosubsetting == 1) {
+      indat <- rename_cols(as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_load_120,sep=""))))
     }
     #}
     # Why subset
@@ -1135,7 +1136,7 @@ observeEvent(input$map_occ_marker_click, {
 })
 
 #import data with times and events
-event_time_data <- fread("ShinyApps/LeafletApp/data/processed/final_count_120secs.csv")
+event_time_data <- fread("ShinyApps/LeafletApp/data/processed/final_count_120secs_marin.csv")
 
 camera_time_data <- reactive({
   if (!is.null(input$species_occ)) {
