@@ -11,8 +11,11 @@ library(plyr)
 # Set the path and workspace to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
 shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam/"
 setwd(shinycam_path)
+#Set project name
+prj_name<- "marin" # No spaces in names
+
 # load the final_count 120sec data file
-species_occ_filename <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "final_count_120secs.csv")
+species_occ_filename <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = paste("final_count_120secs_",prj_name,".csv",sep=""))
 data <- as.data.frame(fread(paste("ShinyApps/LeafletApp/data/processed/",species_occ_filename,sep="")))
 
 #data <- read_csv("ShinyApps/LeafletApp/data/processed/final_count_120secs_marin_smpt.csv") 
