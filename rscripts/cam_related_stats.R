@@ -24,7 +24,7 @@ source("rscripts/RShiny_functions.R")
 #Load Data
 #df_name <- "YOUR FILENAME HERE"
 #Exmample
-df_name <- "marin_data_animals.csv" # 
+df_name <- "marin_data_july2018.csv" # 
 # Set the path to your local camera trap data file in the raw_dataprep ditectory
 # ct_data <- read.csv(paste("YOUR LOCALPATH TO THE REAW DATA FILE",df_name,sep=""))
 # Example
