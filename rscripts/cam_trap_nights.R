@@ -21,11 +21,11 @@ source("rscripts/RShiny_functions.R")
 #Load Data
 #df_name <- "YOUR FILENAME HERE"
 #Exmample
-df_name <- "marin_data_animals.csv" # 
+df_name <- "marin_data_animals_july2018.csv" # 
 # Set the path to your local camera trap data file in the raw_dataprep ditectory
 # ct_data <- read.csv(paste("YOUR LOCALPATH TO THE REAW DATA FILE",df_name,sep=""))
 # Example
-ct_data <-read.csv(paste("ShinyApps/LeafletApp/data/raw_dataprep/",df_name, sep=""))
+ct_data <-read.csv(paste("ShinyApps/LeafletApp/data/processed/",df_name, sep=""))
 ###############################
 # Start processing, filtering and calculating trap nights.
 ct_data_new <- select(ct_data,Project.ID,Deployment.Location.ID,Camera.Deployment.Begin.Date,Camera.Deployment.End.Date,Date_Time.Captured)
