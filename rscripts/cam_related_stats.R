@@ -41,7 +41,7 @@ dm_01_count_images<- ct_data %>% group_by(Project.ID,Camera.ID,Deployment.Locati
 write.csv(dm_01_count_images, file=paste(output_path,"dm_01_count_images.csv",sep=""), row.names = FALSE)
 
 # 02: Count of blanks per camera trap
-dm_02_count_blanks<- ct_data %>% group_by(Project.ID,Camera.ID,Deployment.Location.ID) %>% summarize(count_blanks = sum(Photo.Type == "Blanks"))
+dm_02_count_blanks<- ct_data %>% group_by(Project.ID,Camera.ID,Deployment.Location.ID) %>% summarize(count_blanks = sum(Photo.Type == "Blank"))
 
 write.csv(dm_02_count_blanks, file=paste(output_path,"dm_02_count_blanks.csv",sep=""), row.names = FALSE)
 
