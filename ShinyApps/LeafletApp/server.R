@@ -47,12 +47,17 @@ red.list.table <- subset(red.list.table, id %in% c(3,4,8,9,5))             ##   
 
 # Read data for temp activity tab 
 # Load in the dataset with animals only
-#d_animals<- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "animals")
-#temporal_data <- fread(paste("ShinyApps/LeafletApp/data/processed/",d_animals,sep=""))
-#marin.data.complete.sac <- temporal_data
+d_animals<- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "data_event_120secs")
+temporal_data <- fread(paste("ShinyApps/LeafletApp/data/processed/",d_animals,sep=""))
+temporal_data$yearmonthday <- as.Date(temporal_data$Date_Time.Captured)
+temporal_data$datetime <- as_datetime(temporal_data$Date_Time.Captured)
+temporal_data$capture.time <- strftime(temporal_data$datetime, format="%H:%M:%S")
+temporal_data$Month <- month(temporal_data$datetime)
+temporal_data$Year <- year(temporal_data$datetime)
+marin.data.complete.sac <- temporal_data
 # old code
-marin.data.complete.sac <- data.table::setDT(read_feather(path="ShinyApps/LeafletApp/data/processed/marin.data_1hour",columns = NULL)) 
-instmarin.data.complete.sac <- marin.data.complete.sac[which(marin.data.complete.sac$Genus.Species!=""), ]
+#marin.data.complete.sac <- data.table::setDT(read_feather(path="ShinyApps/LeafletApp/data/processed/marin.data_1hour",columns = NULL)) 
+#instmarin.data.complete.sac <- marin.data.complete.sac[which(marin.data.complete.sac$Genus.Species!=""), ]
 # end old code
 
 # Read Camera Stats
@@ -70,21 +75,22 @@ dm_07_avg_photos_per_deployment <- fread('ShinyApps/LeafletApp/data/processed/dm
 # Read shapefiles for park boundaries
 # EHF: Modify to read a directory of shapefiles (batch load)
 
-shapefile_path <- "ShinyApps/LeafletApp/data/Shapefiles/Marin/"
+shapefile_path <- "ShinyApps/LeafletApp/data/Shapefiles/Guntur-Papandayan/"
 
 #GunturPapandayan
-
-MCPparks <- readOGR(shapefile_path, "MCPparks", verbose = FALSE) %>%
+GP <- readOGR(shapefile_path, "KPHK GUNTUR-PAPANDAYAN", verbose = FALSE) %>%
   spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
-# 
-GGNRA_incChedaJewel <- readOGR(shapefile_path, "GGNRA_incChedaJewel", verbose = FALSE) %>%
-  spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
-# 
-MMWD <- readOGR(shapefile_path, "MMWD", verbose = FALSE) %>%
-  spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
-# 
-SamuelPTaylor <- readOGR(shapefile_path, "SamuelPTaylor", verbose = FALSE) %>%
-  spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+# MCPparks <- readOGR(shapefile_path, "MCPparks", verbose = FALSE) %>%
+#   spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+# # 
+# GGNRA_incChedaJewel <- readOGR(shapefile_path, "GGNRA_incChedaJewel", verbose = FALSE) %>%
+#   spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+# # 
+# MMWD <- readOGR(shapefile_path, "MMWD", verbose = FALSE) %>%
+#   spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
+# # 
+# SamuelPTaylor <- readOGR(shapefile_path, "SamuelPTaylor", verbose = FALSE) %>%
+#   spTransform(CRS("+ellps=WGS84 +proj=longlat +datum=WGS84 +no_defs"))
 
 ## Functions for data cleanup on import ##
 rename_cols <- function(data){  ##   Make column names syntactically-valid (no spaces)
@@ -153,7 +159,7 @@ output$subsettingradio <- renderUI({
     
     ##    Add "All Sites" option to labels vector if dataset is "MWPIP"
     # Get rid of this and generalize
-    if(input$dataset == "MWPIP"){
+    if(input$dataset == "Papandayan"){
       labels <- c(labels, "All Sites")
     }
     
@@ -324,10 +330,10 @@ output$subsettingradio <- renderUI({
       if (input$boundary_checkbox == TRUE) {
         tmap <- tmap %>% 
           # UPDATE HERE for SPATIAL
-          #addPolygons(data = GP, weight = 2, fill=FALSE)# %>%
-          addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
-          addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
-          addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
+          addPolygons(data = GP, weight = 2, fill=FALSE)# %>%
+          #addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
+          #addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
+          #addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
       }
       
       
@@ -1085,7 +1091,7 @@ output$map_occ <- renderLeaflet({
           urlTemplate = "http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
         )  %>%
-        setView(-122.6,37.9,zoom=10) %>%
+       # setView(-122.6,37.9,zoom=10) %>%
         addCircleMarkers(~Longitude, ~Latitude, layerId = ~Deployment.Location.ID, weight=2, radius=4, fillOpacity=1, color = ~pal(present),
                          popup = ~paste("Deployment ID:", Deployment.Location.ID,
                          "<br>Number of Events:", event_total,
@@ -1100,17 +1106,17 @@ output$map_occ <- renderLeaflet({
           attribution = "Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme,
                         NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC"
         )  %>%
-        setView(-122.6,37.9,zoom=10) %>%
+        #setView(-122.6,37.9,zoom=10) %>%
         addCircleMarkers(~Longitude, ~Latitude, weight=2, radius=4, fillOpacity=1, color = 'black')
     }
     # Park Boundary Checkbox - Showing Shapefile names needs to be dynamic
     if (input$boundary_checkbox_occ == TRUE) {
       tmap_occ <- tmap_occ %>%
         # UPDATE HERE for SPATIAL
-        #addPolygons(data = GP, weight = 2, fill=FALSE)# %>%
-        addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
-        addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
-        addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
+        addPolygons(data = GP, weight = 2, fill=FALSE)# %>%
+        #addPolygons(data = GGNRA_incChedaJewel, weight = 2, fill=FALSE) %>%
+        #addPolygons(data = MMWD, weight = 2, fill=FALSE) %>%
+        #addPolygons(data = SamuelPTaylor, weight = 2, fill=FALSE)
     }
   }
   tmap_occ
@@ -1136,8 +1142,8 @@ observeEvent(input$map_occ_marker_click, {
 })
 
 #import data with times and events
-event_time_data <- fread("ShinyApps/LeafletApp/data/processed/final_count_120secs_marin.csv")
-
+dataset_final_count_120 <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = "final_count_120")
+event_time_data <- fread(paste("ShinyApps/LeafletApp/data/processed/",dataset_final_count_120, sep="")) 
 camera_time_data <- reactive({
   if (!is.null(input$species_occ)) {
     event_time_data %>%
