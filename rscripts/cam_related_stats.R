@@ -17,14 +17,14 @@ library(dplyr)
 library(data.table)
 # Set the path and workspace  to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
 shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam/"
-prj_name<- "Marin" # No spaces in names
+prj_name<- "Papandayan" # No spaces in names
 setwd(shinycam_path)
 source("rscripts/RShiny_functions.R")
 # Set the file name and path to your raw data files. This should be a file name that is in the correct format. See README process for explanation
 #Load Data
 #df_name <- "YOUR FILENAME HERE"
 #Exmample
-df_name <- "marin_data_july2018.csv" # 
+df_name <- "Papandayan_joined_data.csv" # 
 # Set the path to your local camera trap data file in the raw_dataprep ditectory
 # ct_data <- read.csv(paste("YOUR LOCALPATH TO THE REAW DATA FILE",df_name,sep=""))
 # Example

@@ -11,7 +11,7 @@ library(plyr)
 library(tidyr)
 # Set the path and workspace to to main ShinyCam directory (i.e. the one that has README.md file, ShinyApps directory,etc)
 shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam"
-prj_name<- "marin" # No spaces in names and needs to be same as used in other files2419
+prj_name<- "Papandayan" # No spaces in names and needs to be same as used in other files2419
 
 ###############################
 # Load the final_count data files

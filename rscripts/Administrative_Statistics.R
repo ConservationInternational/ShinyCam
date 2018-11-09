@@ -1,6 +1,7 @@
 library(data.table)
 library(dplyr)
-marin_data_complete <- fread('~/Downloads/marin_data.csv', header = TRUE, sep = ",")
+
+data_complete <- fread('~/Downloads/marin_data.csv', header = TRUE, sep = ",")
 
 # 1 & 3
 marin_data_complete %>%

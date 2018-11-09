@@ -12,7 +12,7 @@ library(plyr)
 shinycam_path <- "/Users/efegraus/Documents/GitHub/ShinyCam/"
 setwd(shinycam_path)
 #Set project name
-prj_name<- "marin" # No spaces in names
+prj_name<- "Papandayan" # No spaces in names
 
 # load the final_count 120sec data file
 species_occ_filename <- list.files(path="ShinyApps/LeafletApp/data/processed/", pattern = paste("final_count_120secs_",prj_name,".csv",sep=""))
