@@ -12,7 +12,7 @@ vars <- c(
 #########################
 # This needs to be customized by user
 # Have this be part of a config file
-prj_name <- "MWPIP"
+prj_name <- "Papandayan"
 #########################
 
 samplingFrequency <- c("Annual" = "annual",
