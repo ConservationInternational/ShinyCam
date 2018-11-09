@@ -11,6 +11,7 @@
 # 05_count_wildlife: Count of wildlife images (see excluded species list)
 # 06_count_human_related: Count of human-related images (uses excluded species list)
 # 07_avg_photos_per_deployment: Average # of images per camera deployment
+# test for temporal_fix branch
 ###############################
 rm(list = ls())
 library(dplyr)
